@@ -6,6 +6,8 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Bump hermetic-llvm from 0.8.9 to 0.8.18 and remove the local compiler-rt
+  sanitizer patches now included upstream.
 - Add a concise `TODO.md` for release blockers and deferred enhancements.
 - Transfer the repository to MBO Works and adopt the unreleased
   `mboworks_carve` module identity.
