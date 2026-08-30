@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Conventions for AI coding agents (and humans) working on `helly25/carve`. This
+Conventions for AI coding agents (and humans) working on `mboworks/carve`. This
 file is the canonical source; tool-specific entry points such as
 [CLAUDE.md](CLAUDE.md) should reference it rather than duplicate.
 
@@ -12,7 +12,7 @@ For architecture, layering, and the build-out plan, see
 Every Bazel, Starlark, C++, proto, and shell file in the repo starts with:
 
 ```
-# SPDX-FileCopyrightText: Copyright (c) The helly25/carve authors (github.com/helly25/carve)
+# SPDX-FileCopyrightText: Copyright (c) M. Boerger, the MBO Works authors
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,7 +38,7 @@ When picking where a capability lives, prefer in this order:
 
 1. **Standard C++23** if usable out of the box.
 2. **Abseil** if usable out of the box.
-3. **[helly25/mbo](https://github.com/helly25/mbo)** as a wrapper or extension
+3. **[mboworks/mbo](https://github.com/mboworks/mbo)** as a wrapper or extension
    when std or Abseil need smoothing for our use.
 
 Anything mbo lacks that we need gets added upstream there, not locally in
@@ -157,7 +157,7 @@ If you are an AI agent making changes:
 - [CARVE_DESIGN.md](CARVE_DESIGN.md): architecture. Update when design changes.
 - [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md): status + ordered remaining work. Update as milestones land.
 - [RULES.md](RULES.md): code-style and structural rules. Update when conventions change.
-- [STYLE_CPP.md](STYLE_CPP.md): detailed C++ style (shared helly25 conventions with examples); the companion RULES.md points to.
+- [STYLE_CPP.md](STYLE_CPP.md): detailed C++ style (shared MBO Works conventions with examples); the companion RULES.md points to.
 - [README.md](README.md): user-facing intro. Update on user-visible changes.
 - [CHANGELOG.md](CHANGELOG.md): every PR adds a line under `[Unreleased]`.
 - [CONTRIBUTING.md](CONTRIBUTING.md): human onboarding. Should stay short.

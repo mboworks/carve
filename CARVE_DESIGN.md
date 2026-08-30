@@ -18,7 +18,7 @@ Design for replacing this tool with a from-scratch implementation under permissi
 - **C++23**, **Clang 20.1+** as the build toolchain. C++23 features are in scope (`std::expected`, deducing-this, ranges enhancements, `std::print`/`std::format`).
 - **GTest** for unit tests.
 - **Abseil** for utilities (`absl::StatusOr`, `absl::flat_hash_*`, `absl::log`, `absl::Flags`, `absl::strings`).
-- **mbo** ([helly25/mbo](https://github.com/helly25/mbo)) as the project-owned extension layer above Abseil. Brings the Google-internal utilities Abseil did not open-source plus useful additions we control. Bzlmod-ready. Supports clang compilation through `bazel-contrib/toolchain_llvm`, which matches our toolchain choice.
+- **mbo** ([mboworks/mbo](https://github.com/mboworks/mbo)) as the project-owned extension layer above Abseil. Brings the Google-internal utilities Abseil did not open-source plus useful additions we control. Bzlmod-ready. Supports clang compilation through `bazel-contrib/toolchain_llvm`, which matches our toolchain choice.
 - **No Boost.** Anywhere.
 - **No code copied from the existing codebase.** Insights and the quirk inventory are fine; specific expressions are not.
 
@@ -85,7 +85,7 @@ Internal modules:
 | `cdb`       | Atomic JSON output, merge semantics                                                          | mbo atomic-write                |
 | `cli`       | `absl::Flags`-driven subcommand dispatch                                                     | `absl::Flags`                   |
 
-Each module is a self-contained Bazel package following the helly25 house layout
+Each module is a self-contained Bazel package following the MBO Works house layout
 (see [RULES.md](RULES.md)): `carve/<module>/` with `namespace carve::<module>`,
 a `<module>_cc` library, and a colocated `<module>_test`. The binary entry point
 is `//carve:carve` (with a `//:refresh` alias for the documented `bazel run`).
@@ -278,7 +278,7 @@ Net runtime Python: zero. Net developer Python: at most one script run rarely.
 ```python
 module(name = "carve", version = "0.1.0")
 
-bazel_dep(name = "mbo", version = "...")                      # helly25/mbo. Pulls abseil and friends transitively
+bazel_dep(name = "mbo", version = "...")                      # mboworks/mbo. Pulls abseil and friends transitively
 bazel_dep(name = "googletest", version = "1.15.2")
 bazel_dep(name = "protobuf", version = "29.0")
 bazel_dep(name = "rules_cc", version = "0.0.17")
@@ -349,7 +349,7 @@ All flags `absl::Flags`. Help auto-generated. No hand-rolled arg parsing.
 
 Two delivery modes:
 
-1. **As a bzlmod dependency.** Consumers add `bazel_dep(name = "helly25_carve")` and load `carve_refresh` / `carve_aspect_refresh` from `@helly25_carve//rules:carve.bzl`. First use builds `carve` from source; subsequent uses hit Bazel's cache. Because a module's `.bazelrc` does not propagate to its dependents, the consuming build must reproduce carve's compile settings - `-std=c++23` (and, on macOS, a `std::filesystem` deployment floor of at least 10.15), plus - when building the LLVM-linked `//carve:carve` - the C++17 `per_file_copt` scoping for the `@llvm-project` libraries `scan_deps` links and `-fno-rtti` for `scan_deps`. carve will provide these as an importable consumer `.bazelrc` fragment (IMPLEMENTATION_PLAN.md M6).
+1. **As a bzlmod dependency.** Consumers add `bazel_dep(name = "mboworks_carve")` and load `carve_refresh` / `carve_aspect_refresh` from `@mboworks_carve//rules:carve.bzl`. First use builds `carve` from source; subsequent uses hit Bazel's cache. Because a module's `.bazelrc` does not propagate to its dependents, the consuming build must reproduce carve's compile settings - `-std=c++23` (and, on macOS, a `std::filesystem` deployment floor of at least 10.15), plus - when building the LLVM-linked `//carve:carve` - the C++17 `per_file_copt` scoping for the `@llvm-project` libraries `scan_deps` links and `-fno-rtti` for `scan_deps`. carve will provide these as an importable consumer `.bazelrc` fragment (IMPLEMENTATION_PLAN.md M6).
 2. **As prebuilt binaries.** Released for common platforms (darwin-arm64, darwin-x86_64, linux-x86_64, linux-arm64, windows-x86_64) via GitHub Releases. `cc_carve` rule downloads the appropriate binary for the host. Avoids the from-source build entirely for users on supported platforms.
 
 Mode 2 matters for the editor-tooling use case: contributors want compile_commands.json working immediately after clone, not after a 5-minute LLVM toolchain build.
@@ -391,7 +391,7 @@ Concentric rings:
 
 Assert on the structured data, never on a serialized blob:
 
-- **Proto data (sidecar records; any future proto model).** Use the helly25/proto
+- **Proto data (sidecar records; any future proto model).** Use mboworks/proto
   matchers (`@com_helly25_proto//mbo/proto:matchers_cc`, namespace `mbo::proto`) -
   `EqualsProto`, `Partially(EqualsProto(...))`, `WhenDeserialized`,
   `IgnoringRepeatedFieldOrdering` - never `Eq(msg.SerializeAsString())`. They give

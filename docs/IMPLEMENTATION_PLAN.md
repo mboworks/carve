@@ -208,7 +208,7 @@ action cache on `command_file`). **M5 complete.**
   toolchain module + heavy rebuilds - a significant effort, deferred until there is
   a concrete need.
 
-Acceptance: a bzlmod consumer can `bazel_dep(name = "helly25_carve")` and get a working CDB; tagged release.
+Acceptance: a bzlmod consumer can `bazel_dep(name = "mboworks_carve")` and get a working CDB; tagged release.
 
 ## Cross-cutting / parallelizable
 - ✅ `prune` subcommand (`carve/prune`): GC sidecar rows whose `written_at` is older than `--prune_after_days`; unstamped rows kept. `carve prune --sidecar=... --prune_after_days=30`.

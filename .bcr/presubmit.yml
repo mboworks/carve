@@ -19,4 +19,4 @@ tasks:
     # does NOT propagate to consumers, so a clean build here may require that
     # scoping to move into the BUILD graph first (see docs/IMPLEMENTATION_PLAN.md).
     build_targets:
-      - "@helly25_carve//carve:carve"
+      - "@mboworks_carve//carve:carve"

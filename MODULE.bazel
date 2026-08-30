@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright (c) The helly25/carve authors (github.com/helly25/carve)
+# SPDX-FileCopyrightText: Copyright (c) M. Boerger, the MBO Works authors
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,14 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Module helly25_carve.
+"""Module mboworks_carve.
 
 Carve compile_commands.json out of Bazel build graphs for clangd-style tooling.
 See CARVE_DESIGN.md for the architecture.
 """
 
 module(
-    name = "helly25_carve",
+    name = "mboworks_carve",
     version = "0.0.1",
 )
 

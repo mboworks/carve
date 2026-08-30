@@ -6,6 +6,8 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Transfer the repository to MBO Works and adopt the unreleased
+  `mboworks_carve` module identity.
 - Initial bootstrap (MODULE.bazel, .bazelrc, design doc).
 - Design review: correct the scan-deps LLVM-libs linkage assumption
   (toolchains_llvm is not a linkable libs source), front-load it as a month-1
