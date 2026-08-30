@@ -1,8 +1,8 @@
-# SPDX-FileCopyrightText: Copyright (c) The helly25/carve authors (github.com/helly25/carve)
+# SPDX-FileCopyrightText: Copyright (c) M. Boerger, the MBO Works authors
 # SPDX-License-Identifier: Apache-2.0
 #
 # Local quality gates. Install with `pre-commit install`; run on everything
-# with `pre-commit run -a`. Mirrors the helly25 house setup (mbo, bzl).
+# with `pre-commit run -a`. Mirrors the MBO Works house setup (mbo, bzl).
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks

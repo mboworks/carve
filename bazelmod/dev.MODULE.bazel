@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright (c) The helly25/carve authors (github.com/helly25/carve)
+# SPDX-FileCopyrightText: Copyright (c) M. Boerger, the MBO Works authors
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Development-only modules (mirrors helly25/mbo + helly25/xff).
+"""Development-only modules used by MBO Works projects.
 
 `include`d from MODULE.bazel. Everything here is `dev_dependency = True`, so it
 is used only when carve is the root module (local development and CI) and never

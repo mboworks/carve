@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# SPDX-FileCopyrightText: Copyright (c) The helly25/carve authors (github.com/helly25/carve)
+# SPDX-FileCopyrightText: Copyright (c) M. Boerger, the MBO Works authors
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,7 @@
 set -euo pipefail
 
 PACKAGE_NAME="carve"
-BAZELMOD_NAME="helly25_carve"
+BAZELMOD_NAME="mboworks_carve"
 
 # Automatic var from workflow integration.
 TAG="${GITHUB_REF_NAME}"
@@ -94,7 +94,7 @@ git archive --format=tar.gz --prefix="${PREFIX}/" -o "${ARCHIVE}" --add-virtual-
 
 # Release notes (stdout).
 echo "# Version ${TAG}"
-echo "## [Changelog](https://github.com/helly25/${PACKAGE_NAME}/blob/${TAG}/CHANGELOG.md)"
+echo "## [Changelog](https://github.com/mboworks/${PACKAGE_NAME}/blob/${TAG}/CHANGELOG.md)"
 echo ""
 
 # Print the body of the "## [${TAG}]" section from the Keep a Changelog file.

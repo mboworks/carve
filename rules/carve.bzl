@@ -1,10 +1,10 @@
-# SPDX-FileCopyrightText: Copyright (c) The helly25/carve authors (github.com/helly25/carve)
+# SPDX-FileCopyrightText: Copyright (c) M. Boerger, the MBO Works authors
 # SPDX-License-Identifier: Apache-2.0
 """Layer B: a `bazel run` target that refreshes the compilation database.
 
 `carve_refresh` wraps the `carve` binary in a runnable target:
 
-    load("@helly25_carve//rules:carve.bzl", "carve_refresh")
+    load("@mboworks_carve//rules:carve.bzl", "carve_refresh")
 
     carve_refresh(
         name = "refresh",

@@ -1,6 +1,6 @@
 # C++ Style
 
-The C++ coding style for helly25 repositories. It sits on top of two
+The C++ coding style for MBO Works repositories. It sits on top of two
 machine-enforced config files and adds the human conventions below. When in doubt
 the config files win; this document explains and extends them so a contributor (or
 an AI assistant) can follow them without reverse-engineering the tooling.
@@ -374,7 +374,7 @@ substitute for a committed test. Tests use GoogleTest + GoogleMock with these co
   `StatusIs(absl::StatusCode::kInvalidArgument[, msg])`, plus the assert-OK-and-bind macros
   `MBO_ASSERT_OK_AND_ASSIGN(target, expr)` and `MBO_ASSERT_OK_AND_MOVE_TO(expr, target)`
   (test mirrors of `MBO_ASSIGN_OR_RETURN` / `MBO_MOVE_TO_OR_RETURN`) and `MBO_EXPECT_OK` /
-  `MBO_ASSERT_OK`. mbo's set is the helly25-canonical superset: it works on both `Status`
+  `MBO_ASSERT_OK`. mbo's set is the MBO Works canonical superset: it works on both `Status`
   and `StatusOr`, adds payload matchers and the bind macros, and forwards the abseil
   matchers it shares -- features Abseil keeps internal and has not open-sourced. So prefer
   it; **Abseil's `::absl_testing::` matchers (`absl/status/status_matchers.h`) are not
@@ -391,11 +391,11 @@ serialized-string comparison. See the Protocol Buffers section.
 
 ### Shell / binary-level tests
 
-- The helly25 convention is **helly25/bashtest**
-  (`bazel_dep(name = "helly25_bashtest", repo_name = "com_helly25_bashtest")`, whose macro
-  emits `@com_helly25_bashtest` labels), not a hand-rolled `sh_test`:
-  `load("@com_helly25_bashtest//bashtest:bashtest.bzl", "bashtest")`, then a script that
-  `source`s `"${helly25_bashtest}"`, defines `test::name()` functions using `expect_eq` /
+- The MBO Works convention is **mboworks/bashtest**
+  (`bazel_dep(name = "mboworks_bashtest", repo_name = "com_mboworks_bashtest")`, whose macro
+  emits `@com_mboworks_bashtest` labels), not a hand-rolled `sh_test`:
+  `load("@com_mboworks_bashtest//bashtest:bashtest.bzl", "bashtest")`, then a script that
+  `source`s `"${mboworks_bashtest}"`, defines `test::name()` functions using `expect_eq` /
   `expect_contains` / `expect_not_contains`, and ends with `test_runner`.
   - It runs under macOS bash 3.2: **no `mapfile` / `readarray`** or other bash-4 features.
     Read lines with `while IFS= read -r line; do arr+=("$line"); done <<< "$out"`.

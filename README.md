@@ -48,13 +48,13 @@ In a consumer workspace, depend on carve in `MODULE.bazel` (once it is published
 to the Bazel Central Registry):
 
 ```python
-bazel_dep(name = "helly25_carve", version = "<release>")
+bazel_dep(name = "mboworks_carve", version = "<release>")
 ```
 
 then add the rule from a `BUILD` file:
 
 ```python
-load("@helly25_carve//rules:carve.bzl", "carve_refresh")
+load("@mboworks_carve//rules:carve.bzl", "carve_refresh")
 
 carve_refresh(name = "refresh", targets = ["//..."])
 ```

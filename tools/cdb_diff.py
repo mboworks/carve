@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# SPDX-FileCopyrightText: Copyright (c) The helly25/carve authors (github.com/helly25/carve)
+# SPDX-FileCopyrightText: Copyright (c) M. Boerger, the MBO Works authors
 # SPDX-License-Identifier: Apache-2.0
 """Differential harness for compilation databases.
 
