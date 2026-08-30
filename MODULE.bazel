@@ -37,7 +37,7 @@ bazel_dep(name = "rules_proto", version = "7.1.0")
 bazel_dep(name = "rules_shell", version = "0.8.0")
 bazel_dep(name = "abseil-cpp", version = "20260817.0")
 bazel_dep(name = "protobuf", version = "35.0")
-bazel_dep(name = "helly25_mbo", version = "0.11.1")
+bazel_dep(name = "helly25_mbo", version = "0.13.2")
 
 # Test-only deps.
 bazel_dep(name = "googletest", version = "1.17.0.bcr.2", dev_dependency = True)
