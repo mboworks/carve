@@ -6,6 +6,7 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Add a concise `TODO.md` for release blockers and deferred enhancements.
 - Transfer the repository to MBO Works and adopt the unreleased
   `mboworks_carve` module identity.
 - Initial bootstrap (MODULE.bazel, .bazelrc, design doc).
