@@ -81,10 +81,9 @@ one individually-cacheable shard per compile action and aggregate them.
 ## Build requirements
 
 - Bazel 9.1+
-- A C++23-capable Clang or GCC toolchain. Development and release validation
-  use the hermetic [llvm](https://github.com/hermeticbuild/hermetic-llvm)
-  toolchain, which also supplies the LLVM libraries `scan_deps` links and
-  builds them from source.
+- Clang 22.x (LLVM 22.1.8), supplied as a prebuilt distribution by
+  [toolchains_llvm](https://github.com/bazel-contrib/toolchains_llvm) 1.9.0;
+  `scan_deps` links the matching prebuilt `libclang-cpp`
 - Apple Silicon / x86\_64 Linux supported; Windows planned
 
 ## License

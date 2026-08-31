@@ -11,7 +11,7 @@ output differs from the reference extractor (Hedron) only in ways we can
 explain. It pairs with the reusable harness `tools/cdb_diff.py`.
 
 Last run: 2026-06-24, `//carve/...` on this repo (22 compile actions),
-macOS arm64, hermetic `llvm` toolchain (clang 22.1.7).
+macOS arm64, LLVM 22.1.7 (the then-current hermetic toolchain).
 
 ## 1. clangd consumes carve's CDB
 
@@ -32,8 +32,8 @@ clangd --check=<execroot>/carve/cdb/cdb.cc --compile-commands-dir=<out>
 
 **Finding - use a toolchain-matched clangd.** clangd injects a `-resource-dir`
 and resolves the sysroot from the compiler named in the command. With a clangd
-that matches the build toolchain (clang 22.1.7, the one the hermetic `llvm`
-module ships), it uses the hermetic clang builtins + the from-source libc++ named
+that matches the build toolchain (clang 22.1.7 in this historical run), it uses
+the matching clang builtins + standard library named
 in the command and parses cleanly. A *mismatched* system clangd (e.g. Apple
 clang 21 + the macOS SDK libc++) substitutes its own resource-dir and SDK, which
 can surface spurious diagnostics. Editors should point at the toolchain's clangd

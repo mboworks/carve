@@ -6,6 +6,10 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Replace source-built hermetic-llvm with `toolchains_llvm` 1.9.0 and matching
+  prebuilt LLVM 22.1.8 `libclang-cpp`, eliminating LLVM compilation from cold
+  builds. Match upstream's libstdc++ ABI on Linux and libc++ ABI on macOS.
+
 ## [0.1.0] - 2026-08-31
 
 - Prepare the first public release, including a tested consumer Bazel rc

@@ -15,7 +15,7 @@
 
 // `carve_aggregate` is the lean build of the `aggregate` subcommand: it merges
 // independently-produced shards/sidecars into one compilation database and links
-// neither scan_deps nor the from-source LLVM (merging proto records needs no
+// neither scan_deps nor the prebuilt LLVM libraries (merging proto records needs no
 // compiler). The Layer C launcher (`carve_aspect_refresh`) runs it once to fold
 // the per-action shards into `compile_commands.json`, so `bazel run` of a Layer C
 // refresh - and the aspect's `build_test` - never trigger a full LLVM build.
