@@ -6,8 +6,6 @@ short list of remaining work.
 
 ## First release
 
-- [ ] Replace `helly25_mbo@0.11.1` with `mboworks_mbo` after that module is
-  released to the Bazel Central Registry (BCR).
 - [ ] Author and validate the consumer `.bazelrc` fragment required to build
   carve and its source-built LLVM dependencies outside this repository.
 - [ ] Add a valid `BCR_PUBLISH_TOKEN` with access to

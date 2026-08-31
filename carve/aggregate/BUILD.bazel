@@ -26,7 +26,7 @@ cc_library(
         "//carve/refresh:refresh_cc",
         "//carve/sidecar:sidecar_cc",
         "@abseil-cpp//absl/container:flat_hash_map",
-        "@helly25_mbo//mbo/status:status_macros_cc",
+        "@mboworks_mbo//mbo/status:status_macros_cc",
     ],
     visibility = ["//carve:__subpackages__"],
     deps = [
@@ -47,8 +47,8 @@ cc_test(
         "//carve/sidecar:sidecar_cc",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
-        "@helly25_mbo//mbo/testing:status_cc",
         "@helly25_proto//mbo/proto:matchers_cc",
         "@helly25_proto//mbo/proto:parse_text_proto_cc",
+        "@mboworks_mbo//mbo/testing:status_cc",
     ],
 )

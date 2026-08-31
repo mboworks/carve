@@ -59,8 +59,8 @@ cc_test(
         ":sidecar_cc",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
-        "@helly25_mbo//mbo/testing:status_cc",
         "@helly25_proto//mbo/proto:matchers_cc",
         "@helly25_proto//mbo/proto:parse_text_proto_cc",
+        "@mboworks_mbo//mbo/testing:status_cc",
     ],
 )

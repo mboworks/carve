@@ -41,7 +41,7 @@ cc_binary(
         "@abseil-cpp//absl/strings",
         "@abseil-cpp//absl/strings:str_format",
         "@abseil-cpp//absl/time",
-        "@helly25_mbo//mbo/status:status_macros_cc",
+        "@mboworks_mbo//mbo/status:status_macros_cc",
     ],
 )
 
