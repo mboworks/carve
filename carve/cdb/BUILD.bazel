@@ -69,6 +69,6 @@ cc_test(
         ":json_matcher_cc",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
-        "@helly25_mbo//mbo/testing:status_cc",
+        "@mboworks_mbo//mbo/testing:status_cc",
     ],
 )

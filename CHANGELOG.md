@@ -6,6 +6,7 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Replace the legacy `helly25_mbo` dependency with `mboworks_mbo` 0.14.0.
 - Bump hermetic-llvm from 0.8.9 to 0.8.18 and remove the local compiler-rt
   sanitizer patches now included upstream.
 - Add a concise `TODO.md` for release blockers and deferred enhancements.

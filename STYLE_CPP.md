@@ -170,7 +170,7 @@ clang-format picks a layout per line; these habits steer it toward the readable 
   raw pointer mixes nullability, the pointed-at value, and ownership/lifetime into one type
   the caller has to second-guess. For an optional reference use
   `std::optional<std::reference_wrapper<T>>` or mbo's `mbo::types::OptionalRef<T>`
-  (`mbo/types/optional_ref.h`, available through the `helly25_mbo` dependency) and its related
+  (`mbo/types/optional_ref.h`, available through the `mboworks_mbo` dependency) and its related
   types (e.g. `OptionalDataOrRef` when it may own a value or refer to one).
 - **Mark a return value `[[nodiscard]]`** when silently ignoring it is a bug - an
   `absl::Status` / `StatusOr`, a parsed result, a `Consume...` "did it match?" flag, an acquired
@@ -187,7 +187,7 @@ clang-format picks a layout per line; these habits steer it toward the readable 
 ## Error handling: `absl::Status` and the MBO status macros
 
 Propagate errors with the macros from `mbo/status/status_macros.h`
-(`@helly25_mbo//mbo/status:status_macros_cc`), not a hand-written
+(`@mboworks_mbo//mbo/status:status_macros_cc`), not a hand-written
 `if (!x.ok()) return x.status();`.
 
 - **A "value or error" type IS `absl::StatusOr<T>`.** Do not hand-roll a struct that bundles
@@ -370,7 +370,7 @@ substitute for a committed test. Tests use GoogleTest + GoogleMock with these co
 ### Status matchers
 
 - Use the **`mbo::testing`** status matchers (`#include "mbo/testing/status.h"`, dep
-  `@helly25_mbo//mbo/testing:status_cc`): `IsOk()`, `IsOkAndHolds(m)`,
+  `@mboworks_mbo//mbo/testing:status_cc`): `IsOk()`, `IsOkAndHolds(m)`,
   `StatusIs(absl::StatusCode::kInvalidArgument[, msg])`, plus the assert-OK-and-bind macros
   `MBO_ASSERT_OK_AND_ASSIGN(target, expr)` and `MBO_ASSERT_OK_AND_MOVE_TO(expr, target)`
   (test mirrors of `MBO_ASSIGN_OR_RETURN` / `MBO_MOVE_TO_OR_RETURN`) and `MBO_EXPECT_OK` /
