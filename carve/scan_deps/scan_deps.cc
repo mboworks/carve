@@ -66,15 +66,17 @@ class CapturingDiagnosticConsumer : public clang::DiagnosticConsumer {
 absl::StatusOr<std::vector<std::string>> ScanDependencies(
     absl::Span<const std::string> args,
     std::string_view working_dir) {
-  deps::DependencyScanningService service(
-      deps::ScanningMode::DependencyDirectivesScan, deps::ScanningOutputFormat::Make);
+  deps::DependencyScanningServiceOptions service_options;
+  service_options.Mode = deps::ScanningMode::DependencyDirectivesScan;
+  deps::DependencyScanningService service(service_options);
   clang::tooling::DependencyScanningTool tool(service);
 
   std::string diagnostics;
   CapturingDiagnosticConsumer diag_consumer(diagnostics);
   const std::vector<std::string> command(args.begin(), args.end());
-  const std::optional<std::string> result =
-      tool.getDependencyFile(command, llvm::StringRef(working_dir.data(), working_dir.size()), diag_consumer);
+  const std::optional<std::string> result = tool.getDependencyFile(
+      command, llvm::StringRef(working_dir.data(), working_dir.size()),
+      /*LookupModuleOutput=*/nullptr, diag_consumer);
   if (!result.has_value()) {
     return absl::InvalidArgumentError(absl::StrCat("scan-deps failed: ", diagnostics));
   }

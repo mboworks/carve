@@ -8,6 +8,8 @@ follows [SemVer](https://semver.org/).
 
 - Add Dependabot version updates for GitHub Actions.
 - Replace the legacy `helly25_mbo` dependency with `mboworks_mbo` 0.14.0.
+- Bump hermetic-llvm to 0.8.19 (LLVM 23.1.0) and adapt scan-deps to the
+  upstream service-options and module-output callback API.
 - Bump hermetic-llvm from 0.8.9 to 0.8.18 and remove the local compiler-rt
   sanitizer patches now included upstream.
 - Add a concise `TODO.md` for release blockers and deferred enhancements.
