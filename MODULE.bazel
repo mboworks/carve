@@ -40,7 +40,7 @@ bazel_dep(name = "protobuf", version = "35.0")
 bazel_dep(name = "mboworks_mbo", version = "0.14.0")
 
 # Test-only deps.
-bazel_dep(name = "googletest", version = "1.17.0.bcr.2", dev_dependency = True)
+bazel_dep(name = "googletest", version = "1.18.0.bcr.1", dev_dependency = True)
 
 # Proto test matchers (EqualsProto/Partially/WhenDeserialized) that upstream
 # protobuf does not ship. Used to assert on proto data structurally instead of
