@@ -6,6 +6,9 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Add a clean-current-main helper for creating signed numeric release tags and
+  enforce that development advances beyond the latest release tag.
+
 ## [0.1.0] - 2026-08-31
 
 - Prepare the first public release, including a tested consumer Bazel rc

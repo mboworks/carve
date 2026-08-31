@@ -41,6 +41,20 @@ repos:
 
   - repo: local
     hooks:
+      - id: check-version
+        name: module/changelog/release version invariant
+        entry: .pre-commit/check_version.sh
+        language: script
+        pass_filenames: false
+        files: '^(MODULE\.bazel|CHANGELOG\.md|\.pre-commit/check_version\.sh|tools/trigger_release\.sh)$'
+
+      - id: release-helpers-test
+        name: release helper behavior
+        entry: tools/release_helpers_test.sh
+        language: script
+        pass_filenames: false
+        files: '^(MODULE\.bazel|CHANGELOG\.md|\.pre-commit/check_version\.sh|tools/(trigger_release|release_helpers_test)\.sh)$'
+
       - id: align-md-tables
         name: align Markdown table columns
         entry: python3 tools/align_md_tables.py
