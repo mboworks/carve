@@ -44,7 +44,7 @@ jobs:
       # fresh entry per run and restore-keys fall back to the newest prior cache
       # for this OS (busted when MODULE.bazel or the Bazel version changes).
       - name: Mount Bazel caches
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/bazel-disk
@@ -67,7 +67,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: bazelbuild/setup-bazelisk@v3
       - name: Mount Bazel caches
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/bazel-disk
@@ -86,7 +86,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: bazelbuild/setup-bazelisk@v3
       - name: Mount Bazel caches
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/bazel-disk
