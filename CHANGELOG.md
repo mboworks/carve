@@ -6,9 +6,10 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
-- Replace source-built hermetic-llvm with `toolchains_llvm` 1.9.0 and matching
-  prebuilt LLVM 22.1.8 `libclang-cpp`, eliminating LLVM compilation from cold
-  builds. Match upstream's libstdc++ ABI on Linux and libc++ ABI on macOS.
+- Replace source-built hermetic-llvm with `toolchains_llvm` 1.9.0 and the
+  matching prebuilt LLVM 22.1.8 static component archives, eliminating LLVM
+  compilation from cold builds and runtime LLVM shared-library dependencies;
+  link the required Zstandard support through `zstd` 1.5.7.bcr.1.
 
 ## [0.1.0] - 2026-08-31
 

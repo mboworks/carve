@@ -16,4 +16,7 @@
 package(default_visibility = ["//visibility:private"])
 
 # `include`d by MODULE.bazel; exported so the file is addressable.
-exports_files(["dev.MODULE.bazel"])
+exports_files([
+    "dev.MODULE.bazel",
+    "toolchains_llvm-clang-headers.patch",
+])

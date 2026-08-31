@@ -83,7 +83,7 @@ one individually-cacheable shard per compile action and aggregate them.
 - Bazel 9.1+
 - Clang 22.x (LLVM 22.1.8), supplied as a prebuilt distribution by
   [toolchains_llvm](https://github.com/bazel-contrib/toolchains_llvm) 1.9.0;
-  `scan_deps` links the matching prebuilt `libclang-cpp`
+  `scan_deps` links the matching static Clang and LLVM component archives
 - Apple Silicon / x86\_64 Linux supported; Windows planned
 
 ## License

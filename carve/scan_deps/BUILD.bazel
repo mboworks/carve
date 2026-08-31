@@ -32,7 +32,7 @@ cc_library(
     hdrs = ["scan_deps.h"],
     implementation_deps = [
         "//carve/command:command_cc",  # ParseMakeDependencies (make-format depfile parser).
-        "//third_party/llvm:clang_cpp",
+        "//third_party/llvm:clang_dependency_scanning",
         "@abseil-cpp//absl/status",
         "@abseil-cpp//absl/strings",
     ],
@@ -48,7 +48,7 @@ cc_test(
     name = "scan_deps_test",
     size = "small",
     srcs = ["scan_deps_test.cc"],
-    # Links libclang-cpp; excluded from sanitizer builds.
+    # Links the static Clang/LLVM components; excluded from sanitizer builds.
     tags = ["no_san"],
     target_compatible_with = _LLVM_PLATFORM,
     deps = [

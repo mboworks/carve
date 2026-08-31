@@ -23,7 +23,7 @@ Legend: ✅ done & tested · 🟡 partial · ⬜ not started.
 | `refresh` (in-process aquery, execroot, merge, multi-project) | ✅     | M1 done: scan-deps, incremental, staleness, header index, `--jobs`                               |
 | `scan_deps` (clang `DependencyScanningTool`)                  | ✅     | wired into `refresh`; gated linux+macos                                                          |
 | `cli` + `//carve:carve`                                       | ✅     | all four subcommands wired: `refresh` + `prune` + `aggregate` + `shard`                          |
-| e2e harness, CI, pre-commit, hermetic-llvm, proto matchers    | ✅     |                                                                                                  |
+| e2e harness, CI, pre-commit, toolchains_llvm, proto matchers  | ✅     |                                                                                                  |
 | Layer B (`carve_refresh` rule)                                | ✅     | `bazel run //:refresh`; run-based (nested-bazel resolved)                                        |
 | Layer C (aspect + shards)                                     | ✅     | `cc_carve_aspect` + `carve_aspect_refresh` + `shard` + `aggregate`; per-action cacheable shards  |
 | Differential harness vs Hedron / clangd validation            | ✅     | `tools/cdb_diff.py` + `docs/differential-report.md` (M3)                                         |
@@ -181,10 +181,11 @@ action cache on `command_file`). **M5 complete.**
   tag and approve the generated BCR draft PR.
 - ✅ **Consumability gap:** resolved by using `toolchains_llvm` 1.9.0 and its
   prebuilt LLVM distribution. Consumers no longer compile `@llvm-project` or
-  need Carve's former C++17 `per_file_copt` workaround.
+  need Carve's former C++17 `per_file_copt` workaround. Carve links only the
+  required static Clang/LLVM component archives from that distribution.
 - ⬜ **Prebuilt-distribution coverage (deferred):** Windows and macOS x86_64
   remain limited by upstream LLVM archive availability. Add those platforms
-  when official matching compiler + `libclang-cpp` distributions exist.
+  when official matching compiler and development-library distributions exist.
 
 Acceptance: a bzlmod consumer can `bazel_dep(name = "mboworks_carve")` and get a working CDB; tagged release.
 

@@ -38,6 +38,7 @@ bazel_dep(name = "rules_shell", version = "0.8.0")
 bazel_dep(name = "abseil-cpp", version = "20260817.0")
 bazel_dep(name = "protobuf", version = "36.0.bcr.1")
 bazel_dep(name = "mboworks_mbo", version = "0.14.0")
+bazel_dep(name = "zstd", version = "1.5.7.bcr.1")
 
 # Test-only deps.
 bazel_dep(name = "googletest", version = "1.18.0.bcr.1", dev_dependency = True)
@@ -51,17 +52,23 @@ bazel_dep(name = "helly25_proto", version = "1.2.1", dev_dependency = True)
 # bazel-contrib/toolchains_llvm. The module downloads the official LLVM 22.1.8
 # distribution instead of compiling LLVM in every fresh Bazel cache.
 bazel_dep(name = "toolchains_llvm", version = "1.9.0")
+single_version_override(
+    module_name = "toolchains_llvm",
+    patch_strip = 1,
+    patches = ["//bazelmod:toolchains_llvm-clang-headers.patch"],
+    version = "1.9.0",
+)
 
 llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
 llvm.toolchain(
     name = "llvm_toolchain",
     llvm_version = "22.1.8",
-    # Official Linux libclang-cpp is built against libstdc++; match it across
-    # the C++ API boundary. The official macOS distribution uses libc++.
+    # Match the standard library used to build the official static archives.
+    # The unqualified stdc++ selection links it statically.
     stdlib = {
-        "": "libc++",
-        "linux-aarch64": "dynamic-stdc++",
-        "linux-x86_64": "dynamic-stdc++",
+        "": "builtin-libc++",
+        "linux-aarch64": "stdc++",
+        "linux-x86_64": "stdc++",
     },
 )
 use_repo(llvm, "llvm_toolchain", "llvm_toolchain_llvm")

@@ -6,12 +6,11 @@
 
 common --enable_platform_specific_config
 
-# macOS tweaks (CoreFoundation and dynamic_lookup for clang on macOS).
+# macOS tweaks for the prebuilt LLVM/Clang archives.
 common --apple_platform_type=macos
 common:macos --features=-macos_default_link_flags
 common:macos --features=-supports_dynamic_linker
 common:macos --linkopt=-framework --linkopt=CoreFoundation --host_linkopt=-framework --host_linkopt=CoreFoundation
-common:macos --linkopt=-Wl,-undefined,dynamic_lookup --host_linkopt=-Wl,-undefined,dynamic_lookup
 
 # carve is a developer tool; its users track recent macOS, so pin the deployment
 # target to a current floor (macOS 14) rather than carrying backward compatibility
