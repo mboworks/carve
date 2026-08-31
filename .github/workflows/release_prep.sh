@@ -26,8 +26,9 @@ set -euo pipefail
 PACKAGE_NAME="carve"
 BAZELMOD_NAME="mboworks_carve"
 
-# Automatic var from workflow integration.
-TAG="${GITHUB_REF_NAME}"
+# Tagged releases use GitHub's immutable ref name. CI archive-consumer tests use
+# an explicit version because GitHub does not permit overriding GITHUB_* vars.
+TAG="${CARVE_RELEASE_VERSION:-${GITHUB_REF_NAME}}"
 
 function die() {
   echo "ERROR: ${*}" 1>&2

@@ -6,6 +6,10 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-08-31
+
+- Prepare the first public release, including a tested consumer Bazel rc
+  fragment and source-archive smoke test on Linux and macOS.
 - Add Dependabot version updates for GitHub Actions.
 - Replace the legacy `helly25_mbo` dependency with `mboworks_mbo` 0.14.0.
 - Bump hermetic-llvm to 0.8.19 (LLVM 23.1.0) and adapt scan-deps to the

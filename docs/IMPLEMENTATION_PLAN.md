@@ -176,10 +176,10 @@ action cache on `command_file`). **M5 complete.**
   empty root BUILD, comments the dev `include`, excludes dev paths, builds the
   source tarball, prints Keep-a-Changelog notes). Nothing publishes until a tag is
   pushed. **Prebuilt binaries are out of scope (source-only); see design §7.**
-- ⬜ Cut the actual release: bump `MODULE.bazel` to the version, move the
-  CHANGELOG `[Unreleased]` section to `## [x.y.z]`, push the tag, approve the BCR
-  draft PR. Outward-facing; left to a human.
-- ⬜ **Consumability gap (blocker for a real release):** a source-only consumer
+- 🟡 Cut the actual release: `MODULE.bazel` and the changelog are prepared for
+  `0.1.0`; after the remaining publication prerequisites pass, push the signed
+  tag and approve the generated BCR draft PR.
+- ✅ **Consumability gap:** a source-only consumer
   building `//carve:carve` builds the from-source `@llvm-project` libraries that
   `scan_deps` links, but carve scopes those to C++17 via a `per_file_copt` in its
   `.bazelrc`, which does NOT propagate to consumers. So a consumer building at
@@ -191,13 +191,13 @@ action cache on `command_file`). **M5 complete.**
     transition is global to the subgraph - it cannot do the *path-based* scoping
     (llvm/clang only, excluding the runtimes) that the `per_file_copt` does. So the
     C++17 scoping must stay a path-matched `per_file_copt`.
-  - **Therefore the fix is to ship the flags as a consumer `.bazelrc` fragment**
+  - **The fix ships as `carve.bazelrc`, a consumer `.bazelrc` fragment**
     (the C++17 LLVM `per_file_copt`, the `scan_deps` `-fno-rtti`, and a C++23
     scoping for carve's own sources) for consumers to copy/import, the same shape
     mbo ships `llvm.MODULE.bazel`. The exact regexes depend on the consumer's
-    external-repo path form, so author + validate the fragment against a real
-    consumer workspace (or the `.bcr/presubmit.yml` build of `//carve:carve`) when
-    cutting the release.
+    external-repo path form. The release-archive smoke test extracts the actual
+    source tarball, imports the fragment in a clean consumer workspace, and
+    builds `@mboworks_carve//carve:carve` on Linux and macOS.
 - ⬜ **Fully-hermetic runtimes (deferred enhancement, not a blocker).** The mixed
   C++17/C++23 build is ABI-safe today because each build links one consistent
   libc++ (CARVE_DESIGN §4.2 "Mixed C++ standards"). But on macOS that libc++ is the

@@ -1,0 +1,40 @@
+# SPDX-FileCopyrightText: Copyright (c) M. Boerger, the MBO Works authors
+# SPDX-License-Identifier: Apache-2.0
+
+# Import this file from a consumer workspace's .bazelrc. A dependency's own
+# .bazelrc is not loaded by Bazel, but carve and the LLVM libraries it links use
+# different language standards and therefore need explicit consumer-side flags.
+
+common --enable_platform_specific_config
+
+# Carve is C++23. LLVM and Clang remain C++17; the regex matches Bazel 8/9
+# canonical external-repository paths while leaving libc++, compiler-rt, and
+# libunwind at the consumer's global C++23 setting.
+common --cxxopt=-std=c++23 --host_cxxopt=-std=c++23
+common --per_file_copt=llvm-project[/:]+(llvm|clang)[/:].*\.(cpp|cc|cxx)$@-std=c++17
+common --host_per_file_copt=llvm-project[/:]+(llvm|clang)[/:].*\.(cpp|cc|cxx)$@-std=c++17
+
+# scan_deps derives from LLVM types built without RTTI. Match the canonical
+# mboworks_carve external-repository name, including Bazel's +/~ suffixes.
+common --per_file_copt=mboworks_carve[^/:]*[/:]+carve[/:]+scan_deps[/:].*@-fno-rtti
+common --host_per_file_copt=mboworks_carve[^/:]*[/:]+carve[/:]+scan_deps[/:].*@-fno-rtti
+
+common --copt=-fno-exceptions
+
+# Match carve's supported macOS floor and LLVM/Clang link requirements.
+common --apple_platform_type=macos
+common:macos --features=-macos_default_link_flags
+common:macos --features=-supports_dynamic_linker
+common:macos --linkopt=-framework --linkopt=CoreFoundation --host_linkopt=-framework --host_linkopt=CoreFoundation
+common:macos --linkopt=-Wl,-undefined,dynamic_lookup --host_linkopt=-Wl,-undefined,dynamic_lookup
+common:macos --copt=-mmacosx-version-min=14.0 --host_copt=-mmacosx-version-min=14.0
+common:macos --linkopt=-mmacosx-version-min=14.0 --host_linkopt=-mmacosx-version-min=14.0
+
+# Optional supported hermetic configuration. Consumers that register
+# @llvm//toolchain:all can select it with --config=clang, as the archive smoke
+# test does. Consumers using their own compatible toolchain need not use it.
+common:clang --incompatible_enable_cc_toolchain_resolution
+common:clang --cxxopt=-gmlt --host_cxxopt=-gmlt
+common:clang --linkopt=-fuse-ld=lld --host_linkopt=-fuse-ld=lld
+common:clang --define=is_clang=true
+common:clang --cxxopt=-Wno-unused-command-line-argument
