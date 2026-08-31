@@ -55,6 +55,14 @@ jobs:
             bazel-${{ matrix.os }}-
       - name: bazel test
         run: bazel test --config=clang //... --disk_cache="$HOME/.cache/bazel-disk" --repository_cache="$HOME/.cache/bazel-repo"
+      - name: Test release archive as a consumer
+        env:
+          GITHUB_REF_NAME: "0.1.0"
+        run: |
+          .github/workflows/release_prep.sh >release-notes.md
+          tools/release_archive_test.sh carve-0.1.0.tar.gz \
+            --disk_cache="$HOME/.cache/bazel-disk" \
+            --repository_cache="$HOME/.cache/bazel-repo"
 
   # Sanitizers run on ubuntu only: the hermetic `llvm` toolchain wires the
   # compiler-rt runtimes + sanitizer interface headers for Linux but not yet macOS

@@ -12,6 +12,12 @@ tasks:
     bazel: ${{ bazel }}
     build_flags:
       - "--cxxopt=-std=c++23"
+      - "--host_cxxopt=-std=c++23"
+      - "--per_file_copt=llvm-project[/:]+(llvm|clang)[/:].*\\.(cpp|cc|cxx)$@-std=c++17"
+      - "--host_per_file_copt=llvm-project[/:]+(llvm|clang)[/:].*\\.(cpp|cc|cxx)$@-std=c++17"
+      - "--per_file_copt=mboworks_carve[^/:]*[/:]+carve[/:]+scan_deps[/:].*@-fno-rtti"
+      - "--host_per_file_copt=mboworks_carve[^/:]*[/:]+carve[/:]+scan_deps[/:].*@-fno-rtti"
+      - "--copt=-fno-exceptions"
     # `//carve:carve` is carve's only public C++ target (the per-module `_cc`
     # libraries are visibility-private). Building it links the from-source LLVM
     # libraries, so this is heavy. It is also the real consumability test: carve

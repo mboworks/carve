@@ -48,8 +48,21 @@ In a consumer workspace, depend on carve in `MODULE.bazel` (once it is published
 to the Bazel Central Registry):
 
 ```python
-bazel_dep(name = "mboworks_carve", version = "<release>")
+bazel_dep(name = "mboworks_carve", version = "0.1.0")
 ```
+
+Carve links LLVM's dependency-scanning libraries from source. Copy
+[`carve.bazelrc`](carve.bazelrc) into the consumer workspace and import it from
+the workspace `.bazelrc` so LLVM is compiled as C++17 while carve is compiled
+as C++23:
+
+```text
+try-import %workspace%/carve.bazelrc
+```
+
+The fragment is part of every source archive. It deliberately does not choose
+a C++ toolchain; the consumer remains responsible for registering a compatible
+Clang or GCC toolchain.
 
 then add the rule from a `BUILD` file:
 
@@ -68,9 +81,10 @@ one individually-cacheable shard per compile action and aggregate them.
 ## Build requirements
 
 - Bazel 9.1+
-- Clang 22.x (LLVM 22.1.7), pinned via the hermetic
-  [llvm](https://github.com/hermeticbuild/hermetic-llvm) toolchain - which also
-  supplies the LLVM libraries `scan_deps` links, built from source
+- A C++23-capable Clang or GCC toolchain. Development and release validation
+  use the hermetic [llvm](https://github.com/hermeticbuild/hermetic-llvm)
+  toolchain, which also supplies the LLVM libraries `scan_deps` links and
+  builds them from source.
 - Apple Silicon / x86\_64 Linux supported; Windows planned
 
 ## License
