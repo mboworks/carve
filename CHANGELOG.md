@@ -10,6 +10,8 @@ follows [SemVer](https://semver.org/).
   matching prebuilt LLVM 22.1.8 static component archives, eliminating LLVM
   compilation from cold builds and runtime LLVM shared-library dependencies;
   link the required Zstandard support through `zstd` 1.5.7.bcr.1.
+- Add a clean-current-main helper for creating signed numeric release tags and
+  enforce that development advances beyond the latest release tag.
 
 ## [0.1.0] - 2026-08-31
 
