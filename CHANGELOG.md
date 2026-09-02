@@ -6,6 +6,8 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Accept Bazel's `amd64` and `arm64` host architecture names when selecting the
+  prebuilt LLVM distribution.
 - Make `toolchains_llvm` root-development-only and download the matching static
   LLVM distribution through Carve's dependency-safe module extension.
 - Replace source-built hermetic-llvm with `toolchains_llvm` 1.9.0 and the

@@ -21,8 +21,15 @@ _DISTRIBUTIONS = {
     ("mac os x", "aarch64"): ("LLVM-22.1.8-macOS-ARM64", "f260f4f7c0d430828a81ae8a3826a1d63fc0963ec2459489308cc23b1f7eab4f"),
 }
 
+def normalize_arch(arch):
+    """Returns the canonical architecture name used by `_DISTRIBUTIONS`."""
+    return {
+        "amd64": "x86_64",
+        "arm64": "aarch64",
+    }.get(arch, arch)
+
 def _llvm_prebuilt_repository_impl(repository_ctx):
-    platform = (repository_ctx.os.name, repository_ctx.os.arch)
+    platform = (repository_ctx.os.name, normalize_arch(repository_ctx.os.arch))
     distribution = _DISTRIBUTIONS.get(platform)
     if distribution == None:
         fail("No official LLVM 22.1.8 development archive for {}-{}".format(*platform))
