@@ -17,6 +17,11 @@
 
 set -euo pipefail
 
+function die() {
+  echo "ERROR: ${*}" 1>&2
+  exit 1
+}
+
 if (( $# < 1 )); then
   echo "Usage: $0 ARCHIVE [bazel build options...]" >&2
   exit 2
@@ -24,37 +29,34 @@ fi
 
 archive="$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"
 shift
-test -f "${archive}"
+[[ -f ${archive} ]] || die "Release archive not found: ${archive}"
 
 work="$(mktemp -d)"
 trap 'rm -rf "${work}"' EXIT
 tar -xzf "${archive}" -C "${work}"
 
 root="$(find "${work}" -mindepth 1 -maxdepth 1 -type d -print -quit)"
-test -n "${root}"
+[[ -n ${root} ]] || die "Release archive has no root directory."
 version="$(<"${root}/VERSION")"
-test "$(basename "${root}")" = "carve-${version}"
-grep -q "version = \"${version}\"" "${root}/MODULE.bazel"
-grep -q '^# include("//bazelmod:dev.MODULE.bazel")' "${root}/MODULE.bazel"
-test -f "${root}/carve.bazelrc"
+[[ $(basename "${root}") == "carve-${version}" ]] || die "Release archive root does not match VERSION."
+grep -q "version = \"${version}\"" "${root}/MODULE.bazel" || die "MODULE.bazel version does not match VERSION."
+grep -q '^# include("//bazelmod:dev.MODULE.bazel")' "${root}/MODULE.bazel" || die "Development module include is not disabled."
+[[ -f ${root}/carve.bazelrc ]] || die "Release archive is missing carve.bazelrc."
+[[ -f ${root}/bazelmod/BUILD.bazel ]] || die "Release archive is missing the bazelmod package."
+[[ -f ${root}/bazelmod/toolchains_llvm-clang-headers.patch ]] || die "Release archive is missing the toolchains_llvm patch."
 
-for excluded in .bcr .github bazelmod tools; do
-  test ! -e "${root}/${excluded}"
+for excluded in .bcr .github bazelmod/dev.MODULE.bazel tools; do
+  [[ ! -e ${root}/${excluded} ]] || die "Release archive contains excluded path: ${excluded}"
 done
 
 consumer="${work}/consumer"
 mkdir "${consumer}"
 cp "${root}/carve.bazelrc" "${consumer}/carve.bazelrc"
 
-llvm_version="$(sed -rne 's|.*bazel_dep\(name = "llvm", version = "([0-9.]+)"\).*|\1|p' "${root}/MODULE.bazel")"
-test -n "${llvm_version}"
-
 {
   echo 'module(name = "carve_release_consumer")'
   echo "bazel_dep(name = \"mboworks_carve\", version = \"${version}\")"
   echo "local_path_override(module_name = \"mboworks_carve\", path = \"${root}\")"
-  echo "bazel_dep(name = \"llvm\", version = \"${llvm_version}\")"
-  echo 'register_toolchains("@llvm//toolchain:all")'
 } >"${consumer}/MODULE.bazel"
 
 cat >"${consumer}/BUILD.bazel" <<'EOF'

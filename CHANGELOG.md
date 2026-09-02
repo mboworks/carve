@@ -6,6 +6,8 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Keep the required `toolchains_llvm` patch in release archives and update the
+  archive consumer test for the prebuilt toolchain.
 - Replace source-built hermetic-llvm with `toolchains_llvm` 1.9.0 and the
   matching prebuilt LLVM 22.1.8 static component archives, eliminating LLVM
   compilation from cold builds and runtime LLVM shared-library dependencies;

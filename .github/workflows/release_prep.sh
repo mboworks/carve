@@ -59,7 +59,8 @@ fi
 } >BUILD.bazel
 
 # Comment the dev-only include so the released module does not reference the
-# bazelmod/ dev modules (hedron, dwyu); bazelmod/ itself is excluded below.
+# development modules (hedron, dwyu). The bazelmod package remains in the
+# archive because MODULE.bazel uses its toolchains_llvm patch.
 perl -pi -e 's,^include\("//bazelmod:dev\.MODULE\.bazel"\),# include("//bazelmod:dev.MODULE.bazel"),' MODULE.bazel
 grep -qE '^# include\("//bazelmod:dev\.MODULE\.bazel"\)' MODULE.bazel ||
   die "Failed to comment the dev include in MODULE.bazel (did the line change?)."
@@ -69,7 +70,7 @@ EXCLUDES=(
   ".bcr"
   ".github"
   ".pre-commit-config.yaml"
-  "bazelmod"
+  "bazelmod/dev.MODULE.bazel"
   "tools"
 )
 {
