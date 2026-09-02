@@ -13,10 +13,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-package(default_visibility = ["//visibility:private"])
+"""Exports headers and static libraries from an official LLVM distribution."""
 
-# `include`d by MODULE.bazel; exported so the file is addressable.
-exports_files([
-    "dev.MODULE.bazel",
-    "llvm_prebuilt.bzl",
-])
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "clang_headers",
+    hdrs = glob(
+        ["include/**"],
+        exclude = [
+            "include/c++/**",
+            "include/*/c++/**",
+        ],
+    ),
+    strip_include_prefix = "include",
+)
+
+exports_files(glob(["lib/*.a"]))

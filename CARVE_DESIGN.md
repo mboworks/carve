@@ -110,9 +110,9 @@ Expected speedup over forking `clang -M` per action: 5x to 10x on large repos ba
 
 #### Linkage reality (resolved)
 
-`toolchains_llvm` provides a prebuilt compilation toolchain and makes the full
-matching distribution available as `@llvm_toolchain_llvm`. Carve supplies a
-thin wrapper target over its headers and static component archives. Linking
+`toolchains_llvm` provides Carve's root-development compilation toolchain.
+Carve's dependency-safe module extension downloads the matching full LLVM
+distribution and supplies a thin wrapper over its headers and static archives. Linking
 `DependencyScanningTool` required choosing one of:
 
 1. **Build llvm-project from source under Bazel.** Hermetic and correct, but a large/slow build that strains the "5-minute clone-to-working" goal in section 7.
@@ -121,7 +121,8 @@ thin wrapper target over its headers and static component archives. Linking
 
 **Decision (implemented).** Option 2 via
 [bazel-contrib/toolchains_llvm](https://github.com/bazel-contrib/toolchains_llvm)
-1.9.0 and the official LLVM 22.1.8 distributions.
+1.9.0 for root development, plus the official LLVM 22.1.8 distributions fetched
+directly by Carve's module extension.
 `//third_party/llvm:clang_dependency_scanning` wraps `clang_headers` and the
 static archive closure recorded by the distribution's Clang and LLVM CMake
 metadata. This removes both recurring LLVM compilation and runtime LLVM shared
@@ -360,7 +361,7 @@ All flags `absl::Flags`. Help auto-generated. No hand-rolled arg parsing.
 
 Two delivery modes:
 
-1. **As a bzlmod dependency.** Consumers add `bazel_dep(name = "mboworks_carve")` and load `carve_refresh` / `carve_aspect_refresh` from `@mboworks_carve//rules:carve.bzl`. First use builds carve itself from source but downloads LLVM as a prebuilt distribution. The module registers the matching toolchain and links its static Clang/LLVM component archives; consumers do not compile llvm-project.
+1. **As a bzlmod dependency.** Consumers add `bazel_dep(name = "mboworks_carve")` and load `carve_refresh` / `carve_aspect_refresh` from `@mboworks_carve//rules:carve.bzl`. First use builds carve itself with the consumer's toolchain but downloads LLVM as a prebuilt distribution. Carve links its static Clang/LLVM component archives; consumers do not compile llvm-project or configure a Carve-specific toolchain.
 2. **As prebuilt binaries.** Released for common platforms (darwin-arm64, darwin-x86_64, linux-x86_64, linux-arm64, windows-x86_64) via GitHub Releases. `cc_carve` rule downloads the appropriate binary for the host. Avoids the from-source build entirely for users on supported platforms.
 
 Mode 2 matters for the editor-tooling use case: contributors want compile_commands.json working immediately after clone, not after a 5-minute LLVM toolchain build.
@@ -426,7 +427,7 @@ Assert on the structured data, never on a serialized blob:
 ## 10. Open questions
 
 - **Aquery proto vendoring (decided, not open).** `analysis_v2.proto` is not published as a bzlmod module; it lives in `bazelbuild/bazel/src/main/protobuf` and its `import "build.proto"` pulls in a further chain (`stardoc_output.proto`, ...). carve consumes only the aquery action graph, never cquery, so we vendor a **trimmed, self-contained** copy at `carve/third_party/bazel/analysis_v2.proto`: the `ConfiguredTarget`/`CqueryResult` messages and the `build.proto` import they need are removed, every other message is byte-for-byte upstream. This avoids vendoring the whole proto chain. **Version-couple the vendored copy to our Bazel pin** (note the v1→v2 id type change, `string`→`uint64`, gated by `--incompatible_proto_output_v2`) and re-vendor on every Bazel bump - a recurring maintenance task, not a one-time setup.
-- **DependencyScanningService linkage (resolved).** See section 4.2 "Linkage reality": carve links the matching static Clang and LLVM component archives exposed by `toolchains_llvm`, with platform-specific standard-library ABI matching.
+- **DependencyScanningService linkage (resolved).** See section 4.2 "Linkage reality": carve links matching static Clang and LLVM component archives from its dependency-safe distribution repository, with platform-specific standard-library ABI matching.
 - **Modules support timing.** Phase the modules-aware path in later. Scan-deps already handles modules; we just need a flag to expose it. Defer until a real consumer asks.
 - **Remote execution.** Layer C with remote cache is the long-tail goal. Layer A on a developer laptop is the immediate goal. Make sure Layer A does not preclude Layer C in the schema.
 - **Symlink handling.** The current tool's `//external` link choreography (see upstream [refresh.template.py](https://github.com/hedronvision/bazel-compile-commands-extractor/blob/main/refresh.template.py), the external-symlink section) is subtle. Rederive carefully on Windows where junctions differ from symlinks. Candidate for an mbo utility if not already present.

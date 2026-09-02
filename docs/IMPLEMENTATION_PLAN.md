@@ -179,8 +179,8 @@ action cache on `command_file`). **M5 complete.**
 - 🟡 Cut the actual release: `MODULE.bazel` and the changelog are prepared for
   `0.1.0`; after the remaining publication prerequisites pass, push the signed
   tag and approve the generated BCR draft PR.
-- ✅ **Consumability gap:** resolved by using `toolchains_llvm` 1.9.0 and its
-  prebuilt LLVM distribution. Consumers no longer compile `@llvm-project` or
+- ✅ **Consumability gap:** resolved with a dependency-safe module extension
+  for the prebuilt LLVM distribution. Consumers no longer compile `@llvm-project` or
   need Carve's former C++17 `per_file_copt` workaround. Carve links only the
   required static Clang/LLVM component archives from that distribution.
 - ⬜ **Prebuilt-distribution coverage (deferred):** Windows and macOS x86_64

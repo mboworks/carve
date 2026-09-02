@@ -48,18 +48,16 @@ bazel_dep(name = "googletest", version = "1.18.0.bcr.1", dev_dependency = True)
 # comparing serialized strings. See CARVE_DESIGN.md section 9.1.
 bazel_dep(name = "helly25_proto", version = "1.2.1", dev_dependency = True)
 
-# Prebuilt C++ toolchain and Clang libraries from
-# bazel-contrib/toolchains_llvm. The module downloads the official LLVM 22.1.8
-# distribution instead of compiling LLVM in every fresh Bazel cache.
-bazel_dep(name = "toolchains_llvm", version = "1.9.0")
-single_version_override(
-    module_name = "toolchains_llvm",
-    patch_strip = 1,
-    patches = ["//bazelmod:toolchains_llvm-clang-headers.patch"],
-    version = "1.9.0",
-)
+# Root-development C++ toolchain from bazel-contrib/toolchains_llvm. This is a
+# dev dependency because downstream modules compile Carve with their own
+# ABI-compatible toolchain.
+bazel_dep(name = "toolchains_llvm", version = "1.9.0", dev_dependency = True)
 
-llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
+llvm = use_extension(
+    "@toolchains_llvm//toolchain/extensions:llvm.bzl",
+    "llvm",
+    dev_dependency = True,
+)
 llvm.toolchain(
     name = "llvm_toolchain",
     llvm_version = "22.1.8",
@@ -73,4 +71,13 @@ llvm.toolchain(
 )
 use_repo(llvm, "llvm_toolchain", "llvm_toolchain_llvm")
 
-register_toolchains("@llvm_toolchain//:all")
+register_toolchains(
+    "@llvm_toolchain//:all",
+    dev_dependency = True,
+)
+
+# Static Clang/LLVM development libraries are needed by Carve as both a root
+# module and a dependency. Keep their repository independent from the root-only
+# toolchains_llvm configuration above.
+llvm_prebuilt = use_extension("//bazelmod:llvm_prebuilt.bzl", "llvm_prebuilt")
+use_repo(llvm_prebuilt, "carve_llvm_prebuilt")

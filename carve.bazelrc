@@ -25,9 +25,8 @@ common:macos --linkopt=-framework --linkopt=CoreFoundation --host_linkopt=-frame
 common:macos --copt=-mmacosx-version-min=14.0 --host_copt=-mmacosx-version-min=14.0
 common:macos --linkopt=-mmacosx-version-min=14.0 --host_linkopt=-mmacosx-version-min=14.0
 
-# Optional supported prebuilt LLVM configuration. MODULE.bazel registers the
-# toolchains_llvm toolchain; --config=clang selects it. Consumers using their
-# own compatible toolchain need not use this configuration.
+# Optional supported prebuilt LLVM configuration for Carve's root module.
+# Consumers build Carve with their own compatible C++ toolchain.
 common:clang --incompatible_enable_cc_toolchain_resolution
 common:clang --cxxopt=-gmlt --host_cxxopt=-gmlt
 common:clang --linkopt=-fuse-ld=lld --host_linkopt=-fuse-ld=lld

@@ -43,7 +43,8 @@ grep -q "version = \"${version}\"" "${root}/MODULE.bazel" || die "MODULE.bazel v
 grep -q '^# include("//bazelmod:dev.MODULE.bazel")' "${root}/MODULE.bazel" || die "Development module include is not disabled."
 [[ -f ${root}/carve.bazelrc ]] || die "Release archive is missing carve.bazelrc."
 [[ -f ${root}/bazelmod/BUILD.bazel ]] || die "Release archive is missing the bazelmod package."
-[[ -f ${root}/bazelmod/toolchains_llvm-clang-headers.patch ]] || die "Release archive is missing the toolchains_llvm patch."
+[[ -f ${root}/bazelmod/llvm_prebuilt.bzl ]] || die "Release archive is missing the LLVM distribution extension."
+[[ -f ${root}/third_party/llvm/prebuilt.BUILD.bazel ]] || die "Release archive is missing the LLVM distribution BUILD file."
 
 for excluded in .bcr .github bazelmod/dev.MODULE.bazel tools; do
   [[ ! -e ${root}/${excluded} ]] || die "Release archive contains excluded path: ${excluded}"
@@ -70,5 +71,5 @@ echo 'try-import %workspace%/carve.bazelrc' >"${consumer}/.bazelrc"
 
 (
   cd "${consumer}"
-  bazel build --config=clang //:carve "$@"
+  bazel build //:carve "$@"
 )
