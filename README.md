@@ -49,9 +49,25 @@ to the Bazel Central Registry):
 
 ```python
 bazel_dep(name = "mboworks_carve", version = "0.1.0")
+
+# The official LLVM static archives contain LLVM bitcode, so select the
+# matching compiler as well as its C++ standard library.
+bazel_dep(name = "toolchains_llvm", version = "1.9.0")
+llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
+llvm.toolchain(
+    name = "llvm_toolchain",
+    llvm_version = "22.1.8",
+    stdlib = {
+        "": "builtin-libc++",
+        "linux-aarch64": "stdc++",
+        "linux-x86_64": "stdc++",
+    },
+)
+use_repo(llvm, "llvm_toolchain")
+register_toolchains("@llvm_toolchain//:all")
 ```
 
-Carve links LLVM's dependency-scanning libraries from source. Copy
+Carve links LLVM's prebuilt dependency-scanning libraries. Copy
 [`carve.bazelrc`](carve.bazelrc) into the consumer workspace and import it from
 the workspace `.bazelrc` so LLVM is compiled as C++17 while carve is compiled
 as C++23:
@@ -60,9 +76,10 @@ as C++23:
 try-import %workspace%/carve.bazelrc
 ```
 
-The fragment is part of every source archive. It deliberately does not choose
-a C++ toolchain; the consumer remains responsible for registering a compatible
-Clang or GCC toolchain.
+The fragment is part of every source archive. The consumer registers the
+matching toolchain because `toolchains_llvm` 1.9.0 only permits its toolchain
+extension in the root module. Bazel's `include()` likewise cannot load a
+fragment from an external repository, so this stanza cannot live inside Carve.
 
 then add the rule from a `BUILD` file:
 
@@ -84,8 +101,8 @@ one individually-cacheable shard per compile action and aggregate them.
 - Clang 22.x (LLVM 22.1.8); root development uses
   [toolchains_llvm](https://github.com/bazel-contrib/toolchains_llvm) 1.9.0,
   while `scan_deps` downloads and links the matching static Clang/LLVM archives
-- A consumer toolchain using libstdc++ on Linux or libc++ on macOS, matching the
-  official LLVM distributions
+- A consumer toolchain using LLVM 22.1.8 with libstdc++ on Linux or libc++ on
+  macOS, matching the official LLVM distributions
 - Apple Silicon / x86\_64 Linux supported; Windows planned
 
 ## License

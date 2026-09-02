@@ -58,6 +58,19 @@ cp "${root}/carve.bazelrc" "${consumer}/carve.bazelrc"
   echo 'module(name = "carve_release_consumer")'
   echo "bazel_dep(name = \"mboworks_carve\", version = \"${version}\")"
   echo "local_path_override(module_name = \"mboworks_carve\", path = \"${root}\")"
+  echo 'bazel_dep(name = "toolchains_llvm", version = "1.9.0")'
+  echo 'llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")'
+  echo 'llvm.toolchain('
+  echo '    name = "llvm_toolchain",'
+  echo '    llvm_version = "22.1.8",'
+  echo '    stdlib = {'
+  echo '        "": "builtin-libc++",'
+  echo '        "linux-aarch64": "stdc++",'
+  echo '        "linux-x86_64": "stdc++",'
+  echo '    },'
+  echo ')'
+  echo 'use_repo(llvm, "llvm_toolchain")'
+  echo 'register_toolchains("@llvm_toolchain//:all")'
 } >"${consumer}/MODULE.bazel"
 
 cat >"${consumer}/BUILD.bazel" <<'EOF'
