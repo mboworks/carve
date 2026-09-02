@@ -1,0 +1,117 @@
+# SPDX-FileCopyrightText: Copyright (c) M. Boerger, the MBO Works authors
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:private"])
+
+exports_files(["prebuilt.BUILD.bazel"])
+
+# Thin Bazel wrapper over the matching official prebuilt LLVM distribution.
+# The archive list is the transitive closure of clangDependencyScanning in the
+# LLVM 22.1.8 ClangTargets.cmake and LLVMExports.cmake metadata.
+cc_library(
+    name = "clang_dependency_scanning",
+    srcs = [
+        "@carve_llvm_prebuilt//:lib/libLLVMAggressiveInstCombine.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMAnalysis.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMAsmParser.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMBinaryFormat.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMBitReader.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMBitstreamReader.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMCore.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMDebugInfoBTF.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMDebugInfoCodeView.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMDebugInfoDWARF.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMDebugInfoDWARFLowLevel.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMDebugInfoGSYM.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMDebugInfoMSF.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMDebugInfoPDB.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMDemangle.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMFrontendAtomic.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMFrontendDirective.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMFrontendHLSL.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMFrontendOffloading.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMFrontendOpenMP.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMIRReader.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMInstCombine.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMMC.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMMCParser.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMObject.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMObjectYAML.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMOption.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMPlugins.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMProfileData.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMRemarks.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMScalarOpts.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMSupport.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMSymbolize.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMTargetParser.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMTextAPI.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMTransformUtils.a",
+        "@carve_llvm_prebuilt//:lib/libLLVMWindowsDriver.a",
+        "@carve_llvm_prebuilt//:lib/libclangAPINotes.a",
+        "@carve_llvm_prebuilt//:lib/libclangAST.a",
+        "@carve_llvm_prebuilt//:lib/libclangASTMatchers.a",
+        "@carve_llvm_prebuilt//:lib/libclangAnalysis.a",
+        "@carve_llvm_prebuilt//:lib/libclangAnalysisLifetimeSafety.a",
+        "@carve_llvm_prebuilt//:lib/libclangBasic.a",
+        "@carve_llvm_prebuilt//:lib/libclangDependencyScanning.a",
+        "@carve_llvm_prebuilt//:lib/libclangDriver.a",
+        "@carve_llvm_prebuilt//:lib/libclangEdit.a",
+        "@carve_llvm_prebuilt//:lib/libclangFormat.a",
+        "@carve_llvm_prebuilt//:lib/libclangFrontend.a",
+        "@carve_llvm_prebuilt//:lib/libclangLex.a",
+        "@carve_llvm_prebuilt//:lib/libclangOptions.a",
+        "@carve_llvm_prebuilt//:lib/libclangParse.a",
+        "@carve_llvm_prebuilt//:lib/libclangRewrite.a",
+        "@carve_llvm_prebuilt//:lib/libclangSema.a",
+        "@carve_llvm_prebuilt//:lib/libclangSerialization.a",
+        "@carve_llvm_prebuilt//:lib/libclangSupport.a",
+        "@carve_llvm_prebuilt//:lib/libclangTooling.a",
+        "@carve_llvm_prebuilt//:lib/libclangToolingCore.a",
+        "@carve_llvm_prebuilt//:lib/libclangToolingInclusions.a",
+    ],
+    features = [
+        "-layering_check",
+        "-parse_headers",
+    ],
+    linkopts = select({
+        "@platforms//os:linux": [
+            "-ldl",
+            "-lm",
+            "-lpthread",
+            "-lxml2",
+            "-lz",
+        ],
+        "@platforms//os:macos": [
+            "-lcurses",
+            "-lm",
+            "-lxml2",
+            "-lz",
+        ],
+        "//conditions:default": [],
+    }),
+    target_compatible_with = select({
+        "@platforms//os:linux": [],
+        "@platforms//os:macos": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
+    visibility = ["//carve/scan_deps:__pkg__"],
+    deps = [
+        "@carve_llvm_prebuilt//:clang_headers",
+        "@zstd",
+    ],
+)

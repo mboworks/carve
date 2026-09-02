@@ -6,6 +6,14 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Accept Bazel's `amd64` and `arm64` host architecture names when selecting the
+  prebuilt LLVM distribution.
+- Make `toolchains_llvm` root-development-only and download the matching static
+  LLVM distribution through Carve's dependency-safe module extension.
+- Replace source-built hermetic-llvm with `toolchains_llvm` 1.9.0 and the
+  matching prebuilt LLVM 22.1.8 static component archives, eliminating LLVM
+  compilation from cold builds and runtime LLVM shared-library dependencies;
+  link the required Zstandard support through `zstd` 1.5.7.bcr.1.
 - Add a clean-current-main helper for creating signed numeric release tags and
   enforce that development advances beyond the latest release tag.
 

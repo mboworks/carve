@@ -20,7 +20,7 @@ package(default_visibility = ["//visibility:private"])
 cc_binary(
     name = "carve",
     srcs = ["carve.cc"],
-    # Links the from-source LLVM via scan_deps; excluded from sanitizer builds.
+    # Links the prebuilt LLVM libraries via scan_deps; excluded from sanitizer builds.
     tags = ["no_san"],
     visibility = ["//visibility:public"],
     deps = [
@@ -46,7 +46,7 @@ cc_binary(
 )
 
 # Lean, scan-free build of the `shard` subcommand for the Layer C aspect's
-# per-action exec tool. It links neither scan_deps nor the from-source LLVM, so it
+# per-action exec tool. It links neither scan_deps nor the prebuilt LLVM libraries,
 # builds in seconds rather than a full LLVM compile -- which makes a per-compile
 # build tool viable. See carve_shard.cc for the rationale.
 cc_binary(
@@ -68,7 +68,7 @@ cc_binary(
 
 # Lean build of the `aggregate` subcommand for the Layer C launcher
 # (carve_aspect_refresh). Merging proto records needs no compiler, so it links
-# neither scan_deps nor the from-source LLVM -- a `bazel run` of a Layer C refresh
+# neither scan_deps nor the prebuilt LLVM libraries -- a `bazel run` of a Layer C refresh
 # (and the aspect build_test) therefore never triggers a full LLVM build. See
 # carve_aggregate.cc for the rationale.
 cc_binary(

@@ -6,12 +6,11 @@
 
 common --enable_platform_specific_config
 
-# macOS tweaks (CoreFoundation and dynamic_lookup for clang on macOS).
+# macOS tweaks for the prebuilt LLVM/Clang archives.
 common --apple_platform_type=macos
 common:macos --features=-macos_default_link_flags
 common:macos --features=-supports_dynamic_linker
 common:macos --linkopt=-framework --linkopt=CoreFoundation --host_linkopt=-framework --host_linkopt=CoreFoundation
-common:macos --linkopt=-Wl,-undefined,dynamic_lookup --host_linkopt=-Wl,-undefined,dynamic_lookup
 
 # carve is a developer tool; its users track recent macOS, so pin the deployment
 # target to a current floor (macOS 14) rather than carrying backward compatibility
@@ -35,26 +34,8 @@ common --features=layering_check,parse_headers
 # Tell googletest to use Abseil for backtraces.
 common --define absl=1
 
-# C++23 for our own code. The hermetic clang from the `llvm` module (built with a
-# from-source libc++) is the supported configuration.
+# C++23 under the prebuilt toolchains_llvm Clang toolchain.
 common --cxxopt=-std=c++23 --host_cxxopt=-std=c++23
-
-# The LLVM *compiler* libraries (llvm/, clang/) are a C++17 codebase: their
-# sources do not compile under -std=c++23 (they rely on transitive includes that
-# modern libc++ drops at C++23). Build only those at C++17; they link the SAME
-# libc++ as our C++23 code, so each TU is single-standard over one libc++.
-# Mixing -std is ABI-safe precisely because of that ONE shared libc++ build: the
-# libc++ ABI is fixed by the build + _LIBCPP_ABI_VERSION, not by -std (the C++17
-# vs C++23 binary-compatibility hazard only bites across different libc++ builds).
-# See CARVE_DESIGN.md 4.2 "Mixed C++ standards" (incl. the macOS-uses-the-SDK-libc++
-# caveat + the from-source-runtimes enhancement, deferred).
-# Scoped to the llvm/ and clang/ packages only -- NOT libc++/libc++abi/libunwind/
-# compiler-rt: on Linux the toolchain builds those runtimes from source and they
-# need their own, newer standard (e.g. libcxx/src uses std::ranges, which is
-# C++20+), so they stay on the global -std=c++23. C++ extensions only, so LLVM's
-# C sources (e.g. BLAKE3 NEON) are not handed an invalid `-std=c++17`.
-common --per_file_copt=llvm-project[/:]+(llvm|clang)[/:].*\.(cpp|cc|cxx)$@-std=c++17
-common --host_per_file_copt=llvm-project[/:]+(llvm|clang)[/:].*\.(cpp|cc|cxx)$@-std=c++17
 
 # Treat warnings as errors for first-party code only, scoped by a positive match
 # on our own source tree. Third-party dependencies (e.g. re2 compiled against a
@@ -85,8 +66,8 @@ test --test_output=errors
 common --copt=-fdiagnostics-color=always
 common --copt=-fno-exceptions
 
-# --config=clang: enable C++ toolchain resolution so the registered hermetic-llvm
-# clang toolchain (libc++ built from source) is selected instead of the host's.
+# --config=clang: enable C++ toolchain resolution so the registered
+# toolchains_llvm Clang toolchain is selected instead of the host's.
 common:clang --incompatible_enable_cc_toolchain_resolution
 common:clang --cxxopt=-gmlt
 common:clang --host_cxxopt=-gmlt
@@ -99,25 +80,14 @@ common:clang --cxxopt=-Wno-unused-command-line-argument
 
 # Sanitizer presets.
 common:asan --copt -g
-# -fsanitize=address is injected by the toolchain via --@llvm//config:asan=True
-# below (gated by config:asan), NOT a raw --copt. A raw copt would also instrument
-# the crt startup objects: cc_stage0_object resets config:asan=False for them, but
-# a raw copt ignores that, and asan_globals in crtendS.o then break the lld link
-# ("a section asan_globals with SHF_LINK_ORDER should not refer ... .eh_frame").
-# Same reasoning for the tsan/ubsan copts below.
 common:asan --copt -fno-sanitize=vptr
 common:asan --copt -fno-omit-frame-pointer
 common:asan --copt -DADDRESS_SANITIZER
-# -fsanitize=address at link also comes from --@llvm//config:asan=True (the
-# toolchain gates it on config:asan), so no raw --linkopt for it either.
 common:asan --linkopt -fno-sanitize=vptr
 common:asan --linkopt -ldl
 common:asan --build_tag_filters=-no_san
 common:asan --test_tag_filters=-no_san
 common:asan --features=asan
-# Build + link the compiler-rt asan runtime from source (auto-disabled in the exec
-# config). Needs carve's compiler-rt patches (MODULE.bazel + bazelmod/patches/).
-common:asan --@llvm//config:asan=True
 # detect_container_overflow=0: the toolchain's libc++ is NOT asan-instrumented, so
 # the container-overflow check false-positives whenever instrumented carve code
 # shares a std::string/container with libc++ (the asan wiki recommends disabling it
@@ -130,27 +100,13 @@ common:asan --test_env=UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1:symboliz
 
 common:tsan --copt -g
 common:tsan --copt -fno-omit-frame-pointer
-# -fsanitize=thread (compile + link) comes from --@llvm//config:tsan=True; see the
-# asan note above for why no raw -fsanitize copt/linkopt.
 common:tsan --features=tsan
-# Build the compiler-rt tsan runtime from source (the hermetic `llvm` toolchain
-# leaves it off by default; without it the tsan link fails: "cannot open ...
-# libclang_rt.tsan.a"). It auto-disables in the exec configuration, so host tools
-# stay uninstrumented. Enabled now that carve patches the `llvm` module's
-# compiler-rt symbolizer build (see MODULE.bazel + bazelmod/patches/). Sanitizer
-# CI is ubuntu-only; macOS needs further, macOS-specific toolchain fixes.
-common:tsan --@llvm//config:tsan=True
 # Exclude the LLVM-linking targets (tagged `no_san`) from instrumented builds.
 common:tsan --build_tag_filters=-no_san
 common:tsan --test_tag_filters=-no_san
 
 common:ubsan --copt -g
 common:ubsan --copt -fno-omit-frame-pointer
-# -fsanitize=undefined (compile + link) comes from --@llvm//config:ubsan=True; see
-# the asan note for why no raw -fsanitize copt/linkopt.
 common:ubsan --features=ubsan
-# Build the compiler-rt ubsan runtime from source. Runs combined with asan
-# (`--config=asan --config=ubsan`); both are link-compatible.
-common:ubsan --@llvm//config:ubsan=True
 
 try-import %workspace%/.bazelrc.user.end

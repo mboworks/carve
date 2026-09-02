@@ -23,7 +23,7 @@ Legend: ✅ done & tested · 🟡 partial · ⬜ not started.
 | `refresh` (in-process aquery, execroot, merge, multi-project) | ✅     | M1 done: scan-deps, incremental, staleness, header index, `--jobs`                               |
 | `scan_deps` (clang `DependencyScanningTool`)                  | ✅     | wired into `refresh`; gated linux+macos                                                          |
 | `cli` + `//carve:carve`                                       | ✅     | all four subcommands wired: `refresh` + `prune` + `aggregate` + `shard`                          |
-| e2e harness, CI, pre-commit, hermetic-llvm, proto matchers    | ✅     |                                                                                                  |
+| e2e harness, CI, pre-commit, toolchains_llvm, proto matchers  | ✅     |                                                                                                  |
 | Layer B (`carve_refresh` rule)                                | ✅     | `bazel run //:refresh`; run-based (nested-bazel resolved)                                        |
 | Layer C (aspect + shards)                                     | ✅     | `cc_carve_aspect` + `carve_aspect_refresh` + `shard` + `aggregate`; per-action cacheable shards  |
 | Differential harness vs Hedron / clangd validation            | ✅     | `tools/cdb_diff.py` + `docs/differential-report.md` (M3)                                         |
@@ -179,34 +179,13 @@ action cache on `command_file`). **M5 complete.**
 - 🟡 Cut the actual release: `MODULE.bazel` and the changelog are prepared for
   `0.1.0`; after the remaining publication prerequisites pass, push the signed
   tag and approve the generated BCR draft PR.
-- ✅ **Consumability gap:** a source-only consumer
-  building `//carve:carve` builds the from-source `@llvm-project` libraries that
-  `scan_deps` links, but carve scopes those to C++17 via a `per_file_copt` in its
-  `.bazelrc`, which does NOT propagate to consumers. So a consumer building at
-  `-std=c++23` would fail to compile `@llvm-project`.
-  - **A build-graph config transition does NOT work (investigated + ruled out).**
-    A `cxxopt`-appending transition on `@llvm-project//clang:tooling` over-reaches:
-    its subgraph includes ~254 libc++/compiler-rt/libunwind targets (the
-    from-source runtimes, which need C++20+ for `std::ranges`), and a `cxxopt`
-    transition is global to the subgraph - it cannot do the *path-based* scoping
-    (llvm/clang only, excluding the runtimes) that the `per_file_copt` does. So the
-    C++17 scoping must stay a path-matched `per_file_copt`.
-  - **The fix ships as `carve.bazelrc`, a consumer `.bazelrc` fragment**
-    (the C++17 LLVM `per_file_copt`, the `scan_deps` `-fno-rtti`, and a C++23
-    scoping for carve's own sources) for consumers to copy/import, the same shape
-    mbo ships `llvm.MODULE.bazel`. The exact regexes depend on the consumer's
-    external-repo path form. The release-archive smoke test extracts the actual
-    source tarball, imports the fragment in a clean consumer workspace, and
-    builds `@mboworks_carve//carve:carve` on Linux and macOS.
-- ⬜ **Fully-hermetic runtimes (deferred enhancement, not a blocker).** The mixed
-  C++17/C++23 build is ABI-safe today because each build links one consistent
-  libc++ (CARVE_DESIGN §4.2 "Mixed C++ standards"). But on macOS that libc++ is the
-  host Command Line Tools SDK's, not version-matched to the from-source LLVM. Building
-  libc++/libc++abi/libunwind from the `@llvm-project` source on every platform would
-  make the build fully hermetic + the ABI safety airtight. hermetic-llvm's `osx`
-  extension has no from-source-libc++ knob, so this means forking/extending the
-  toolchain module + heavy rebuilds - a significant effort, deferred until there is
-  a concrete need.
+- ✅ **Consumability gap:** resolved with a dependency-safe module extension
+  for the prebuilt LLVM distribution. Consumers no longer compile `@llvm-project` or
+  need Carve's former C++17 `per_file_copt` workaround. Carve links only the
+  required static Clang/LLVM component archives from that distribution.
+- ⬜ **Prebuilt-distribution coverage (deferred):** Windows and macOS x86_64
+  remain limited by upstream LLVM archive availability. Add those platforms
+  when official matching compiler and development-library distributions exist.
 
 Acceptance: a bzlmod consumer can `bazel_dep(name = "mboworks_carve")` and get a working CDB; tagged release.
 

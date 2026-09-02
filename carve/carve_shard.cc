@@ -14,7 +14,7 @@
 // limitations under the License.
 
 // `carve_shard` is the lean, scan-free build of the `shard` subcommand: it does
-// NOT link scan_deps / the from-source LLVM, so it builds in seconds instead of a
+// NOT link scan_deps / the prebuilt LLVM libraries, so it builds in seconds instead of a
 // full LLVM compile. The Layer C aspect (`cc_carve_aspect`) runs it once per
 // compile action as a build tool, where a per-action LLVM-linked exec tool would
 // be untenable. It injects no scanner; by default it records command + source

@@ -13,14 +13,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load(":llvm_prebuilt_test.bzl", "llvm_prebuilt_test_suite")
+"""Exports headers and static libraries from an official LLVM distribution."""
 
-package(default_visibility = ["//visibility:private"])
+load("@rules_cc//cc:defs.bzl", "cc_library")
 
-# `include`d by MODULE.bazel; exported so the file is addressable.
-exports_files([
-    "dev.MODULE.bazel",
-    "llvm_prebuilt.bzl",
-])
+package(default_visibility = ["//visibility:public"])
 
-llvm_prebuilt_test_suite(name = "llvm_prebuilt_test")
+cc_library(
+    name = "clang_headers",
+    hdrs = glob(
+        ["include/**"],
+        exclude = [
+            "include/c++/**",
+            "include/*/c++/**",
+        ],
+    ),
+    strip_include_prefix = "include",
+)
+
+exports_files(glob(["lib/*.a"]))

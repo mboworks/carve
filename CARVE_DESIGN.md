@@ -110,19 +110,29 @@ Expected speedup over forking `clang -M` per action: 5x to 10x on large repos ba
 
 #### Linkage reality (resolved)
 
-`toolchains_llvm` provides a *compilation toolchain* - clang to compile **with**. It does **not** ship `libclangDependencyScanning` (or any LLVM/Clang library + headers) to link **against**. Linking `DependencyScanningTool` required choosing one of:
+`toolchains_llvm` provides Carve's root-development compilation toolchain.
+Carve's dependency-safe module extension downloads the matching full LLVM
+distribution and supplies a thin wrapper over its headers and static archives. Linking
+`DependencyScanningTool` required choosing one of:
 
 1. **Build llvm-project from source under Bazel.** Hermetic and correct, but a large/slow build that strains the "5-minute clone-to-working" goal in section 7.
 2. **Hermetic prebuilt LLVM libs** (a repo rule exposing `cc_library` targets for the needed Clang/LLVM static libs). Adds a dependency we must name and pin, but inherits whatever STL the prebuilt was built with - on Linux that is libstdc++, which a libc++ tool cannot link against.
 3. **Local-install bridge** (`bazel-llvm-bridge`, `@local_llvm//:llvm_headers`). Non-hermetic; breaks "works immediately after clone." Acceptable only as a dev fallback.
 
-**Decision (implemented).** Option 1, via [hermeticbuild/hermetic-llvm](https://github.com/hermeticbuild/hermetic-llvm) - the `llvm` BCR module - which makes option 1 ergonomic: it provides *both* a hermetic clang toolchain (one libc++ shared by the toolchain and our code - sourced per platform, see *Mixed C++ standards* below) and the `@llvm-project` Bazel overlay. `//carve/scan_deps` links `@llvm-project//clang:tooling` (which pulls `:dependency_scanning`), built from source with the **same libc++** as our own code. That dissolves the ABI question: no shared-library boundary, no libstdc++-on-Linux coupling. An earlier iteration took a prebuilt path (a `clang_cpp` target added to `toolchains_llvm` exposing `libclang-cpp`); it worked on macOS but inherited the prebuilt's STL and so could not stay libc++ on Linux - hence the move to source-built libs. Cost: a ~12-min cold build of the LLVM/Clang subset, cacheable locally and remotely. carve's own code stays C++23; LLVM's own sources build at their native C++17 under one shared libc++ (scoped in `.bazelrc`).
+**Decision (implemented).** Option 2 via
+[bazel-contrib/toolchains_llvm](https://github.com/bazel-contrib/toolchains_llvm)
+1.9.0 for root development, plus the official LLVM 22.1.8 distributions fetched
+directly by Carve's module extension.
+`//third_party/llvm:clang_dependency_scanning` wraps `clang_headers` and the
+static archive closure recorded by the distribution's Clang and LLVM CMake
+metadata. This removes both recurring LLVM compilation and runtime LLVM shared
+library dependencies.
 
-**Optional optimization (deferred).** The sole downside of source-built libs is that ~12-min cold build. It caches cleanly, so caching (local disk cache, CI cache, optionally a shared/remote cache) is the first answer. If that build time becomes a recurring drag on developers, an optional - but maintenance-heavy - escalation is option 2 done *with libc++*: build a `libclang-cpp` + headers artifact once, host it (e.g. GitHub Releases), and link it via `http_archive`. Fast to consume, but it re-adds a per-LLVM-bump chore to rebuild and re-host the artifact, so it is not worth doing until caching proves insufficient. Note hermetic-llvm ships no prebuilt clang dev libraries today, and the only freely available `libclang-cpp` prebuilts (upstream's) are libstdc++ on Linux - they would reintroduce the very ABI coupling this design removed.
-
-**Mixed C++ standards (ABI-safe).** carve links three standards in one binary: the LLVM/Clang libraries at C++17 (they do not compile at C++23 - modern libc++ drops transitive includes they rely on, scoped via a `per_file_copt` in `.bazelrc`), libc++ at its own standard, and carve's own code at C++23. This is ABI-safe because each build links a **single** libc++, and libc++ supports translation units compiled at different `-std` sharing one libc++ build - the ABI is fixed by the libc++ build and `_LIBCPP_ABI_VERSION`, not by `-std`. The standard-mixing hazard (C++17 and C++23 are not in general binary-compatible) bites only when the two sides link *different* libc++ builds, which carve avoids. carve also uses no C++23-only features today, so the standard is movable if that ever changed.
-
-One caveat: that single libc++ is built from source on Linux but is the **host SDK's** on macOS - hermetic-llvm's `osx` extension supplies libc++ from the Command Line Tools macOS SDK and exposes no from-source-libc++ option. That is still one consistent libc++ per build (so still ABI-safe), but it is not version-matched to the from-source LLVM and not fully hermetic on macOS. Building libc++/libc++abi/libunwind from the `@llvm-project` source on every platform - making the build fully hermetic and the safety airtight - is a deferred enhancement (IMPLEMENTATION_PLAN.md M6); it would require forking/extending the toolchain module.
+**C++ ABI matching.** The official Linux static archives are built for
+libstdc++, so the Linux toolchain selects static libstdc++. The official macOS
+archives use libc++, matched by the SDK libc++ selected by the toolchain. The
+compiler, headers, archives, and standard-library selection therefore come from
+one pinned toolchain definition without a Clang/LLVM shared-library boundary.
 
 #### Decoupling: scan-deps is not required for a working CDB
 
@@ -257,7 +267,7 @@ Layer C is opt-in: `cc_carve(..., use_aspect = True)`. Layer A/B remain the defa
 - The aspect reads each compile action's command straight from `action.argv`, which Bazel returns fully expanded (param files already inlined, no `@file`). This is faithful to the real build and needs no `cc_common` command-line reconstruction. The shard's `command_file` is that argv in Bazel's multiline param-file format (one token per line), not a serialized proto.
 - A shard's content is a function of its compile command alone, so each shard action's *only* input is its `command_file`. Bazel re-runs an individual shard exactly when that command changes (a new flag/define/dep); editing source or header *content* leaves the command - and the database entry - unchanged, so nothing re-shards (clangd re-reads the changed files itself). Consequently shards are **not** header-scanned: the lean `carve_shard` tool links no scanner at all - the database does not use headers, and scanning every TU inside a build action would be costly. Recording headers in shards (for a shard-built `HeaderIndex`, the `ASPECT_M` source kind) is a future enhancement.
 - Aggregation runs as a `bazel run` step (`carve_aspect_refresh`), not a build action: the database's `directory` must be the persistent execroot (`bazel info execution_root`), which a sandboxed action cannot know. The outer build produces the shards (cacheable); the run step merges them.
-- Layer C runs **lean, LLVM-free tools**: the aspect's per-action exec tool is `//carve:carve_shard` and the run step's merge tool is `//carve:carve_aggregate`. Neither links `scan_deps` or the from-source LLVM - sharding only records the command, and aggregation only merges proto records, so no compiler is needed. Using the full `carve` instead would pull a tens-of-minutes from-source LLVM build into the exec config for every shard action (and again into the target config for the merge); the lean binaries build in seconds, which is why the whole Layer C path is exercised by an `aspect_shards_build_test` in CI rather than only on demand.
+- Layer C runs **lean, LLVM-free tools**: the aspect's per-action exec tool is `//carve:carve_shard` and the run step's merge tool is `//carve:carve_aggregate`. Neither links `scan_deps` or the prebuilt LLVM libraries - sharding only records the command, and aggregation only merges proto records, so no compiler is needed. Using the full `carve` would unnecessarily link the LLVM distribution into both exec and target configurations; the lean binaries build in seconds, which is why the whole Layer C path is exercised by an `aspect_shards_build_test` in CI rather than only on demand.
 - The opt-in is a dedicated `carve_aspect_refresh` rule rather than a `use_aspect` flag on `cc_carve`. Its `targets` are real label deps (the aspect must analyze them), trading whole-graph analysis for per-action build-cache incrementality. The aspect scopes to first-party targets by default (`exclude_external_sources`, an aspect parameter; set `False` to shard the full transitive graph): external libraries need no database entries of their own, since clangd resolves their headers through the `-I` flags on first-party entries.
 
 ### 4.8 Python footprint
@@ -283,15 +293,14 @@ bazel_dep(name = "googletest", version = "1.15.2")
 bazel_dep(name = "protobuf", version = "29.0")
 bazel_dep(name = "rules_cc", version = "0.0.17")
 bazel_dep(name = "rules_proto", version = "7.0.2")
+bazel_dep(name = "zstd", version = "1.5.7.bcr.1")
 
-# Hermetic clang toolchain AND linkable LLVM/Clang libraries from one ecosystem
-# (hermeticbuild/hermetic-llvm). The @llvm-project overlay it exposes is built
-# from source with the same libc++ as our code; //carve/scan_deps links
-# `@llvm-project//clang:tooling`. See section 4.2 "Linkage reality".
-bazel_dep(name = "llvm", version = "0.8.9")
-register_toolchains("@llvm//toolchain:all", dev_dependency = True)
-llvm_overlay = use_extension("@llvm//extensions:llvm.bzl", "llvm")
-use_repo(llvm_overlay, "llvm-project")
+# Prebuilt clang toolchain and matching static Clang/LLVM archives.
+bazel_dep(name = "toolchains_llvm", version = "1.9.0")
+llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
+llvm.toolchain(name = "llvm_toolchain", llvm_version = "22.1.8")
+use_repo(llvm, "llvm_toolchain", "llvm_toolchain_llvm")
+register_toolchains("@llvm_toolchain//:all")
 ```
 
 mbo brings Abseil transitively, so we do not list Abseil separately. If a future mbo release stops re-exporting Abseil, add a direct `bazel_dep` then. Versions above are placeholders pinned at project bootstrap; lock to current-at-start releases.
@@ -301,8 +310,11 @@ C++ build:
 - `cc_binary` target `//carve:carve` (with a `//:refresh` alias for `bazel run`).
 - Per-module `cc_library` targets `//carve/<module>:<module>_cc`, using
   `implementation_deps` vs `deps` per the house convention (see [RULES.md](RULES.md)).
-- Linked statically where feasible. LLVM libs typically static.
-- Compiled with `-std=c++23`, `-stdlib=libc++` (under the hermetic-llvm clang toolchain), `-Wall -Wextra -Werror`, `-Wpedantic`. LLVM's own sources build at C++17 (scoped in `.bazelrc`).
+- Clang and LLVM component libraries are linked statically from the prebuilt
+  distribution.
+- Compiled with `-std=c++23`, `-Wall -Wextra -Werror`, `-Wpedantic` under
+  `toolchains_llvm`; Linux uses static libstdc++, while macOS uses the SDK's
+  libc++.
 - Sanitizer presets: `--config=asan`, `--config=tsan`, `--config=ubsan` for tests.
 
 Test layout:
@@ -349,7 +361,7 @@ All flags `absl::Flags`. Help auto-generated. No hand-rolled arg parsing.
 
 Two delivery modes:
 
-1. **As a bzlmod dependency.** Consumers add `bazel_dep(name = "mboworks_carve")` and load `carve_refresh` / `carve_aspect_refresh` from `@mboworks_carve//rules:carve.bzl`. First use builds `carve` from source; subsequent uses hit Bazel's cache. Because a module's `.bazelrc` does not propagate to its dependents, the consuming build must reproduce carve's compile settings - `-std=c++23` (and, on macOS, a `std::filesystem` deployment floor of at least 10.15), plus - when building the LLVM-linked `//carve:carve` - the C++17 `per_file_copt` scoping for the `@llvm-project` libraries `scan_deps` links and `-fno-rtti` for `scan_deps`. carve will provide these as an importable consumer `.bazelrc` fragment (IMPLEMENTATION_PLAN.md M6).
+1. **As a bzlmod dependency.** Consumers add `bazel_dep(name = "mboworks_carve")` and load `carve_refresh` / `carve_aspect_refresh` from `@mboworks_carve//rules:carve.bzl`. First use builds carve itself with the consumer's toolchain but downloads LLVM as a prebuilt distribution. Carve links its static Clang/LLVM component archives; consumers do not compile llvm-project or configure a Carve-specific toolchain.
 2. **As prebuilt binaries.** Released for common platforms (darwin-arm64, darwin-x86_64, linux-x86_64, linux-arm64, windows-x86_64) via GitHub Releases. `cc_carve` rule downloads the appropriate binary for the host. Avoids the from-source build entirely for users on supported platforms.
 
 Mode 2 matters for the editor-tooling use case: contributors want compile_commands.json working immediately after clone, not after a 5-minute LLVM toolchain build.
@@ -415,7 +427,7 @@ Assert on the structured data, never on a serialized blob:
 ## 10. Open questions
 
 - **Aquery proto vendoring (decided, not open).** `analysis_v2.proto` is not published as a bzlmod module; it lives in `bazelbuild/bazel/src/main/protobuf` and its `import "build.proto"` pulls in a further chain (`stardoc_output.proto`, ...). carve consumes only the aquery action graph, never cquery, so we vendor a **trimmed, self-contained** copy at `carve/third_party/bazel/analysis_v2.proto`: the `ConfiguredTarget`/`CqueryResult` messages and the `build.proto` import they need are removed, every other message is byte-for-byte upstream. This avoids vendoring the whole proto chain. **Version-couple the vendored copy to our Bazel pin** (note the v1→v2 id type change, `string`→`uint64`, gated by `--incompatible_proto_output_v2`) and re-vendor on every Bazel bump - a recurring maintenance task, not a one-time setup.
-- **DependencyScanningService linkage (resolved).** See section 4.2 "Linkage reality": carve links `@llvm-project//clang:tooling` (which pulls `:dependency_scanning`) built from source via the hermetic-llvm `llvm` module, with the same libc++ as our code. `DependencyScanningTool` links cleanly - validated on macOS and Linux in CI. Cost is a ~12-min cold compile of the LLVM/Clang subset, cacheable.
+- **DependencyScanningService linkage (resolved).** See section 4.2 "Linkage reality": carve links matching static Clang and LLVM component archives from its dependency-safe distribution repository, with platform-specific standard-library ABI matching.
 - **Modules support timing.** Phase the modules-aware path in later. Scan-deps already handles modules; we just need a flag to expose it. Defer until a real consumer asks.
 - **Remote execution.** Layer C with remote cache is the long-tail goal. Layer A on a developer laptop is the immediate goal. Make sure Layer A does not preclude Layer C in the schema.
 - **Symlink handling.** The current tool's `//external` link choreography (see upstream [refresh.template.py](https://github.com/hedronvision/bazel-compile-commands-extractor/blob/main/refresh.template.py), the external-symlink section) is subtle. Rederive carefully on Windows where junctions differ from symlinks. Candidate for an mbo utility if not already present.
@@ -430,14 +442,14 @@ Assert on the structured data, never on a serialized blob:
 
 Concrete sequence for the first six months:
 
-| Month | Milestone                                                                                                                                                                                                                                                                                         |
-| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1     | Repo bootstrap, MODULE.bazel, toolchain pin, hello-world `carve` binary, GTest wired up. **LLVM-libs linkage spike** (section 4.2): prove `DependencyScanningTool` links into a `cc_binary`. *Resolved - source-built via hermetic-llvm (`@llvm-project//clang:tooling`).* This gates months 3–4. |
-| 2     | `aquery` module + vendored proto parsing; basic `command` module with first three quirks (incl. execroot canonicalization); CDB writer. **Layer A emits a working CDB straight from aquery, no scan-deps yet.** Stand up a crude differential harness against Hedron on this repo.                |
-| 3     | Sidecar persistence, action-keyed diff, scan-deps integration (single-threaded) - assuming the month-1 spike succeeded; otherwise carry the no-scan-deps Layer A and reschedule.                                                                                                                  |
-| 4     | Full quirk inventory ported, scan-deps parallelized, merge mode, Layer A feature-complete                                                                                                                                                                                                         |
-| 5     | `cc_carve` rule (Layer B), integration test corpus, differential test harness hardened                                                                                                                                                                                                            |
-| 6     | Public 0.1 release; begin Layer C prototype                                                                                                                                                                                                                                                       |
+| Month | Milestone                                                                                                                                                                                                                                                                                |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1     | Repo bootstrap, MODULE.bazel, toolchain pin, hello-world `carve` binary, GTest wired up. **LLVM-libs linkage spike** (section 4.2): prove `DependencyScanningTool` links into a `cc_binary`. *Resolved via prebuilt `toolchains_llvm` static component archives.* This gates months 3–4. |
+| 2     | `aquery` module + vendored proto parsing; basic `command` module with first three quirks (incl. execroot canonicalization); CDB writer. **Layer A emits a working CDB straight from aquery, no scan-deps yet.** Stand up a crude differential harness against Hedron on this repo.       |
+| 3     | Sidecar persistence, action-keyed diff, scan-deps integration (single-threaded) - assuming the month-1 spike succeeded; otherwise carry the no-scan-deps Layer A and reschedule.                                                                                                         |
+| 4     | Full quirk inventory ported, scan-deps parallelized, merge mode, Layer A feature-complete                                                                                                                                                                                                |
+| 5     | `cc_carve` rule (Layer B), integration test corpus, differential test harness hardened                                                                                                                                                                                                   |
+| 6     | Public 0.1 release; begin Layer C prototype                                                                                                                                                                                                                                              |
 
 This is aggressive but plausible if the implementer is focused. Real schedules slip; the layering ensures each month produces a shippable improvement. The deliberate move here is putting the riskiest dependency (LLVM linkage) and the most valuable validation artifact (differential harness) at the *front*, so a bad surprise lands in month 1–2 rather than month 3–5.
 

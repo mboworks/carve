@@ -17,9 +17,9 @@ load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
 
 package(default_visibility = ["//visibility:private"])
 
-# scan_deps links the LLVM/Clang dependency-scanning libraries, built from source
-# via the hermetic-llvm @llvm-project overlay. Supported on macOS and Linux (the
-# two CI platforms); marked incompatible elsewhere so those targets are skipped.
+# scan_deps links the matching prebuilt LLVM/Clang distribution supplied by
+# toolchains_llvm. Supported on macOS and Linux (the two CI platforms); marked
+# incompatible elsewhere so those targets are skipped.
 _LLVM_PLATFORM = select({
     "@platforms//os:linux": [],
     "@platforms//os:macos": [],
@@ -32,13 +32,9 @@ cc_library(
     hdrs = ["scan_deps.h"],
     implementation_deps = [
         "//carve/command:command_cc",  # ParseMakeDependencies (make-format depfile parser).
+        "//third_party/llvm:clang_dependency_scanning",
         "@abseil-cpp//absl/status",
         "@abseil-cpp//absl/strings",
-        # Clang dependency-scanning libraries, built from source via the
-        # @llvm-project overlay (the `llvm` module). `:tooling` provides
-        # DependencyScanningTool.h and depends on `:dependency_scanning`
-        # (DependencyScanningService.h). Built with the same libc++ as our code.
-        "@llvm-project//clang:tooling",
     ],
     target_compatible_with = _LLVM_PLATFORM,
     visibility = ["//carve:__subpackages__"],
@@ -52,7 +48,7 @@ cc_test(
     name = "scan_deps_test",
     size = "small",
     srcs = ["scan_deps_test.cc"],
-    # Links the from-source LLVM; excluded from sanitizer builds.
+    # Links the static Clang/LLVM components; excluded from sanitizer builds.
     tags = ["no_san"],
     target_compatible_with = _LLVM_PLATFORM,
     deps = [
