@@ -68,6 +68,13 @@ repos:
         files: ^tools/cdb_diff\.py$
         pass_filenames: false
 
+      - id: clang-tidy-runner-tests
+        name: clang-tidy runner tests
+        entry: python3 -m unittest tools/clang_tidy_test.py
+        language: system
+        pass_filenames: false
+        files: '^tools/clang_tidy(_test)?\.py$'
+
       - id: blocked-merge-markers
         name: no blocked-merge markers
         entry: '(?i)do[ _-]?not[ _-]?merge'

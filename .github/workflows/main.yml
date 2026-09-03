@@ -26,6 +26,51 @@ jobs:
           python-version: "3.13"
       - uses: pre-commit/action@v3.0.1
 
+  clang-tidy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: bazelbuild/setup-bazelisk@v3
+      - name: Mount Bazel caches
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cache/bazel-disk
+            ~/.cache/bazel-repo
+          key: bazel-clang-tidy-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.sha }}
+          restore-keys: |
+            bazel-clang-tidy-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-
+            bazel-clang-tidy-ubuntu-
+            bazel-ubuntu-latest-
+      - name: Generate the Clang compilation database
+        run: bazel run --disk_cache="$HOME/.cache/bazel-disk" --repository_cache="$HOME/.cache/bazel-repo" //:refresh_compile_commands
+      - name: Locate the matching hermetic clang-tidy
+        id: clang_tidy
+        run: |
+          executable="$(find "$(bazel info output_base)/external" -path '*/bin/clang-tidy' -type f -print -quit)"
+          if [[ -z "${executable}" ]]; then
+            echo "::error::The hermetic LLVM distribution contains no clang-tidy executable"
+            exit 1
+          fi
+          echo "executable=${executable}" >>"${GITHUB_OUTPUT}"
+      - name: Select changed translation units
+        if: github.event_name == 'pull_request'
+        run: |
+          git diff --name-only --diff-filter=ACMR "${{ github.event.pull_request.base.sha }}"...HEAD -- \
+            carve rules MODULE.bazel .bazelrc .clang-tidy >.clang-tidy-changed
+          if grep -qEv '\.cc$' .clang-tidy-changed; then
+            find carve -name '*.cc' -type f | sort >.clang-tidy-inputs
+          else
+            grep -E '\.cc$' .clang-tidy-changed | sort >.clang-tidy-inputs || true
+          fi
+      - name: Select all translation units
+        if: github.event_name != 'pull_request'
+        run: find carve -name '*.cc' -type f | sort >.clang-tidy-inputs
+      - name: Run clang-tidy
+        run: python3 tools/clang_tidy.py --clang-tidy "${{ steps.clang_tidy.outputs.executable }}" --files-from .clang-tidy-inputs
+
   test:
     strategy:
       fail-fast: false
@@ -109,7 +154,7 @@ jobs:
   # workflow job is wired into `needs`, so a newly added job cannot silently
   # escape the gate. Mirrors the MBO Works house pattern (mbo/bzl/xff).
   done:
-    needs: [pre-commit, test, asan, tsan]
+    needs: [pre-commit, clang-tidy, test, asan, tsan]
     if: always()
     runs-on: ubuntu-latest
     steps:
