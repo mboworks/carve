@@ -126,10 +126,22 @@ repos:
 
       - id: build-policy-tests
         name: BUILD policy checker tests
-        entry: python3 -m unittest tools/check_cc_target_naming_test.py tools/check_cc_library_tested_test.py tools/check_test_sizes_test.py
+        entry: python3 -m unittest tools/check_cc_target_naming_test.py tools/check_cc_library_tested_test.py tools/check_test_sizes_test.py tools/check_headers_test.py
         language: system
         pass_filenames: false
-        files: '^tools/(build_rules|check_cc_target_naming(_test)?|check_cc_library_tested(_test)?|check_test_sizes(_test)?)\.py$'
+        files: '^tools/(build_rules|check_cc_target_naming(_test)?|check_cc_library_tested(_test)?|check_test_sizes(_test)?|check_headers(_claimed)?(_test)?)\.py$'
+
+      - id: headers-claimed
+        name: every first-party header is claimed by a BUILD target
+        entry: tools/check_headers_claimed.py
+        language: script
+        files: '^(carve/.*\.h|carve/.*/BUILD\.bazel)$'
+
+      - id: header-guards
+        name: first-party header guards follow STYLE_CPP
+        entry: tools/check_header_guards.py
+        language: script
+        files: '^carve/.*\.h$'
 
       - id: no-gtest-comparison-macros
         name: GoogleTest assertions use matchers

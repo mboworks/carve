@@ -6,9 +6,9 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
-- Enforce MBO Works C++ target naming, direct library-test coverage, explicit
-  Bazel test sizes, and matcher/status assertion conventions with tested local
-  pre-commit checks.
+- Enforce MBO Works C++ target naming, header ownership and guards, direct
+  library-test coverage, explicit Bazel test sizes, and matcher/status
+  assertion conventions with tested local pre-commit checks.
 - Point the README's extractor comparison at the maintained `helly25` fork and
   call out that the original Hedron repository is unmaintained.
 - Accept Bazel's `amd64` and `arm64` host architecture names when selecting the
