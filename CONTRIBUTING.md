@@ -47,7 +47,7 @@ bazel test //...
 For sanitizer runs:
 
 ```bash
-bazel test //... --config=asan
-bazel test //... --config=tsan
-bazel test //... --config=ubsan
+bazel test //... --config=clang --config=asan --config=ubsan
+bazel test //... --config=clang --config=msan  # Linux x86-64 only
+bazel test //... --config=clang --config=tsan
 ```

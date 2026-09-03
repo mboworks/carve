@@ -10,7 +10,8 @@ follows [SemVer](https://semver.org/).
   complementing the existing ASan/LSan/UBSan and TSan jobs.
 - Document shared shell and Git/PR practices, require two-layer agent PR
   descriptions, add the Trunk configuration/security gate, and automatically
-  remove obsolete GitHub Actions caches.
+  remove obsolete GitHub Actions caches; document the matching hermetic local
+  sanitizer commands.
 - Point the README's extractor comparison at the maintained `helly25` fork and
   call out that the original Hedron repository is unmaintained.
 - Accept Bazel's `amd64` and `arm64` host architecture names when selecting the

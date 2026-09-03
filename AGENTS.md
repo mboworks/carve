@@ -110,8 +110,9 @@ Edition 2024 (`edition = "2024";`) for new `.proto` files. Use
 ```bash
 bazel build //...                  # default toolchain
 bazel build //... --config=clang   # prebuilt clang via toolchains_llvm
-bazel test //... --config=asan     # sanitizer presets
-bazel test //... --config=msan     # MemorySanitizer (Linux x86-64 only)
+bazel test //... --config=clang --config=asan  # ASan (combine with --config=ubsan)
+bazel test //... --config=clang --config=msan  # MSan (Linux x86-64 only)
+bazel test //... --config=clang --config=tsan  # TSan
 ```
 
 Run `pre-commit run -a` for format and repository policy checks. CI also runs
