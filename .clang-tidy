@@ -1,4 +1,6 @@
 ---
+# LLVM 22.1.8 crashes in abseil-unchecked-statusor-access dataflow analysis
+# on valid Carve translation units, so keep that single check disabled.
 Checks: >
   *,
   abseil-*,
@@ -32,6 +34,7 @@ Checks: >
   -readability-avoid-nested-conditional-operator,
   -readability-else-after-return,
   -readability-redundant-inline-specifier,
+  -abseil-unchecked-statusor-access,
 
 WarningsAsErrors: '*'
 FormatStyle:       '.clang-format'

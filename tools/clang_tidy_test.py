@@ -7,6 +7,7 @@ import os
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -36,6 +37,30 @@ class SelectedSourcesTest(unittest.TestCase):
                 clang_tidy.selected_sources(database, {"carve/b/b.cc", "README.md"}, root),
                 ["carve/b/b.cc"],
             )
+
+    @mock.patch("clang_tidy.subprocess.run")
+    def test_run_limits_header_diagnostics_to_first_party_code(self, run):
+        run.return_value = mock.Mock(returncode=0, stdout="")
+        clang_tidy.run_one("clang-tidy", Path("compile_commands.json"), "carve/a/a.cc")
+        self.assertEqual(
+            run.call_args.args[0],
+            [
+                "clang-tidy",
+                "-p",
+                ".",
+                "--header-filter=^carve/",
+                "--exclude-header-filter=^(bazel-out|external)/",
+                "carve/a/a.cc",
+            ],
+        )
+
+    def test_crashing_llvm_check_is_disabled(self):
+        config = (Path(__file__).parent.parent / ".clang-tidy").read_text(encoding="utf-8")
+        checks = config.split("Checks: >", 1)[1].split("WarningsAsErrors:", 1)[0]
+        self.assertGreater(
+            checks.rfind("-abseil-unchecked-statusor-access,"),
+            checks.rfind("abseil-*"),
+        )
 
     def test_outside_absolute_path_is_ignored(self):
         with tempfile.TemporaryDirectory() as raw:

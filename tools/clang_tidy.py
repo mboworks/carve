@@ -33,7 +33,14 @@ def selected_sources(database: list[dict], requested: set[str] | None, root: Pat
 
 def run_one(executable: str, database: Path, source: str) -> tuple[str, int, str]:
     result = subprocess.run(
-        [executable, "-p", str(database.parent), source],
+        [
+            executable,
+            "-p",
+            str(database.parent),
+            "--header-filter=^carve/",
+            "--exclude-header-filter=^(bazel-out|external)/",
+            source,
+        ],
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
