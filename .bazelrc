@@ -128,6 +128,7 @@ common:ubsan --features=ubsan
 # sanitizer jobs.
 coverage:coverage --config=clang
 coverage:coverage --combined_report=lcov
+coverage:coverage --experimental_use_llvm_covmap
 coverage:coverage --instrumentation_filter=^//carve[/:]
 coverage:coverage --build_tag_filters=-no_san
 coverage:coverage --test_tag_filters=-no_san

@@ -22,7 +22,7 @@ class Counts:
 
     @property
     def percent(self) -> float:
-        return 100.0 if self.found == 0 else 100.0 * self.hit / self.found
+        return 0.0 if self.found == 0 else 100.0 * self.hit / self.found
 
 
 def repo_path(value: str) -> str | None:

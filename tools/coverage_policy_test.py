@@ -50,6 +50,14 @@ end_of_record
         self.assertFalse(passed)
         self.assertIn("50.00%", report)
 
+    def test_empty_report_fails_policy(self):
+        totals = {metric: coverage_policy.Counts() for metric in coverage_policy.METRICS}
+        report, passed = coverage_policy.render(
+            totals, {"minimum": {"lines": 60, "functions": 50, "branches": 40}}
+        )
+        self.assertFalse(passed)
+        self.assertIn("0 / 0 | 0.00%", report)
+
     def test_policy_requires_every_metric(self):
         with self.assertRaisesRegex(ValueError, "lines, functions, and branches"):
             coverage_policy.validate({"include": ["carve/**"], "minimum": {"lines": 80}})
