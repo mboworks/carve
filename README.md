@@ -2,8 +2,9 @@
 
 Carve `compile_commands.json` out of Bazel build graphs for clangd-style
 tooling. A clean-slate C++23 replacement for the
-[Hedron bazel-compile-commands-extractor](https://github.com/hedronvision/bazel-compile-commands-extractor),
-under [Apache-2.0](LICENSE).
+[maintained `helly25` fork of Hedron's bazel-compile-commands-extractor](https://github.com/helly25/bazel-compile-commands-extractor),
+under [Apache-2.0](LICENSE). The original Hedron repository is no longer
+maintained.
 
 ## Status
 
