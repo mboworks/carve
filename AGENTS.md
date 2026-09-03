@@ -114,6 +114,10 @@ bazel test //... --config=asan     # sanitizer presets
 bazel test //... --config=msan     # MemorySanitizer (Linux x86-64 only)
 ```
 
+Run `pre-commit run -a` for format and repository policy checks. CI also runs
+Trunk's independent configuration/security scan; Trunk does not own Git hooks
+or run clang-tidy.
+
 ## Commits
 
 - All commits signed off (DCO): `git commit -s`.
