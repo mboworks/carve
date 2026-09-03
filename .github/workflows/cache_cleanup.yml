@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: Copyright (c) M. Boerger, the MBO Works authors
+# SPDX-License-Identifier: Apache-2.0
+
+name: Cleanup caches
+
+on:
+  pull_request:
+    types: [closed]
+  schedule:
+    - cron: "37 4 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: cache-cleanup
+  cancel-in-progress: false
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Delete caches belonging to the closed pull request
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_REF: refs/pull/${{ github.event.pull_request.number }}/merge
+        run: gh cache delete --all --ref "${PR_REF}" --succeed-on-no-caches
+      - name: Retain only the newest main cache in each key family
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh cache list --ref refs/heads/main --limit 10000 --json id,key,createdAt \
+            | python3 tools/cache_cleanup.py >expired-cache-ids
+          while read -r cache_id; do
+            [[ -z "${cache_id}" ]] || gh cache delete "${cache_id}"
+          done <expired-cache-ids

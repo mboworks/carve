@@ -68,6 +68,13 @@ repos:
         files: ^tools/cdb_diff\.py$
         pass_filenames: false
 
+      - id: cache-cleanup-tests
+        name: cache cleanup selection tests
+        entry: python3 -m unittest tools/cache_cleanup_test.py
+        language: system
+        pass_filenames: false
+        files: '^(\.github/workflows/cache_cleanup\.yml|tools/cache_cleanup(_test)?\.py)$'
+
       - id: blocked-merge-markers
         name: no blocked-merge markers
         entry: '(?i)do[ _-]?not[ _-]?merge'
