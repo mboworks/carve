@@ -16,8 +16,9 @@ an AI assistant) can follow them without reverse-engineering the tooling.
   helly25 extractor fork. CI resolves clang-tidy from the pinned hermetic LLVM
   distribution, lints changed translation units on ordinary pull requests, and expands
   to the whole first-party database when headers or build/toolchain policy changes.
-  `WarningsAsErrors` makes the dedicated job an enforcing, report-only gate; never apply
-  clang-tidy fixes automatically. The enabled set is broad: `abseil-*`, `bugprone-*`,
+  `WarningsAsErrors` makes findings explicit. The dedicated CI step is temporarily
+  report-only while the existing tree is brought to zero; database generation and tool
+  discovery still gate CI. Never apply clang-tidy fixes automatically. The enabled set is broad: `abseil-*`, `bugprone-*`,
   `cppcoreguidelines-*`, `google-*`, `misc-*`, `modernize-*`, `performance-*`,
   `portability-*`, and `readability-*`.
 
