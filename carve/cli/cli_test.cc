@@ -15,6 +15,8 @@
 
 #include "carve/cli/cli.h"
 
+#include <array>
+
 #include "absl/status/status.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -27,7 +29,9 @@ using ::mbo::testing::IsOkAndHolds;
 using ::mbo::testing::StatusIs;
 
 TEST(SubcommandTest, NamesRoundTripThroughParse) {
-  for (const Subcommand cmd : {Subcommand::kRefresh, Subcommand::kAggregate, Subcommand::kShard, Subcommand::kPrune}) {
+  constexpr auto kSubcommands =
+      std::to_array({Subcommand::kRefresh, Subcommand::kAggregate, Subcommand::kShard, Subcommand::kPrune});
+  for (const Subcommand cmd : kSubcommands) {
     EXPECT_THAT(ParseSubcommand(SubcommandName(cmd)), IsOkAndHolds(cmd));
   }
 }

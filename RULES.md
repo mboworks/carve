@@ -50,7 +50,11 @@ file is corrected.
 ### Bazel targets
 
 - `cc_library` targets are suffixed `_cc` (e.g. `command_cc`).
-- `cc_test` targets are suffixed `_test`, `size = "small"` by default.
+- `cc_test` targets are suffixed `_test` and every direct test rule declares
+  its scheduling `size` explicitly.
+- Every `cc_library` has a direct dependency from a test in the same package;
+  narrowly justified structural fixtures are recorded in the policy check's
+  allowlist.
 - Split `implementation_deps` (private, not propagated) from `deps` (public API
   surface).
 - Package `default_visibility = ["//visibility:private"]`; widen explicitly per
@@ -78,8 +82,8 @@ file is corrected.
 - GTest, colocated with the unit. Every change is covered by a committed test at
   the appropriate level - see the testing-discipline section in
   [AGENTS.md](AGENTS.md#testing-discipline). No exemption category.
-- **Assert with matchers.** Prefer `EXPECT_THAT(actual, matcher)` over
-  `EXPECT_EQ`/`EXPECT_NE`. Use the expressive matcher, not a hand-rolled
+- **Assert with matchers.** Use `EXPECT_THAT(actual, matcher)`, not GoogleTest
+  comparison macros. Use the expressive matcher, not a hand-rolled
   predicate:
   - substring: `EXPECT_THAT(text, HasSubstr("x"))` - never
     `EXPECT_NE(text.find("x"), npos)`.
@@ -89,4 +93,8 @@ file is corrected.
     `@mboworks_mbo//mbo/testing:status_cc`) `IsOk()`, `StatusIs(code)`,
     `IsOkAndHolds(value_matcher)`; `::absl_testing::` is disallowed (see STYLE_CPP.md
     "Status matchers"). Use `IsOkAndHolds(m)` rather than asserting `IsOk()` and then
-    dereferencing (`*x`) to compare the value.
+    dereferencing (`*x`) to compare the value; bind reusable values with
+    `MBO_ASSERT_OK_AND_ASSIGN`.
+- Range-for loops use a named collection rather than an inline braced list.
+- Use comparison `CHECK` macros (`CHECK_EQ`, `CHECK_NE`, and variants) so
+  failures report both operands.

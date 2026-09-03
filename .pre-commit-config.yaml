@@ -103,3 +103,73 @@ repos:
         language: pygrep
         args: [--multiline]
         types_or: [c++]
+
+      - id: cc-target-naming
+        name: cc_library targets end in _cc
+        entry: tools/check_cc_target_naming.py
+        language: script
+        files: '(^|/)(BUILD|BUILD\.bazel)$'
+        exclude: '^third_party/'
+
+      - id: library-test-coverage
+        name: every cc_library has a direct package-local test
+        entry: tools/check_cc_library_tested.py
+        language: script
+        files: '(^|/)(BUILD|BUILD\.bazel)$'
+        exclude: '^third_party/'
+
+      - id: explicit-test-sizes
+        name: direct Bazel tests declare their size
+        entry: tools/check_test_sizes.py
+        language: script
+        files: '(^|/)(BUILD|BUILD\.bazel)$'
+
+      - id: build-policy-tests
+        name: BUILD policy checker tests
+        entry: python3 -m unittest tools/check_cc_target_naming_test.py tools/check_cc_library_tested_test.py tools/check_test_sizes_test.py tools/check_headers_test.py
+        language: system
+        pass_filenames: false
+        files: '^tools/(build_rules|check_cc_target_naming(_test)?|check_cc_library_tested(_test)?|check_test_sizes(_test)?|check_headers(_claimed)?(_test)?)\.py$'
+
+      - id: headers-claimed
+        name: every first-party header is claimed by a BUILD target
+        entry: tools/check_headers_claimed.py
+        language: script
+        files: '^(carve/.*\.h|carve/.*/BUILD\.bazel)$'
+
+      - id: header-guards
+        name: first-party header guards follow STYLE_CPP
+        entry: tools/check_header_guards.py
+        language: script
+        files: '^carve/.*\.h$'
+
+      - id: no-gtest-comparison-macros
+        name: GoogleTest assertions use matchers
+        entry: tools/check_test_matchers.sh
+        language: script
+        types_or: [c, c++]
+
+      - id: no-comparison-in-check-macro
+        name: boolean CHECKs do not contain comparisons
+        entry: tools/check_check_macros.sh
+        language: script
+        types_or: [c, c++]
+
+      - id: no-isok-assert-then-deref
+        name: StatusOr assertions bind or match the value
+        entry: tools/check_status_assert.py
+        language: script
+        files: '_test\.cc$'
+
+      - id: assertion-policy-tests
+        name: assertion policy checker tests
+        entry: python3 -m unittest tools/check_status_assert_test.py tools/check_shell_policies_test.py
+        language: system
+        pass_filenames: false
+        files: '^tools/(check_(status_assert|test_matchers|check_macros|shell_policies)(_test)?\.(py|sh))$'
+
+      - id: no-braced-init-list-loop
+        name: range-for uses a named collection
+        entry: 'for\s*\([^)]*:\s*\{'
+        language: pygrep
+        types_or: [c, c++]

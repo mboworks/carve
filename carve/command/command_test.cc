@@ -25,6 +25,7 @@ namespace carve::command {
 namespace {
 
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::IsEmpty;
 
 TEST(DeBazelTest, EmptyStaysEmpty) {
@@ -116,31 +117,31 @@ TEST(ResolveXcodePlaceholdersTest, EmptyReplacementsLeavePlaceholdersUntouched) 
 }
 
 TEST(RelativizeToExecrootTest, StripsTheExecrootPrefix) {
-  EXPECT_EQ(
+  EXPECT_THAT(
       RelativizeToExecroot(
           "/cache/execroot/_main/bazel-out/k8-fastbuild/bin/external/x/h.inc", "/cache/execroot/_main"),
-      "bazel-out/k8-fastbuild/bin/external/x/h.inc");
+      Eq("bazel-out/k8-fastbuild/bin/external/x/h.inc"));
 }
 
 TEST(RelativizeToExecrootTest, LeavesAnAlreadyRelativePathUnchanged) {
-  EXPECT_EQ(
+  EXPECT_THAT(
       RelativizeToExecroot("bazel-out/k8-fastbuild/bin/x.h", "/cache/execroot/_main"),
-      "bazel-out/k8-fastbuild/bin/x.h");
+      Eq("bazel-out/k8-fastbuild/bin/x.h"));
 }
 
 TEST(RelativizeToExecrootTest, LeavesAPathOutsideTheExecrootAbsolute) {
   // A genuine system header is not under the execroot and cannot be made relative.
-  EXPECT_EQ(RelativizeToExecroot("/usr/include/stdio.h", "/cache/execroot/_main"), "/usr/include/stdio.h");
+  EXPECT_THAT(RelativizeToExecroot("/usr/include/stdio.h", "/cache/execroot/_main"), Eq("/usr/include/stdio.h"));
 }
 
 TEST(RelativizeToExecrootTest, DoesNotStripAMereStringPrefix) {
   // "/a/b_main" shares a string prefix with "/a/b" but is not a path child of it;
   // relativization is path-component-aware, so the path stays absolute.
-  EXPECT_EQ(RelativizeToExecroot("/a/b_main/x.h", "/a/b"), "/a/b_main/x.h");
+  EXPECT_THAT(RelativizeToExecroot("/a/b_main/x.h", "/a/b"), Eq("/a/b_main/x.h"));
 }
 
 TEST(RelativizeToExecrootTest, EmptyExecrootIsANoOp) {
-  EXPECT_EQ(RelativizeToExecroot("/cache/execroot/_main/x.h", ""), "/cache/execroot/_main/x.h");
+  EXPECT_THAT(RelativizeToExecroot("/cache/execroot/_main/x.h", ""), Eq("/cache/execroot/_main/x.h"));
 }
 
 TEST(ParseMakeDependenciesTest, SplitsDepsAfterTheColon) {

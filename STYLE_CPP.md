@@ -318,8 +318,8 @@ substitute for a committed test. Tests use GoogleTest + GoogleMock with these co
   give far better failure messages. The accepted exception is the boolean `EXPECT_TRUE` /
   `EXPECT_FALSE` (and `ASSERT_TRUE` / `ASSERT_FALSE`), which read fine on their own. Within a
   single test keep one style - do not mix, say, `EXPECT_TRUE(x)` and `EXPECT_THAT(y, IsTrue())`.
-- **Exception: use `EXPECT_EQ` for multiline-text comparisons** - its unified-diff output is
-  more readable than a matcher's for large strings (e.g. golden output or a rendered file).
+- For multiline text, use `mbo::testing::EqualsText`, which reports a useful
+  unified diff while retaining matcher style.
 - **Name matchers unqualified - never a `::testing::` / `::absl_testing::` / `::mbo::testing::`
   prefix inline.** Bring each matcher in with a `using ::testing::Foo;` (or
   `using ::mbo::testing::Foo;`) in the test's anonymous namespace, then write `Foo(...)` in the

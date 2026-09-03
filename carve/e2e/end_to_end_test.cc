@@ -42,12 +42,13 @@ using ::mbo::testing::IsOkAndHolds;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::HasSubstr;
+using ::testing::NotNull;
 
 // Absolute path to the built `carve` binary in the test's runfiles.
 std::string CarveBinary() {
   std::string error;
   const std::unique_ptr<Runfiles> runfiles(Runfiles::CreateForTest(&error));
-  EXPECT_NE(runfiles, nullptr) << error;
+  EXPECT_THAT(runfiles, NotNull()) << error;
   const char* workspace = std::getenv("TEST_WORKSPACE");
   return runfiles->Rlocation(std::string(workspace != nullptr ? workspace : "_main") + "/carve/carve");
 }
