@@ -272,11 +272,10 @@ you add_ multi-threaded code, not a description of current breadth.
 - **If a type has more than one mutex, document their lock-acquisition order** (which is
   taken before which) so the ordering that prevents deadlock is explicit.
 - **Enforce the annotations**: compile first-party code with clang's `-Wthread-safety`
-  (with `-Werror` an unguarded access becomes a build failure). A runtime ThreadSanitizer CI
-  job is the complementary guard where the toolchain can build the sanitizer runtime; carve's
-  hermetic LLVM toolchain currently cannot, so `-Wthread-safety` is the standing gate (see
-  `.bazelrc` and `docs/IMPLEMENTATION_PLAN.md`). Scope any tsan job to the threaded targets;
-  exclude heavy third-party-linked ones so tsan does not rebuild them.
+  (with `-Werror` an unguarded access becomes a build failure), and run TSan in CI as the
+  complementary runtime race detector. ASan/LSan/UBSan and Linux MSan cover the other
+  sanitizer classes. LLVM-linking targets stay excluded because their prebuilt archives
+  cannot be instrumented consistently with first-party code.
 
 ## Protocol Buffers
 

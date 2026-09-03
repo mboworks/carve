@@ -6,6 +6,8 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Add Linux MemorySanitizer CI with an LLVM 22.1.8 instrumented-libc++ overlay,
+  complementing the existing ASan/LSan/UBSan and TSan jobs.
 - Point the README's extractor comparison at the maintained `helly25` fork and
   call out that the original Hedron repository is unmaintained.
 - Accept Bazel's `amd64` and `arm64` host architecture names when selecting the

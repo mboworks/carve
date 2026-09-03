@@ -60,6 +60,11 @@ llvm = use_extension(
 )
 llvm.toolchain(
     name = "llvm_toolchain",
+    # MSan reports false positives for reads from an uninstrumented standard
+    # library. toolchains_llvm's msan feature swaps this matching overlay in on
+    # Linux; ordinary builds continue to use the stdlib selection below.
+    libcxx_sha256 = "fd1ac49eeda4edc6deeda2037998e558718a63a5054fff4fdace7751b270217a",
+    libcxx_url = "https://github.com/RealtimeRoboticsGroup/toolchains/releases/download/22.1.8/libcxx-msan-22.1.8-x86_64-linux-gnu-ubuntu-22.04.tar.zst",
     llvm_version = "22.1.8",
     # Match the standard library used to build the official static archives.
     # The unqualified stdc++ selection links it statically.
