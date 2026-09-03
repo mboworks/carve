@@ -29,12 +29,35 @@ jobs:
     steps:
       # This workflow and its elevated token always come from the trusted default
       # branch. Pull-request code only creates the downloadable coverage artifact.
+      - uses: actions/checkout@v7
+        with:
+          path: source
+          ref: main
       - uses: actions/download-artifact@v8
         with:
           github-token: ${{ github.token }}
           name: coverage-report
           path: report
           run-id: ${{ github.event.workflow_run.id }}
+      - name: Add report metadata
+        env:
+          SOURCE_COMPLETED_AT: ${{ github.event.workflow_run.updated_at }}
+          SOURCE_CREATED_AT: ${{ github.event.workflow_run.created_at }}
+          SOURCE_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          SOURCE_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          SOURCE_STARTED_AT: ${{ github.event.workflow_run.run_started_at }}
+        run: |
+          python3 source/tools/coverage_metadata.py \
+            report/coverage-html/coverage-summary.json \
+            main \
+            report/coverage-html/coverage-meta.json \
+            --completed-at "${SOURCE_COMPLETED_AT}" \
+            --created-at "${SOURCE_CREATED_AT}" \
+            --head-sha "${SOURCE_HEAD_SHA}" \
+            --run-attempt "${SOURCE_RUN_ATTEMPT}" \
+            --run-id "${SOURCE_RUN_ID}" \
+            --started-at "${SOURCE_STARTED_AT}"
       - uses: actions/upload-pages-artifact@v5
         with:
           path: report/coverage-html

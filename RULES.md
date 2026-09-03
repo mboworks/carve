@@ -67,7 +67,8 @@ file is corrected.
 
 ## Shell and Starlark
 
-- Shell: Google shell style, formatted with `shfmt`, linted with `shellcheck`.
+- Shell: follow [STYLE_SH.md](STYLE_SH.md), based on Google shell style;
+  format with `shfmt` and lint with `shellcheck`.
 - Starlark/Bazel: formatted and linted with `buildifier` (`--warnings=all`).
 
 ## Markdown

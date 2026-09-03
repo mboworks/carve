@@ -110,9 +110,14 @@ Edition 2024 (`edition = "2024";`) for new `.proto` files. Use
 ```bash
 bazel build //...                  # default toolchain
 bazel build //... --config=clang   # prebuilt clang via toolchains_llvm
-bazel test //... --config=asan     # sanitizer presets
-bazel test //... --config=msan     # MemorySanitizer (Linux x86-64 only)
+bazel test //... --config=clang --config=asan  # ASan (combine with --config=ubsan)
+bazel test //... --config=clang --config=msan  # MSan (Linux x86-64 only)
+bazel test //... --config=clang --config=tsan  # TSan
 ```
+
+Run `pre-commit run -a` for format and repository policy checks. CI also runs
+Trunk's independent configuration/security scan; Trunk does not own Git hooks
+or run clang-tidy.
 
 ## Commits
 
@@ -122,11 +127,15 @@ bazel test //... --config=msan     # MemorySanitizer (Linux x86-64 only)
 - One logical change per commit. Mixing refactors with feature work is
   discouraged.
 - Do not amend pushed commits; create a fresh commit instead.
+- Follow [GIT_RULES.md](GIT_RULES.md) for synchronization, stacked changes,
+  readiness, and merge operations.
 
 ## Pull requests
 
 - Branches off `main`. PRs target `main`.
 - Description explains the why; the diff explains the what.
+- Agent-authored descriptions begin with a short `## AG;DR` summary, followed
+  by the detailed rationale, change list, and verification evidence.
 - All CI green before merge.
 - Squash-merge by default; preserve commit history only for substantial,
   well-organized series.
@@ -159,6 +168,8 @@ If you are an AI agent making changes:
 - [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md): status + ordered remaining work. Update as milestones land.
 - [RULES.md](RULES.md): code-style and structural rules. Update when conventions change.
 - [STYLE_CPP.md](STYLE_CPP.md): detailed C++ style (shared MBO Works conventions with examples); the companion RULES.md points to.
+- [STYLE_SH.md](STYLE_SH.md): shell conventions for developer and CI scripts.
+- [GIT_RULES.md](GIT_RULES.md): branch, pull-request, and merge orchestration.
 - [README.md](README.md): user-facing intro. Update on user-visible changes.
 - [CHANGELOG.md](CHANGELOG.md): every PR adds a line under `[Unreleased]`.
 - [CONTRIBUTING.md](CONTRIBUTING.md): human onboarding. Should stay short.

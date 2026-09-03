@@ -12,6 +12,11 @@ follows [SemVer](https://semver.org/).
   the build runner to Bazel 9.2.0.
 - Add Linux MemorySanitizer CI with an LLVM 22.1.8 instrumented-libc++ overlay,
   complementing the existing ASan/LSan/UBSan and TSan jobs.
+- Document shared shell and Git/PR practices, require two-layer agent PR
+  descriptions, add the Trunk configuration/security gate, and automatically
+  remove obsolete GitHub Actions caches; document the matching hermetic local
+  sanitizer commands; emit module-level coverage summaries and report metadata
+  compatible with MBO Works coverage overview tables.
 - Enforce MBO Works C++ target naming, header ownership and guards, direct
   library-test coverage, explicit Bazel test sizes, and matcher/status
   assertion conventions with tested local pre-commit checks.
