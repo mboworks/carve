@@ -111,6 +111,7 @@ Edition 2024 (`edition = "2024";`) for new `.proto` files. Use
 bazel build //...                  # default toolchain
 bazel build //... --config=clang   # prebuilt clang via toolchains_llvm
 bazel test //... --config=asan     # sanitizer presets
+bazel test //... --config=msan     # MemorySanitizer (Linux x86-64 only)
 ```
 
 ## Commits
