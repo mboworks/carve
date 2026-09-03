@@ -109,4 +109,13 @@ common:ubsan --copt -g
 common:ubsan --copt -fno-omit-frame-pointer
 common:ubsan --features=ubsan
 
+# First-party LLVM source coverage. LLVM-linking targets cannot be instrumented
+# safely and already carry no_san, so use the same exclusion boundary as the
+# sanitizer jobs.
+coverage:coverage --config=clang
+coverage:coverage --combined_report=lcov
+coverage:coverage --instrumentation_filter=^//carve[/:]
+coverage:coverage --build_tag_filters=-no_san
+coverage:coverage --test_tag_filters=-no_san
+
 try-import %workspace%/.bazelrc.user.end

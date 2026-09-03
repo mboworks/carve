@@ -104,12 +104,44 @@ jobs:
       - name: bazel test (tsan)
         run: bazel test --config=clang --config=tsan //carve/... --disk_cache="$HOME/.cache/bazel-disk" --repository_cache="$HOME/.cache/bazel-repo"
 
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: bazelbuild/setup-bazelisk@v3
+      - name: Install LCOV
+        run: sudo apt-get update && sudo apt-get install --yes lcov
+      - name: Mount Bazel caches
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cache/bazel-disk
+            ~/.cache/bazel-repo
+          key: bazel-coverage-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.sha }}
+          restore-keys: |
+            bazel-coverage-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-
+            bazel-coverage-ubuntu-
+            bazel-ubuntu-latest-
+      - name: Collect coverage
+        run: bazel coverage --config=coverage //carve/... --disk_cache="$HOME/.cache/bazel-disk" --repository_cache="$HOME/.cache/bazel-repo"
+      - name: Enforce coverage policy
+        run: python3 tools/coverage_policy.py bazel-out/_coverage/_coverage_report.dat coverage_policy.json --summary "$GITHUB_STEP_SUMMARY"
+      - name: Render HTML report
+        run: genhtml --branch-coverage --output-directory coverage-html bazel-out/_coverage/_coverage_report.dat
+      - uses: actions/upload-artifact@v6
+        with:
+          name: coverage-report
+          path: |
+            bazel-out/_coverage/_coverage_report.dat
+            coverage-html
+          retention-days: 30
+
   # Single required status check: one job that gates merge on the whole matrix,
   # so branch protection needs only `done`. A yq/jq step self-checks that every
   # workflow job is wired into `needs`, so a newly added job cannot silently
   # escape the gate. Mirrors the MBO Works house pattern (mbo/bzl/xff).
   done:
-    needs: [pre-commit, test, asan, tsan]
+    needs: [pre-commit, test, asan, tsan, coverage]
     if: always()
     runs-on: ubuntu-latest
     steps:
