@@ -157,9 +157,15 @@ jobs:
       - name: Collect coverage
         run: bazel coverage --config=coverage //carve/... --disk_cache="$HOME/.cache/bazel-disk" --repository_cache="$HOME/.cache/bazel-repo"
       - name: Enforce coverage policy
-        run: python3 tools/coverage_policy.py bazel-out/_coverage/_coverage_report.dat coverage_policy.json --summary "$GITHUB_STEP_SUMMARY"
+        run: |
+          python3 tools/coverage_policy.py \
+            bazel-out/_coverage/_coverage_report.dat coverage_policy.json \
+            --summary "$GITHUB_STEP_SUMMARY" \
+            --json-summary coverage-summary.json
       - name: Render HTML report
-        run: genhtml --branch-coverage --output-directory coverage-html bazel-out/_coverage/_coverage_report.dat
+        run: |
+          genhtml --branch-coverage --output-directory coverage-html bazel-out/_coverage/_coverage_report.dat
+          mv coverage-summary.json coverage-html/
       - uses: actions/upload-artifact@v6
         with:
           name: coverage-report

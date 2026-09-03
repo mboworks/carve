@@ -76,11 +76,11 @@ repos:
         files: '^(\.github/workflows/cache_cleanup\.yml|tools/cache_cleanup(_test)?\.py)$'
 
       - id: coverage-policy-tests
-        name: coverage policy tests
-        entry: python3 -m unittest tools/coverage_policy_test.py
+        name: coverage reporting tests
+        entry: python3 -m unittest tools/coverage_policy_test.py tools/coverage_metadata_test.py
         language: system
         pass_filenames: false
-        files: '^(coverage_policy\.json|tools/coverage_policy(_test)?\.py|\.bazelrc|\.github/workflows/main\.yml)$'
+        files: '^(coverage_policy\.json|tools/coverage_(policy|metadata)(_test)?\.py|\.bazelrc|\.github/workflows/(main|coverage_pages)\.yml)$'
 
       - id: blocked-merge-markers
         name: no blocked-merge markers

@@ -8,7 +8,7 @@ on:
     types: [closed]
   schedule:
     - cron: "37 4 * * 1"
-  workflow_dispatch:
+  workflow_dispatch: {}
 
 concurrency:
   group: cache-cleanup

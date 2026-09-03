@@ -15,7 +15,8 @@ follows [SemVer](https://semver.org/).
 - Document shared shell and Git/PR practices, require two-layer agent PR
   descriptions, add the Trunk configuration/security gate, and automatically
   remove obsolete GitHub Actions caches; document the matching hermetic local
-  sanitizer commands.
+  sanitizer commands; emit module-level coverage summaries and report metadata
+  compatible with MBO Works coverage overview tables.
 - Enforce MBO Works C++ target naming, header ownership and guards, direct
   library-test coverage, explicit Bazel test sizes, and matcher/status
   assertion conventions with tested local pre-commit checks.
