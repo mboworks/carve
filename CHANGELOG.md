@@ -7,7 +7,8 @@ follows [SemVer](https://semver.org/).
 ## [Unreleased]
 
 - Add an enforcing clang-tidy CI job using the compilation database and the
-  clang-tidy binary from the pinned hermetic LLVM distribution.
+  clang-tidy binary from the pinned hermetic LLVM distribution, and document
+  the active clang-tidy and ThreadSanitizer gates accurately.
 - Point the README's extractor comparison at the maintained `helly25` fork and
   call out that the original Hedron repository is unmaintained.
 - Accept Bazel's `amd64` and `arm64` host architecture names when selecting the
