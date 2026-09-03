@@ -7,7 +7,8 @@ follows [SemVer](https://semver.org/).
 ## [Unreleased]
 
 - Add first-party Clang coverage reporting with a tested checked-in policy,
-  HTML and LCOV artifacts, and enforcement through the required CI gate.
+  HTML and LCOV artifacts, main-branch GitHub Pages publishing, and enforcement
+  through the required CI gate.
 - Point the README's extractor comparison at the maintained `helly25` fork and
   call out that the original Hedron repository is unmaintained.
 - Accept Bazel's `amd64` and `arm64` host architecture names when selecting the

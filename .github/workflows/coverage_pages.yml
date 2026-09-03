@@ -1,0 +1,43 @@
+# SPDX-FileCopyrightText: Copyright (c) M. Boerger, the MBO Works authors
+# SPDX-License-Identifier: Apache-2.0
+
+name: Publish coverage
+
+on:
+  workflow_run:
+    workflows: [Test]
+    branches: [main]
+    types: [completed]
+
+concurrency:
+  group: coverage-pages
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  publish:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      id-token: write
+      pages: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # This workflow and its elevated token always come from the trusted default
+      # branch. Pull-request code only creates the downloadable coverage artifact.
+      - uses: actions/download-artifact@v8
+        with:
+          github-token: ${{ github.token }}
+          name: coverage-report
+          path: report
+          run-id: ${{ github.event.workflow_run.id }}
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: report/coverage-html
+      - name: Deploy coverage to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
