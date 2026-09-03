@@ -6,6 +6,8 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Point the README's extractor comparison at the maintained `helly25` fork and
+  call out that the original Hedron repository is unmaintained.
 - Accept Bazel's `amd64` and `arm64` host architecture names when selecting the
   prebuilt LLVM distribution.
 - Make `toolchains_llvm` root-development-only and download the matching static
