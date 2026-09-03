@@ -68,6 +68,13 @@ repos:
         files: ^tools/cdb_diff\.py$
         pass_filenames: false
 
+      - id: coverage-policy-tests
+        name: coverage policy tests
+        entry: python3 -m unittest tools/coverage_policy_test.py
+        language: system
+        pass_filenames: false
+        files: '^(coverage_policy\.json|tools/coverage_policy(_test)?\.py|\.bazelrc|\.github/workflows/main\.yml)$'
+
       - id: blocked-merge-markers
         name: no blocked-merge markers
         entry: '(?i)do[ _-]?not[ _-]?merge'
