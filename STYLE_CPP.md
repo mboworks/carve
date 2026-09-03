@@ -272,11 +272,10 @@ you add_ multi-threaded code, not a description of current breadth.
 - **If a type has more than one mutex, document their lock-acquisition order** (which is
   taken before which) so the ordering that prevents deadlock is explicit.
 - **Enforce the annotations**: compile first-party code with clang's `-Wthread-safety`
-  (with `-Werror` an unguarded access becomes a build failure). A runtime ThreadSanitizer CI
-  job is the complementary guard where the toolchain can build the sanitizer runtime; carve's
-  hermetic LLVM toolchain currently cannot, so `-Wthread-safety` is the standing gate (see
-  `.bazelrc` and `docs/IMPLEMENTATION_PLAN.md`). Scope any tsan job to the threaded targets;
-  exclude heavy third-party-linked ones so tsan does not rebuild them.
+  (with `-Werror` an unguarded access becomes a build failure), and run TSan in CI as the
+  complementary runtime race detector. ASan/LSan/UBSan and Linux MSan cover the other
+  sanitizer classes. LLVM-linking targets stay excluded because their prebuilt archives
+  cannot be instrumented consistently with first-party code.
 
 ## Protocol Buffers
 
@@ -319,8 +318,8 @@ substitute for a committed test. Tests use GoogleTest + GoogleMock with these co
   give far better failure messages. The accepted exception is the boolean `EXPECT_TRUE` /
   `EXPECT_FALSE` (and `ASSERT_TRUE` / `ASSERT_FALSE`), which read fine on their own. Within a
   single test keep one style - do not mix, say, `EXPECT_TRUE(x)` and `EXPECT_THAT(y, IsTrue())`.
-- **Exception: use `EXPECT_EQ` for multiline-text comparisons** - its unified-diff output is
-  more readable than a matcher's for large strings (e.g. golden output or a rendered file).
+- For multiline text, use `mbo::testing::EqualsText`, which reports a useful
+  unified diff while retaining matcher style.
 - **Name matchers unqualified - never a `::testing::` / `::absl_testing::` / `::mbo::testing::`
   prefix inline.** Bring each matcher in with a `using ::testing::Foo;` (or
   `using ::mbo::testing::Foo;`) in the test's anonymous namespace, then write `Foo(...)` in the

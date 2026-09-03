@@ -104,6 +104,29 @@ jobs:
       - name: bazel test (tsan)
         run: bazel test --config=clang --config=tsan //carve/... --disk_cache="$HOME/.cache/bazel-disk" --repository_cache="$HOME/.cache/bazel-repo"
 
+  # MemorySanitizer catches uninitialized reads that ASan does not. It is Linux
+  # x86-64 only and uses toolchains_llvm's instrumented libc++ overlay. Targets
+  # tagged no_san remain excluded because their prebuilt LLVM archives use the
+  # ordinary libstdc++ ABI.
+  msan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: bazelbuild/setup-bazelisk@v3
+      - name: Mount Bazel caches
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cache/bazel-disk
+            ~/.cache/bazel-repo
+          key: bazel-msan-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.sha }}
+          restore-keys: |
+            bazel-msan-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-
+            bazel-msan-ubuntu-
+            bazel-ubuntu-latest-
+      - name: bazel test (msan)
+        run: bazel test --config=clang --config=msan //carve/... --disk_cache="$HOME/.cache/bazel-disk" --repository_cache="$HOME/.cache/bazel-repo"
+
   coverage:
     runs-on: ubuntu-latest
     steps:
@@ -141,7 +164,7 @@ jobs:
   # workflow job is wired into `needs`, so a newly added job cannot silently
   # escape the gate. Mirrors the MBO Works house pattern (mbo/bzl/xff).
   done:
-    needs: [pre-commit, test, asan, tsan, coverage]
+    needs: [pre-commit, test, asan, tsan, msan, coverage]
     if: always()
     runs-on: ubuntu-latest
     steps:

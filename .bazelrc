@@ -105,6 +105,20 @@ common:tsan --features=tsan
 common:tsan --build_tag_filters=-no_san
 common:tsan --test_tag_filters=-no_san
 
+# --config=msan: MemorySanitizer, Linux x86-64 only. MSan requires every linked
+# library to be instrumented. Source dependencies inherit the instrumentation;
+# toolchains_llvm's msan feature supplies the instrumented libc++ configured in
+# MODULE.bazel. LLVM-linking targets remain excluded because the official LLVM
+# archives use libstdc++ on Linux and cannot cross the libc++ ABI boundary.
+common:msan --features=msan
+common:msan --copt -g
+common:msan --copt -fno-omit-frame-pointer
+common:msan --copt -DMEMORY_SANITIZER
+common:msan --build_tag_filters=-no_san
+common:msan --test_tag_filters=-no_san
+common:msan --action_env=MSAN_OPTIONS=halt_on_error=1:print_stacktrace=1:symbolize=1:strip_path_prefix=/proc/self/cwd/:color=always
+common:msan --test_env=MSAN_OPTIONS=halt_on_error=1:print_stacktrace=1:symbolize=1:strip_path_prefix=/proc/self/cwd/:color=always
+
 common:ubsan --copt -g
 common:ubsan --copt -fno-omit-frame-pointer
 common:ubsan --features=ubsan

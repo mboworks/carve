@@ -114,7 +114,7 @@ def carve_rules_test_suite(name):
     # the shards, exercising the sandboxed `carve_shard` action in CI.
     carve_aspect_refresh(
         name = "aspect_refresh_under_test",
-        targets = ["//rules/testdata:lib"],
+        targets = ["//rules/testdata:lib_cc"],
         tags = ["manual"],
     )
     _aspect_refresh_wiring_test(name = "aspect_refresh_wiring_test", target_under_test = ":aspect_refresh_under_test")
@@ -135,7 +135,7 @@ def carve_rules_test_suite(name):
     # source, never int128.cc. Analysis-only -- no external code is built.
     carve_aspect_refresh(
         name = "aspect_refresh_external_under_test",
-        targets = ["//rules/testdata:lib_with_external_dep"],
+        targets = ["//rules/testdata:lib_with_external_dep_cc"],
         tags = ["manual"],
     )
     _aspect_excludes_external_test(
@@ -144,7 +144,7 @@ def carve_rules_test_suite(name):
     )
     carve_aspect_refresh(
         name = "aspect_refresh_external_included_under_test",
-        targets = ["//rules/testdata:lib_with_external_dep"],
+        targets = ["//rules/testdata:lib_with_external_dep_cc"],
         exclude_external_sources = False,
         tags = ["manual"],
     )

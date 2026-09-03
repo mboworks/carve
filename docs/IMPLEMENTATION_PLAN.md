@@ -23,7 +23,7 @@ Legend: ✅ done & tested · 🟡 partial · ⬜ not started.
 | `refresh` (in-process aquery, execroot, merge, multi-project) | ✅     | M1 done: scan-deps, incremental, staleness, header index, `--jobs`                               |
 | `scan_deps` (clang `DependencyScanningTool`)                  | ✅     | wired into `refresh`; gated linux+macos                                                          |
 | `cli` + `//carve:carve`                                       | ✅     | all four subcommands wired: `refresh` + `prune` + `aggregate` + `shard`                          |
-| e2e harness, CI, pre-commit, toolchains_llvm, proto matchers  | ✅     |                                                                                                  |
+| e2e harness, CI, pre-commit, toolchains_llvm, proto matchers  | ✅     | ASan/LSan/UBSan, TSan, and Linux MSan coverage for LLVM-free targets                             |
 | Layer B (`carve_refresh` rule)                                | ✅     | `bazel run //:refresh`; run-based (nested-bazel resolved)                                        |
 | Layer C (aspect + shards)                                     | ✅     | `cc_carve_aspect` + `carve_aspect_refresh` + `shard` + `aggregate`; per-action cacheable shards  |
 | Differential harness vs Hedron / clangd validation            | ✅     | `tools/cdb_diff.py` + `docs/differential-report.md` (M3)                                         |
@@ -53,7 +53,7 @@ Realizes incremental refresh and header coverage; everything downstream assumes 
 - ✅ Build and persist the `HeaderIndex` (header → owning `action_key`s, canonical owner = lex-min) next to the sidecar so an edited header maps to the action(s) to re-scan (design §4.4–§4.5).
 - ✅ Header-staleness invalidation: on refresh, an action whose cached header (or source) changed on disk (mtime past `written_at`) is re-scanned even though its command is unchanged, via `FindReusableRecord` + a `rescanned` set passed to `MergeRecords`. One-second granularity.
 - ✅ Missing generated headers: a failed scan leaves the record unstamped so the next refresh re-scans it (cache only a complete scan, design §4.2); `RunRefresh` returns `RefreshStats` and the binary surfaces an unresolved-headers count.
-- ✅ Parallelize scanning across actions (`--jobs`, default hardware concurrency): an `absl::Mutex`-guarded worker pool (fully thread-safety-annotated, enforced by `-Wthread-safety`). The scan decision stays serial so the sidecar is deterministic. (Runtime tsan CI is blocked by the hermetic `llvm` toolchain's sanitizer-runtime build; the `.bazelrc` `:tsan` flag is documented + commented out for when it's fixed.)
+- ✅ Parallelize scanning across actions (`--jobs`, default hardware concurrency): an `absl::Mutex`-guarded worker pool (fully thread-safety-annotated, enforced by `-Wthread-safety`). The scan decision stays serial so the sidecar is deterministic. Runtime TSan CI covers the LLVM-free targets; LLVM-linking targets remain excluded from sanitizer builds because they consume prebuilt archives.
 - ✅ **Platform/optionality decision - resolved (option b).** `scan_deps` is gated linux+macos and injected into `refresh` as a `HeaderScanner`, so the core CDB still builds everywhere and header-scanning is the enhancement; the gate propagates to the `carve` binary and e2e test.
 
 Acceptance: `carve refresh` on this repo populates `headers`; editing a header invalidates only owning actions; refresh stays idempotent; unit + e2e tests cover header population, reuse, and missing-header caching.
