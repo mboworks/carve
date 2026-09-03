@@ -6,6 +6,8 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Add Linux MemorySanitizer CI with an LLVM 22.1.8 instrumented-libc++ overlay,
+  complementing the existing ASan/LSan/UBSan and TSan jobs.
 - Enforce MBO Works C++ target naming, header ownership and guards, direct
   library-test coverage, explicit Bazel test sizes, and matcher/status
   assertion conventions with tested local pre-commit checks.
