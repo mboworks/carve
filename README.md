@@ -6,6 +6,9 @@ replacement for the
 [maintained `helly25` fork of Hedron's bazel-compile-commands-extractor](https://github.com/helly25/bazel-compile-commands-extractor).
 (Note that the original Hedron repository is no longer maintained.)
 
+[![Test](https://github.com/mboworks/carve/actions/workflows/main.yml/badge.svg)](https://github.com/mboworks/carve/actions/workflows/main.yml)
+[Coverage report](https://mboworks.github.io/carve/)
+
 ## Status
 
 Working, pre-release. All three layers are implemented and tested - Layer A
