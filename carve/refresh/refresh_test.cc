@@ -15,6 +15,7 @@
 
 #include "carve/refresh/refresh.h"
 
+#include <array>
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
@@ -41,6 +42,11 @@
 
 namespace carve::refresh {
 namespace {
+
+constexpr auto kCompileArgs = std::to_array<std::string_view>({"clang", "-c", "src/a.cc"});
+constexpr auto kCompileArgsWithOutput = std::to_array<std::string_view>(
+    {"clang", "-fno-canonical-system-headers", "-c", "src/a.cc", "-o", "bazel-out/a.o"});
+constexpr auto kRootCompileArgs = std::to_array<std::string_view>({"clang", "-c", "a.cc"});
 
 using ::mbo::proto::EqualsProto;
 using ::mbo::proto::ParseTextProtoOrDie;
@@ -91,7 +97,7 @@ analysis::Action* AddCompile(analysis::ActionGraphContainer& container, std::str
 TEST(BuildEntriesTest, MapsCompileActionToDeBazeledEntry) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : {"clang", "-fno-canonical-system-headers", "-c", "src/a.cc", "-o", "bazel-out/a.o"}) {
+  for (std::string_view arg : kCompileArgsWithOutput) {
     compile->add_arguments(std::string(arg));
   }
 
@@ -144,7 +150,7 @@ TEST(BuildEntriesTest, EmptyInputYieldsNoEntries) {
 TEST(RunRefreshTest, ReadsProtoFileAndWritesCompileCommands) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : {"clang", "-c", "src/a.cc"}) {
+  for (std::string_view arg : kCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
 
@@ -201,7 +207,7 @@ FileOptions TempRefresh(std::string_view name, const analysis::ActionGraphContai
 TEST(RunRefreshTest, UnchangedActionReusesStoredRecordWithCachedHeaders) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : {"clang", "-c", "src/a.cc"}) {
+  for (std::string_view arg : kCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
   const FileOptions options = TempRefresh("carve_incremental_reuse", container);
@@ -212,7 +218,7 @@ TEST(RunRefreshTest, UnchangedActionReusesStoredRecordWithCachedHeaders) {
   ActionRecord* seeded = seed.add_records();
   seeded->set_action_key("k1");
   seeded->add_sources("src/a.cc");
-  for (std::string_view arg : {"clang", "-c", "src/a.cc"}) {
+  for (std::string_view arg : kCompileArgs) {
     seeded->add_command(std::string(arg));
   }
   seeded->add_headers("cached.h");
@@ -229,7 +235,7 @@ TEST(RunRefreshTest, UnchangedActionReusesStoredRecordWithCachedHeaders) {
 TEST(RunRefreshTest, ChangedCommandRebuildsRecordDroppingStaleCache) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : {"clang", "-c", "src/a.cc"}) {
+  for (std::string_view arg : kCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
   const FileOptions options = TempRefresh("carve_incremental_changed", container);
@@ -251,7 +257,7 @@ TEST(RunRefreshTest, ChangedCommandRebuildsRecordDroppingStaleCache) {
   ActionRecord* rebuilt = expected.add_records();
   rebuilt->set_action_key("k1");
   rebuilt->add_sources("src/a.cc");
-  for (std::string_view arg : {"clang", "-c", "src/a.cc"}) {
+  for (std::string_view arg : kCompileArgs) {
     rebuilt->add_command(std::string(arg));
   }
   EXPECT_THAT(
@@ -262,7 +268,7 @@ TEST(RunRefreshTest, ChangedCommandRebuildsRecordDroppingStaleCache) {
 TEST(RunRefreshTest, PopulatesHeadersFromTheInjectedScanner) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : {"clang", "-c", "src/a.cc"}) {
+  for (std::string_view arg : kCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
   FileOptions options = TempRefresh("carve_scan_headers", container);
@@ -292,7 +298,7 @@ TEST(RunRefreshTest, PopulatesHeadersFromTheInjectedScanner) {
 TEST(RunRefreshTest, UnchangedActionIsNotRescanned) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : {"clang", "-c", "src/a.cc"}) {
+  for (std::string_view arg : kCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
   FileOptions options = TempRefresh("carve_scan_skip", container);
@@ -332,7 +338,7 @@ TEST(RunRefreshTest, UnchangedActionIsNotRescanned) {
 TEST(RunRefreshTest, StampsWrittenAtUsingTheInjectedClock) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : {"clang", "-c", "src/a.cc"}) {
+  for (std::string_view arg : kCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
   FileOptions options = TempRefresh("carve_written_at", container);
@@ -358,7 +364,7 @@ TEST(RunRefreshTest, StampsWrittenAtUsingTheInjectedClock) {
 TEST(RunRefreshTest, ReusedRecordIsRestampedKeepingCachedHeaders) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : {"clang", "-c", "src/a.cc"}) {
+  for (std::string_view arg : kCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
   FileOptions options = TempRefresh("carve_written_at_reuse", container);
@@ -400,7 +406,7 @@ TEST(RunRefreshTest, ReusedRecordIsRestampedKeepingCachedHeaders) {
 TEST(RunRefreshTest, WritesHeaderIndexAlongsideTheSidecar) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : {"clang", "-c", "src/a.cc"}) {
+  for (std::string_view arg : kCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
   FileOptions options = TempRefresh("carve_header_index", container);
@@ -443,7 +449,7 @@ StalenessFixture MakeStalenessFixture(std::string_view name, std::int64_t writte
 
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : {"clang", "-c", "a.cc"}) {
+  for (std::string_view arg : kRootCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
   fixture.options = FileOptions{
@@ -551,9 +557,8 @@ TEST(RunRefreshTest, SidecarHoldsNoAbsolutePathsForCrossHostDeterminism) {
 
   ASSERT_THAT(RunRefresh(fixture.options), IsOk());
 
-  const absl::StatusOr<ActionRecords> stored = sidecar::Load(fixture.options.sidecar_path);
-  ASSERT_THAT(stored, IsOk());
-  for (const ActionRecord& record : stored->records()) {
+  MBO_ASSERT_OK_AND_ASSIGN(const ActionRecords stored, sidecar::Load(fixture.options.sidecar_path));
+  for (const ActionRecord& record : stored.records()) {
     for (std::string_view source : record.sources()) {
       EXPECT_FALSE(source.starts_with("/")) << "absolute source leaked into the sidecar: " << source;
     }
@@ -590,7 +595,7 @@ TEST(RunRefreshTest, RefreshTwiceYieldsAByteIdenticalSidecar) {
 TEST(RunRefreshTest, FailedScanIsLeftUnstampedAndCounted) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : {"clang", "-c", "src/a.cc"}) {
+  for (std::string_view arg : kCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
   FileOptions options = TempRefresh("carve_unresolved", container);
@@ -621,7 +626,7 @@ TEST(RunRefreshTest, FailedScanIsLeftUnstampedAndCounted) {
 TEST(RunRefreshTest, FailedScanIsRetriedOnTheNextRefresh) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : {"clang", "-c", "src/a.cc"}) {
+  for (std::string_view arg : kCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
   FileOptions options = TempRefresh("carve_unresolved_retry", container);
@@ -662,7 +667,8 @@ TEST(RunRefreshTest, ScansActionsInParallel) {
   // concurrently and the result is deterministic regardless of thread
   // interleaving. Run under tsan in CI to exercise the worker pool.
   analysis::ActionGraphContainer container;
-  for (std::string_view key : {"k1", "k2", "k3", "k4"}) {
+  constexpr auto kActionKeys = std::to_array<std::string_view>({"k1", "k2", "k3", "k4"});
+  for (std::string_view key : kActionKeys) {
     analysis::Action* compile = AddCompile(container, key);
     compile->add_arguments("clang");
     compile->add_arguments("-c");

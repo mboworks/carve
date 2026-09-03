@@ -6,12 +6,19 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Add first-party Clang coverage reporting with a tested checked-in policy,
+  HTML and LCOV artifacts, main-branch GitHub Pages publishing, and enforcement
+  through the required CI gate; link CI and coverage from the README; update
+  the build runner to Bazel 9.2.0.
 - Add Linux MemorySanitizer CI with an LLVM 22.1.8 instrumented-libc++ overlay,
   complementing the existing ASan/LSan/UBSan and TSan jobs.
 - Document shared shell and Git/PR practices, require two-layer agent PR
   descriptions, add the Trunk configuration/security gate, and automatically
   remove obsolete GitHub Actions caches; document the matching hermetic local
   sanitizer commands.
+- Enforce MBO Works C++ target naming, header ownership and guards, direct
+  library-test coverage, explicit Bazel test sizes, and matcher/status
+  assertion conventions with tested local pre-commit checks.
 - Point the README's extractor comparison at the maintained `helly25` fork and
   call out that the original Hedron repository is unmaintained.
 - Accept Bazel's `amd64` and `arm64` host architecture names when selecting the

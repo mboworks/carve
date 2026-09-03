@@ -30,6 +30,7 @@ namespace {
 
 using ::mbo::testing::IsOkAndHolds;
 using ::mbo::testing::StatusIs;
+using ::testing::AllOf;
 using ::testing::Contains;
 using ::testing::HasSubstr;
 
@@ -47,7 +48,7 @@ TEST(ScanDependenciesTest, ReportsSourceAndIncludedHeader) {
   const std::vector<std::string> args = {"clang", "-c", (dir / "main.cc").string()};
   EXPECT_THAT(
       ScanDependencies(args, dir.string()),
-      IsOkAndHolds(testing::AllOf(Contains(HasSubstr("main.cc")), Contains(HasSubstr("dep.h")))));
+      IsOkAndHolds(AllOf(Contains(HasSubstr("main.cc")), Contains(HasSubstr("dep.h")))));
 }
 
 TEST(ScanDependenciesTest, MissingHeaderIsAnError) {

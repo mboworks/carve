@@ -8,7 +8,7 @@ package(default_visibility = ["//rules:__subpackages__"])
 # A dependency-free library: the Layer C aspect tests shard it without fanning
 # out across external deps, and scan-deps must discover `lib.h` from `lib.cc`.
 cc_library(
-    name = "lib",
+    name = "lib_cc",
     srcs = ["lib.cc"],
     hdrs = ["lib.h"],
 )
@@ -17,7 +17,7 @@ cc_library(
 # external compile actions are NOT sharded by default (exclude_external_sources):
 # only this target's own `lib.cc` should yield a shard, never abseil's int128.cc.
 cc_library(
-    name = "lib_with_external_dep",
+    name = "lib_with_external_dep_cc",
     srcs = ["lib.cc"],
     hdrs = ["lib.h"],
     deps = ["@abseil-cpp//absl/numeric:int128"],

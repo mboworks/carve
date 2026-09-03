@@ -107,10 +107,11 @@ absl::StatusOr<CommandResult> Run(absl::Span<const std::string> argv) {
     ::close(out_pipe[1]);
     return ErrnoError("pipe(stderr)");
   }
+  const std::array descriptors = {out_pipe[0], out_pipe[1], err_pipe[0], err_pipe[1]};
 
   const pid_t pid = ::fork();
   if (pid < 0) {
-    for (const int descriptor : {out_pipe[0], out_pipe[1], err_pipe[0], err_pipe[1]}) {
+    for (const int descriptor : descriptors) {
       ::close(descriptor);
     }
     return ErrnoError("fork");
@@ -120,7 +121,7 @@ absl::StatusOr<CommandResult> Run(absl::Span<const std::string> argv) {
     // Child: wire stdout/stderr to the pipes and exec.
     ::dup2(out_pipe[1], STDOUT_FILENO);
     ::dup2(err_pipe[1], STDERR_FILENO);
-    for (const int descriptor : {out_pipe[0], out_pipe[1], err_pipe[0], err_pipe[1]}) {
+    for (const int descriptor : descriptors) {
       ::close(descriptor);
     }
     std::vector<char*> c_argv;
