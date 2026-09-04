@@ -7,7 +7,7 @@ replacement for the
 (Note that the original Hedron repository is no longer maintained.)
 
 [![Test](https://github.com/mboworks/carve/actions/workflows/main.yml/badge.svg)](https://github.com/mboworks/carve/actions/workflows/main.yml)
-[Coverage report](https://mboworks.github.io/carve/)
+[Coverage report](https://mboworks.github.io/carve/coverage/)
 
 ## Status
 

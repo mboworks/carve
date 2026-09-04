@@ -32,6 +32,24 @@ class Counts:
         }
 
 
+@dataclass(frozen=True)
+class MetricPolicy:
+    minimum: float
+    target: float
+    enforce: str
+
+
+def rating(percent: float | None, policy: MetricPolicy) -> str:
+    if percent is None or percent < policy.minimum:
+        return "low"
+    return "high" if percent >= policy.target else "medium"
+
+
+def passes(percent: float | None, policy: MetricPolicy) -> bool:
+    required = policy.target if policy.enforce == "high" else policy.minimum
+    return percent is not None and percent >= required
+
+
 def repo_path(value: str) -> str | None:
     normalized = value.replace("\\", "/")
     if normalized.startswith("carve/"):

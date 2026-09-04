@@ -15,10 +15,12 @@ def summary(percent: float = 75.0) -> dict:
     metric = {"covered": 3, "total": 4, "percent": percent}
     policy = {name: 60 for name in coverage_index.METRICS}
     target = {name: 85 for name in coverage_index.METRICS}
+    enforcement = {name: "medium" for name in coverage_index.METRICS}
     return {
         "measurements": {"overall": {name: metric for name in coverage_index.METRICS}},
         "minimums": {"overall": policy},
         "targets": {"overall": target},
+        "enforcement": {"overall": enforcement},
     }
 
 
@@ -39,6 +41,10 @@ class CoverageIndexTest(unittest.TestCase):
         rendered = coverage_index.render_report(summary(), "pr/81")
         self.assertIn("Carve coverage: pr/81", rendered)
         self.assertIn("75.00%", rendered)
+        self.assertIn('<td class="status-ok">OK</td>', rendered)
+        self.assertIn("Policy vs default<sup>*</sup>", rendered)
+        self.assertIn("3</td>", rendered)
+        self.assertIn("4</td>", rendered)
         self.assertIn('href="lcov/"', rendered)
         self.assertIn('href="coverage-data.json"', rendered)
         self.assertIn('href="coverage.lcov"', rendered)
@@ -67,6 +73,7 @@ class CoverageIndexTest(unittest.TestCase):
     def test_each_global_row_links_to_report_source_commit_and_run(self):
         rendered = coverage_index._report_row(metadata("pr/81"))
         self.assertIn('href="pr/81/"', rendered)
+        self.assertIn('href="pr/81/coverage-data.json">JSON</a>', rendered)
         self.assertIn("/mboworks/carve/pull/81", rendered)
         self.assertIn("/mboworks/carve/commit/abcdef012345", rendered)
         self.assertIn("/mboworks/carve/actions/runs/42", rendered)
@@ -76,6 +83,36 @@ class CoverageIndexTest(unittest.TestCase):
         new = {**old, "source": {**old["source"], "created_at": "2026-09-04T11:00:00Z"}}
         self.assertTrue(coverage_index.is_newer(new, old))
         self.assertFalse(coverage_index.is_newer(old, new))
+
+    def test_regenerate_rebuilds_all_indexes_from_retained_json(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for target in ("main", "tag/0.1.0", "pr/83"):
+                destination = root / target
+                destination.mkdir(parents=True)
+                (destination / "coverage-summary.json").write_text(json.dumps(summary()))
+                (destination / "coverage-meta.json").write_text(
+                    json.dumps(metadata(target))
+                )
+                (destination / "coverage-data.json").write_text('{"retained": true}\n')
+                lcov = destination / "lcov"
+                lcov.mkdir()
+                (lcov / "index.html").write_text("detailed")
+                (destination / "index.html").write_text("stale")
+
+            count = coverage_index.regenerate(root)
+
+            self.assertEqual(3, count)
+            self.assertIn("Carve coverage reports", (root / "index.html").read_text())
+            self.assertIn(
+                "Policy vs default",
+                (root / "pr/83/index.html").read_text(),
+            )
+            self.assertEqual(
+                '{"retained": true}\n',
+                (root / "pr/83/coverage-data.json").read_text(),
+            )
+            self.assertEqual("detailed", (root / "pr/83/lcov/index.html").read_text())
 
 
 if __name__ == "__main__":

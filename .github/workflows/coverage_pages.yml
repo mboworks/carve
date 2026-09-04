@@ -113,7 +113,7 @@ jobs:
             mkdir -p "site/coverage/${target}"
             rsync --archive --delete report/coverage-html/ "site/coverage/${target}/"
           fi
-          python3 source/tools/coverage_index.py site site/coverage site/coverage/index.html
+          python3 source/tools/coverage_index.py regenerate site/coverage
           git -C site config user.name 'github-actions[bot]'
           git -C site config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git -C site add coverage
@@ -121,8 +121,8 @@ jobs:
             git -C site commit -m "coverage: publish ${target} from run ${SOURCE_RUN_ID}"
             git -C site push
           fi
-          mkdir -p public
-          rsync --archive site/coverage/ public/
+          mkdir -p public/coverage
+          rsync --archive --delete site/coverage/ public/coverage/
       - uses: actions/upload-pages-artifact@v5
         if: steps.target.outputs.publish == 'true'
         with:
