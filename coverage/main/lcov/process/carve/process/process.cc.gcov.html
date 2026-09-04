@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2026-09-04 23:07:06</td>
+            <td class="headerValue">2026-09-04 23:40:28</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryLo">66.7&nbsp;%</td>
@@ -136,16 +136,16 @@
 <span id="L65"><span class="lineNum">      65</span>         [<span class="tlaGBC" title="Branch 0 was taken 110 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 55 times"> + </span>]:<span class="tlaGNC tlaBgGNC">         165 :     for (std::size_t i = 0; i &lt; fds.size(); ++i) {</span></span>
 <span id="L66"><span class="lineNum">      66</span>                 :             :       // POSIX poll flags are signed int macros; the bitmask test is the idiomatic form.</span>
 <span id="L67"><span class="lineNum">      67</span>                 :             :       // NOLINTNEXTLINE(hicpp-signed-bitwise)</span>
-<span id="L68"><span class="lineNum">      68</span> [<span class="tlaGBC" title="Branch 0 was taken 12 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 98 times"> + </span>][<span class="tlaGBC" title="Branch 0 was taken 39 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 59 times"> + </span>]:<span class="tlaGNC">         110 :       if (fds[i].fd &lt; 0 || (fds[i].revents &amp; (POLLIN | POLLHUP | POLLERR)) == 0) {</span></span>
+<span id="L68"><span class="lineNum">      68</span> [<span class="tlaGBC" title="Branch 0 was taken 1 time"> + </span><span class="tlaGBC" title="Branch 1 was taken 109 times"> + </span>][<span class="tlaGBC" title="Branch 0 was taken 50 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 59 times"> + </span>]:<span class="tlaGNC">         110 :       if (fds.at(i).fd &lt; 0 || (fds.at(i).revents &amp; (POLLIN | POLLHUP | POLLERR)) == 0) {</span></span>
 <span id="L69"><span class="lineNum">      69</span>                 :<span class="tlaGNC">          51 :         continue;</span></span>
 <span id="L70"><span class="lineNum">      70</span>                 :<span class="tlaGNC">          51 :       }</span></span>
 <span id="L71"><span class="lineNum">      71</span>                 :<span class="tlaGNC">          59 :       std::array&lt;char, kReadChunkBytes&gt; buffer{};</span></span>
-<span id="L72"><span class="lineNum">      72</span>                 :<span class="tlaGNC">          59 :       const ssize_t got = ::read(fds[i].fd, buffer.data(), buffer.size());</span></span>
+<span id="L72"><span class="lineNum">      72</span>                 :<span class="tlaGNC">          59 :       const ssize_t got = ::read(fds.at(i).fd, buffer.data(), buffer.size());</span></span>
 <span id="L73"><span class="lineNum">      73</span>         [<span class="tlaGBC" title="Branch 0 was taken 51 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 8 times"> + </span>]:<span class="tlaGNC">          59 :       if (got &gt; 0) {</span></span>
-<span id="L74"><span class="lineNum">      74</span>                 :<span class="tlaGNC">          51 :         sinks[i]-&gt;append(buffer.data(), static_cast&lt;std::size_t&gt;(got));</span></span>
+<span id="L74"><span class="lineNum">      74</span>                 :<span class="tlaGNC">          51 :         sinks.at(i)-&gt;append(buffer.data(), static_cast&lt;std::size_t&gt;(got));</span></span>
 <span id="L75"><span class="lineNum">      75</span> [<span class="tlaGBC" title="Branch 0 was taken 8 times"> + </span><span class="tlaUNC" title="Branch 1 was not taken"> - </span>][<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaGNC">          51 :       } else if (got == 0 || errno != EINTR) {</span></span>
-<span id="L76"><span class="lineNum">      76</span>                 :<span class="tlaGNC">           8 :         ::close(fds[i].fd);</span></span>
-<span id="L77"><span class="lineNum">      77</span>                 :<span class="tlaGNC">           8 :         fds[i].fd = -1;</span></span>
+<span id="L76"><span class="lineNum">      76</span>                 :<span class="tlaGNC">           8 :         ::close(fds.at(i).fd);</span></span>
+<span id="L77"><span class="lineNum">      77</span>                 :<span class="tlaGNC">           8 :         fds.at(i).fd = -1;</span></span>
 <span id="L78"><span class="lineNum">      78</span>                 :<span class="tlaGNC">           8 :         --open_fds;</span></span>
 <span id="L79"><span class="lineNum">      79</span>                 :<span class="tlaGNC">           8 :       }</span></span>
 <span id="L80"><span class="lineNum">      80</span>                 :<span class="tlaGNC">          59 :     }</span></span>
@@ -174,11 +174,11 @@
 <span id="L103"><span class="lineNum">     103</span>                 :<span class="tlaUNC">           0 :   }</span></span>
 <span id="L104"><span class="lineNum">     104</span>                 :             :   // NOLINTNEXTLINE(android-cloexec-pipe)</span>
 <span id="L105"><span class="lineNum">     105</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 4 times"> + </span>]:<span class="tlaGNC tlaBgGNC">           4 :   if (::pipe(err_pipe.data()) != 0) {</span></span>
-<span id="L106"><span class="lineNum">     106</span>                 :<span class="tlaUNC tlaBgUNC">           0 :     ::close(out_pipe[0]);</span></span>
-<span id="L107"><span class="lineNum">     107</span>                 :<span class="tlaUNC">           0 :     ::close(out_pipe[1]);</span></span>
+<span id="L106"><span class="lineNum">     106</span>                 :<span class="tlaUNC tlaBgUNC">           0 :     ::close(out_pipe.at(0));</span></span>
+<span id="L107"><span class="lineNum">     107</span>                 :<span class="tlaUNC">           0 :     ::close(out_pipe.at(1));</span></span>
 <span id="L108"><span class="lineNum">     108</span>                 :<span class="tlaUNC">           0 :     return ErrnoError(&quot;pipe(stderr)&quot;);</span></span>
 <span id="L109"><span class="lineNum">     109</span>                 :<span class="tlaUNC">           0 :   }</span></span>
-<span id="L110"><span class="lineNum">     110</span>                 :<span class="tlaGNC tlaBgGNC">           4 :   const std::array descriptors = {out_pipe[0], out_pipe[1], err_pipe[0], err_pipe[1]};</span></span>
+<span id="L110"><span class="lineNum">     110</span>                 :<span class="tlaGNC tlaBgGNC">           4 :   const std::array descriptors = {out_pipe.at(0), out_pipe.at(1), err_pipe.at(0), err_pipe.at(1)};</span></span>
 <span id="L111"><span class="lineNum">     111</span>                 :             : </span>
 <span id="L112"><span class="lineNum">     112</span>                 :<span class="tlaGNC">           4 :   const pid_t pid = ::fork();</span></span>
 <span id="L113"><span class="lineNum">     113</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 4 times"> + </span>]:<span class="tlaGNC">           4 :   if (pid &lt; 0) {</span></span>
@@ -190,8 +190,8 @@
 <span id="L119"><span class="lineNum">     119</span>                 :             : </span>
 <span id="L120"><span class="lineNum">     120</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 4 times"> + </span>]:<span class="tlaGNC tlaBgGNC">           4 :   if (pid == 0) {</span></span>
 <span id="L121"><span class="lineNum">     121</span>                 :             :     // Child: wire stdout/stderr to the pipes and exec.</span>
-<span id="L122"><span class="lineNum">     122</span>                 :<span class="tlaUNC tlaBgUNC">           0 :     ::dup2(out_pipe[1], STDOUT_FILENO);</span></span>
-<span id="L123"><span class="lineNum">     123</span>                 :<span class="tlaUNC">           0 :     ::dup2(err_pipe[1], STDERR_FILENO);</span></span>
+<span id="L122"><span class="lineNum">     122</span>                 :<span class="tlaUNC tlaBgUNC">           0 :     ::dup2(out_pipe.at(1), STDOUT_FILENO);</span></span>
+<span id="L123"><span class="lineNum">     123</span>                 :<span class="tlaUNC">           0 :     ::dup2(err_pipe.at(1), STDERR_FILENO);</span></span>
 <span id="L124"><span class="lineNum">     124</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaUNC">           0 :     for (const int descriptor : descriptors) {</span></span>
 <span id="L125"><span class="lineNum">     125</span>                 :<span class="tlaUNC">           0 :       ::close(descriptor);</span></span>
 <span id="L126"><span class="lineNum">     126</span>                 :<span class="tlaUNC">           0 :     }</span></span>
@@ -203,15 +203,15 @@
 <span id="L132"><span class="lineNum">     132</span>                 :<span class="tlaUNC">           0 :       c_argv.push_back(const_cast&lt;char*&gt;(arg.c_str()));</span></span>
 <span id="L133"><span class="lineNum">     133</span>                 :<span class="tlaUNC">           0 :     }</span></span>
 <span id="L134"><span class="lineNum">     134</span>                 :<span class="tlaUNC">           0 :     c_argv.push_back(nullptr);</span></span>
-<span id="L135"><span class="lineNum">     135</span>                 :<span class="tlaUNC">           0 :     ::execvp(c_argv[0], c_argv.data());</span></span>
+<span id="L135"><span class="lineNum">     135</span>                 :<span class="tlaUNC">           0 :     ::execvp(c_argv.front(), c_argv.data());</span></span>
 <span id="L136"><span class="lineNum">     136</span>                 :<span class="tlaUNC">           0 :     ::_exit(kExecFailedExitCode);  // Reached only if exec failed (e.g. program not found).</span></span>
 <span id="L137"><span class="lineNum">     137</span>                 :<span class="tlaUNC">           0 :   }</span></span>
 <span id="L138"><span class="lineNum">     138</span>                 :             : </span>
 <span id="L139"><span class="lineNum">     139</span>                 :             :   // Parent: close write ends, drain, and reap.</span>
-<span id="L140"><span class="lineNum">     140</span>                 :<span class="tlaGNC tlaBgGNC">           4 :   ::close(out_pipe[1]);</span></span>
-<span id="L141"><span class="lineNum">     141</span>                 :<span class="tlaGNC">           4 :   ::close(err_pipe[1]);</span></span>
+<span id="L140"><span class="lineNum">     140</span>                 :<span class="tlaGNC tlaBgGNC">           4 :   ::close(out_pipe.at(1));</span></span>
+<span id="L141"><span class="lineNum">     141</span>                 :<span class="tlaGNC">           4 :   ::close(err_pipe.at(1));</span></span>
 <span id="L142"><span class="lineNum">     142</span>                 :<span class="tlaGNC">           4 :   CommandResult result;</span></span>
-<span id="L143"><span class="lineNum">     143</span>                 :<span class="tlaGNC">           4 :   DrainPipes(out_pipe[0], err_pipe[0], result);</span></span>
+<span id="L143"><span class="lineNum">     143</span>                 :<span class="tlaGNC">           4 :   DrainPipes(out_pipe.at(0), err_pipe.at(0), result);</span></span>
 <span id="L144"><span class="lineNum">     144</span>                 :             : </span>
 <span id="L145"><span class="lineNum">     145</span>                 :<span class="tlaGNC">           4 :   int status = 0;</span></span>
 <span id="L146"><span class="lineNum">     146</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 4 times"> + </span>]:<span class="tlaGNC">           4 :   while (::waitpid(pid, &amp;status, 0) &lt; 0) {</span></span>

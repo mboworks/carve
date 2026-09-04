@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2026-09-04 23:07:06</td>
+            <td class="headerValue">2026-09-04 23:40:28</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">91.7&nbsp;%</td>
@@ -126,7 +126,7 @@
 <span id="L55"><span class="lineNum">      55</span>         [<span class="tlaGBC" title="Branch 0 was taken 52 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 25 times"> + </span>]:<span class="tlaGNC">          77 :   if (dot == std::string_view::npos) {</span></span>
 <span id="L56"><span class="lineNum">      56</span>                 :<span class="tlaGNC">          52 :     return false;</span></span>
 <span id="L57"><span class="lineNum">      57</span>                 :<span class="tlaGNC">          52 :   }</span></span>
-<span id="L58"><span class="lineNum">      58</span>                 :<span class="tlaGNC">          25 :   std::string_view ext = arg.substr(dot + 1);</span></span>
+<span id="L58"><span class="lineNum">      58</span>                 :<span class="tlaGNC">          25 :   const std::string_view ext = arg.substr(dot + 1);</span></span>
 <span id="L59"><span class="lineNum">      59</span>                 :<span class="tlaGNC">          25 :   static const absl::flat_hash_set&lt;std::string_view&gt;* const kSourceExt =</span></span>
 <span id="L60"><span class="lineNum">      60</span>                 :<span class="tlaGNC">          25 :       new absl::flat_hash_set&lt;std::string_view&gt;{&quot;c&quot;, &quot;cc&quot;, &quot;cpp&quot;, &quot;cxx&quot;, &quot;c++&quot;, &quot;cu&quot;, &quot;m&quot;, &quot;mm&quot;};</span></span>
 <span id="L61"><span class="lineNum">      61</span>                 :<span class="tlaGNC">          25 :   return kSourceExt-&gt;contains(ext);</span></span>
@@ -161,7 +161,7 @@
 <span id="L90"><span class="lineNum">      90</span>                 :             : // be identified (such an action cannot form a valid compilation-database entry).</span>
 <span id="L91"><span class="lineNum">      91</span>                 :<span class="tlaGNC">          25 : std::optional&lt;ActionRecord&gt; MakeRecord(const aquery::CompileAction&amp; action, std::string_view project_id) {</span></span>
 <span id="L92"><span class="lineNum">      92</span>                 :<span class="tlaGNC">          25 :   std::vector&lt;std::string&gt; arguments = command::DeBazel(action.arguments);</span></span>
-<span id="L93"><span class="lineNum">      93</span>                 :<span class="tlaGNC">          25 :   std::string_view source = FindSource(arguments);</span></span>
+<span id="L93"><span class="lineNum">      93</span>                 :<span class="tlaGNC">          25 :   const std::string_view source = FindSource(arguments);</span></span>
 <span id="L94"><span class="lineNum">      94</span>         [<span class="tlaGBC" title="Branch 0 was taken 1 time"> + </span><span class="tlaGBC" title="Branch 1 was taken 24 times"> + </span>]:<span class="tlaGNC">          25 :   if (source.empty()) {</span></span>
 <span id="L95"><span class="lineNum">      95</span>                 :<span class="tlaGNC">           1 :     return std::nullopt;</span></span>
 <span id="L96"><span class="lineNum">      96</span>                 :<span class="tlaGNC">           1 :   }</span></span>
@@ -272,15 +272,15 @@
 <span id="L201"><span class="lineNum">     201</span>                 :<span class="tlaGNC">           4 :         }</span></span>
 <span id="L202"><span class="lineNum">     202</span>                 :<span class="tlaGNC">           1 :       }</span></span>
 <span id="L203"><span class="lineNum">     203</span>                 :<span class="tlaGNC">          10 :     }</span></span>
-<span id="L204"><span class="lineNum">     204</span>                 :<span class="tlaGNC">          18 :     absl::MutexLock lock(mu_);</span></span>
-<span id="L205"><span class="lineNum">     205</span>                 :<span class="tlaGNC">          18 :     std::sort(failed_.begin(), failed_.end());</span></span>
+<span id="L204"><span class="lineNum">     204</span>                 :<span class="tlaGNC">          18 :     const absl::MutexLock lock(mu_);</span></span>
+<span id="L205"><span class="lineNum">     205</span>                 :<span class="tlaGNC">          18 :     std::ranges::sort(failed_);</span></span>
 <span id="L206"><span class="lineNum">     206</span>                 :<span class="tlaGNC">          18 :     return failed_;</span></span>
 <span id="L207"><span class="lineNum">     207</span>                 :<span class="tlaGNC">          18 :   }</span></span>
 <span id="L208"><span class="lineNum">     208</span>                 :             : </span>
 <span id="L209"><span class="lineNum">     209</span>                 :             :  private:</span>
 <span id="L210"><span class="lineNum">     210</span>                 :             :   // Returns the next record index to scan, or nullopt once all are claimed.</span>
 <span id="L211"><span class="lineNum">     211</span>                 :<span class="tlaGNC">          26 :   std::optional&lt;std::size_t&gt; ClaimNext() ABSL_LOCKS_EXCLUDED(mu_) {</span></span>
-<span id="L212"><span class="lineNum">     212</span>                 :<span class="tlaGNC">          26 :     absl::MutexLock lock(mu_);</span></span>
+<span id="L212"><span class="lineNum">     212</span>                 :<span class="tlaGNC">          26 :     const absl::MutexLock lock(mu_);</span></span>
 <span id="L213"><span class="lineNum">     213</span>         [<span class="tlaGBC" title="Branch 0 was taken 13 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 13 times"> + </span>]:<span class="tlaGNC">          26 :     if (next_ &gt;= records_.size()) {</span></span>
 <span id="L214"><span class="lineNum">     214</span>                 :<span class="tlaGNC">          13 :       return std::nullopt;</span></span>
 <span id="L215"><span class="lineNum">     215</span>                 :<span class="tlaGNC">          13 :     }</span></span>
@@ -291,8 +291,8 @@
 <span id="L220"><span class="lineNum">     220</span>                 :<span class="tlaGNC">          13 :   void Worker() ABSL_LOCKS_EXCLUDED(mu_) {</span></span>
 <span id="L221"><span class="lineNum">     221</span>         [<span class="tlaGBC" title="Branch 0 was taken 13 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 13 times"> + </span>]:<span class="tlaGNC">          26 :     while (const std::optional&lt;std::size_t&gt; index = ClaimNext()) {</span></span>
 <span id="L222"><span class="lineNum">     222</span>                 :             :       // Sole owner of records_[*index] (see class comment): scan without the lock.</span>
-<span id="L223"><span class="lineNum">     223</span>         [<span class="tlaGBC" title="Branch 0 was taken 2 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 11 times"> + </span>]:<span class="tlaGNC">          13 :       if (!ScanHeaders(*records_[*index], directory_, scanner_)) {</span></span>
-<span id="L224"><span class="lineNum">     224</span>                 :<span class="tlaGNC">           2 :         absl::MutexLock lock(mu_);</span></span>
+<span id="L223"><span class="lineNum">     223</span>         [<span class="tlaGBC" title="Branch 0 was taken 2 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 11 times"> + </span>]:<span class="tlaGNC">          13 :       if (!ScanHeaders(*records_.at(*index), directory_, scanner_)) {</span></span>
+<span id="L224"><span class="lineNum">     224</span>                 :<span class="tlaGNC">           2 :         const absl::MutexLock lock(mu_);</span></span>
 <span id="L225"><span class="lineNum">     225</span>                 :<span class="tlaGNC">           2 :         failed_.push_back(*index);</span></span>
 <span id="L226"><span class="lineNum">     226</span>                 :<span class="tlaGNC">           2 :       }</span></span>
 <span id="L227"><span class="lineNum">     227</span>                 :<span class="tlaGNC">          13 :     }</span></span>
@@ -413,118 +413,120 @@
 <span id="L341"><span class="lineNum">     341</span>                 :<span class="tlaGNC">           5 :   return EntriesFromRecords(records, options.directory);</span></span>
 <span id="L342"><span class="lineNum">     342</span>                 :<span class="tlaGNC">           5 : }</span></span>
 <span id="L343"><span class="lineNum">     343</span>                 :             : </span>
-<span id="L344"><span class="lineNum">     344</span>                 :<span class="tlaGNC">          19 : absl::StatusOr&lt;RefreshStats&gt; RunRefresh(const FileOptions&amp; options) {</span></span>
-<span id="L345"><span class="lineNum">     345</span>                 :<span class="tlaGNC">          19 :   absl::StatusOr&lt;std::string&gt; proto;</span></span>
-<span id="L346"><span class="lineNum">     346</span>         [<span class="tlaGBC" title="Branch 0 was taken 19 times"> + </span><span class="tlaUNC" title="Branch 1 was not taken"> - </span>]:<span class="tlaGNC">          19 :   if (!options.aquery_proto_path.empty()) {</span></span>
-<span id="L347"><span class="lineNum">     347</span>                 :<span class="tlaGNC">          19 :     proto = io::ReadFile(options.aquery_proto_path);</span></span>
-<span id="L348"><span class="lineNum">     348</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaGNC">          19 :   } else if (!options.targets.empty()) {</span></span>
-<span id="L349"><span class="lineNum">     349</span>                 :<span class="tlaUNC tlaBgUNC">           0 :     proto = RunAquery(options.targets, options.bazel_path);</span></span>
-<span id="L350"><span class="lineNum">     350</span>                 :<span class="tlaUNC">           0 :   } else {</span></span>
-<span id="L351"><span class="lineNum">     351</span>                 :<span class="tlaUNC">           0 :     return absl::InvalidArgumentError(&quot;refresh needs --aquery_proto or --targets&quot;);</span></span>
-<span id="L352"><span class="lineNum">     352</span>                 :<span class="tlaUNC">           0 :   }</span></span>
-<span id="L353"><span class="lineNum">     353</span>         [<span class="tlaGBC" title="Branch 0 was taken 37 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 20 times"> + </span>]:<span class="tlaGNC tlaBgGNC">          19 :   MBO_RETURN_IF_ERROR(proto.status());  // status() so a large proto is not copied.</span></span>
-<span id="L354"><span class="lineNum">     354</span>                 :             : </span>
-<span id="L355"><span class="lineNum">     355</span>                 :             :   // Default the entry directory to the execroot so exec-relative argv resolve.</span>
-<span id="L356"><span class="lineNum">     356</span>                 :<span class="tlaGNC">          18 :   std::string directory = options.directory;</span></span>
-<span id="L357"><span class="lineNum">     357</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 18 times"> + </span>]:<span class="tlaGNC">          18 :   if (directory.empty()) {</span></span>
-<span id="L358"><span class="lineNum">     358</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaUNC tlaBgUNC">           0 :     MBO_ASSIGN_OR_RETURN(std::string execroot, BazelExecRoot(options.bazel_path));</span></span>
-<span id="L359"><span class="lineNum">     359</span>                 :<span class="tlaUNC">           0 :     directory = std::move(execroot);</span></span>
-<span id="L360"><span class="lineNum">     360</span>                 :<span class="tlaUNC">           0 :   }</span></span>
-<span id="L361"><span class="lineNum">     361</span>                 :             : </span>
-<span id="L362"><span class="lineNum">     362</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 18 times"> + </span>]:<span class="tlaGNC tlaBgGNC">          36 :   MBO_ASSIGN_OR_RETURN(ActionRecords current, BuildRecords(*proto, options.project_id));</span></span>
-<span id="L363"><span class="lineNum">     363</span>         [<span class="tlaGBC" title="Branch 0 was taken 1 time"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          36 :   if (options.xcode_resolver) {</span></span>
-<span id="L364"><span class="lineNum">     364</span>                 :<span class="tlaGNC">           1 :     ApplyXcodePlaceholders(current, options.xcode_resolver);</span></span>
-<span id="L365"><span class="lineNum">     365</span>                 :<span class="tlaGNC">           1 :   }</span></span>
-<span id="L366"><span class="lineNum">     366</span>                 :             : </span>
-<span id="L367"><span class="lineNum">     367</span>         [<span class="tlaGBC" title="Branch 0 was taken 1 time"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          36 :   if (options.sidecar_path.empty()) {</span></span>
-<span id="L368"><span class="lineNum">     368</span>                 :             :     // No cache: scan every action (when a scanner is configured).</span>
-<span id="L369"><span class="lineNum">     369</span>                 :<span class="tlaGNC">           1 :     std::vector&lt;ActionRecord*&gt; to_scan;</span></span>
-<span id="L370"><span class="lineNum">     370</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 1 time"> + </span>]:<span class="tlaGNC">           1 :     if (options.scanner) {</span></span>
-<span id="L371"><span class="lineNum">     371</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaUNC tlaBgUNC">           0 :       for (ActionRecord&amp; record : *current.mutable_records()) {</span></span>
-<span id="L372"><span class="lineNum">     372</span>                 :<span class="tlaUNC">           0 :         to_scan.push_back(&amp;record);</span></span>
-<span id="L373"><span class="lineNum">     373</span>                 :<span class="tlaUNC">           0 :       }</span></span>
-<span id="L374"><span class="lineNum">     374</span>                 :<span class="tlaUNC">           0 :     }</span></span>
-<span id="L375"><span class="lineNum">     375</span>                 :<span class="tlaGNC tlaBgGNC">           1 :     const std::vector&lt;std::size_t&gt; failed =</span></span>
-<span id="L376"><span class="lineNum">     376</span>                 :<span class="tlaGNC">           1 :         ParallelScan(to_scan, directory, options.scanner).Run(WorkerCount(options.jobs));</span></span>
-<span id="L377"><span class="lineNum">     377</span>                 :             : </span>
-<span id="L378"><span class="lineNum">     378</span>                 :<span class="tlaGNC">           1 :     const std::vector&lt;cdb::CompileCommand&gt; entries = EntriesFromRecords(current, directory);</span></span>
-<span id="L379"><span class="lineNum">     379</span>                 :<span class="tlaGNC">           1 :     RefreshStats stats;</span></span>
-<span id="L380"><span class="lineNum">     380</span>                 :<span class="tlaGNC">           1 :     stats.entries = static_cast&lt;int&gt;(entries.size());</span></span>
-<span id="L381"><span class="lineNum">     381</span>                 :<span class="tlaGNC">           1 :     stats.scanned = static_cast&lt;int&gt;(to_scan.size());</span></span>
-<span id="L382"><span class="lineNum">     382</span>                 :<span class="tlaGNC">           1 :     stats.unresolved = static_cast&lt;int&gt;(failed.size());</span></span>
-<span id="L383"><span class="lineNum">     383</span>         [<span class="tlaGBC" title="Branch 0 was taken 2 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 1 time"> + </span>]:<span class="tlaGNC">           1 :     MBO_RETURN_IF_ERROR(cdb::Write(options.output_path, entries));</span></span>
-<span id="L384"><span class="lineNum">     384</span>                 :<span class="tlaGNC">           1 :     return stats;</span></span>
-<span id="L385"><span class="lineNum">     385</span>                 :<span class="tlaGNC">           1 :   }</span></span>
-<span id="L386"><span class="lineNum">     386</span>                 :             : </span>
-<span id="L387"><span class="lineNum">     387</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          36 :   MBO_ASSIGN_OR_RETURN(const ActionRecords stored, sidecar::Load(options.sidecar_path));</span></span>
+<span id="L344"><span class="lineNum">     344</span>                 :             : // Status-propagation macros inflate clang-tidy's measured complexity here.</span>
+<span id="L345"><span class="lineNum">     345</span>                 :             : // NOLINTNEXTLINE(readability-function-cognitive-complexity)</span>
+<span id="L346"><span class="lineNum">     346</span>                 :<span class="tlaGNC">          19 : absl::StatusOr&lt;RefreshStats&gt; RunRefresh(const FileOptions&amp; options) {</span></span>
+<span id="L347"><span class="lineNum">     347</span>                 :<span class="tlaGNC">          19 :   absl::StatusOr&lt;std::string&gt; proto;</span></span>
+<span id="L348"><span class="lineNum">     348</span>         [<span class="tlaGBC" title="Branch 0 was taken 19 times"> + </span><span class="tlaUNC" title="Branch 1 was not taken"> - </span>]:<span class="tlaGNC">          19 :   if (!options.aquery_proto_path.empty()) {</span></span>
+<span id="L349"><span class="lineNum">     349</span>                 :<span class="tlaGNC">          19 :     proto = io::ReadFile(options.aquery_proto_path);</span></span>
+<span id="L350"><span class="lineNum">     350</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaGNC">          19 :   } else if (!options.targets.empty()) {</span></span>
+<span id="L351"><span class="lineNum">     351</span>                 :<span class="tlaUNC tlaBgUNC">           0 :     proto = RunAquery(options.targets, options.bazel_path);</span></span>
+<span id="L352"><span class="lineNum">     352</span>                 :<span class="tlaUNC">           0 :   } else {</span></span>
+<span id="L353"><span class="lineNum">     353</span>                 :<span class="tlaUNC">           0 :     return absl::InvalidArgumentError(&quot;refresh needs --aquery_proto or --targets&quot;);</span></span>
+<span id="L354"><span class="lineNum">     354</span>                 :<span class="tlaUNC">           0 :   }</span></span>
+<span id="L355"><span class="lineNum">     355</span>         [<span class="tlaGBC" title="Branch 0 was taken 37 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 20 times"> + </span>]:<span class="tlaGNC tlaBgGNC">          19 :   MBO_RETURN_IF_ERROR(proto.status());  // status() so a large proto is not copied.</span></span>
+<span id="L356"><span class="lineNum">     356</span>                 :             : </span>
+<span id="L357"><span class="lineNum">     357</span>                 :             :   // Default the entry directory to the execroot so exec-relative argv resolve.</span>
+<span id="L358"><span class="lineNum">     358</span>                 :<span class="tlaGNC">          18 :   std::string directory = options.directory;</span></span>
+<span id="L359"><span class="lineNum">     359</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 18 times"> + </span>]:<span class="tlaGNC">          18 :   if (directory.empty()) {</span></span>
+<span id="L360"><span class="lineNum">     360</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaUNC tlaBgUNC">           0 :     MBO_ASSIGN_OR_RETURN(std::string execroot, BazelExecRoot(options.bazel_path));</span></span>
+<span id="L361"><span class="lineNum">     361</span>                 :<span class="tlaUNC">           0 :     directory = std::move(execroot);</span></span>
+<span id="L362"><span class="lineNum">     362</span>                 :<span class="tlaUNC">           0 :   }</span></span>
+<span id="L363"><span class="lineNum">     363</span>                 :             : </span>
+<span id="L364"><span class="lineNum">     364</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 18 times"> + </span>]:<span class="tlaGNC tlaBgGNC">          36 :   MBO_ASSIGN_OR_RETURN(ActionRecords current, BuildRecords(*proto, options.project_id));</span></span>
+<span id="L365"><span class="lineNum">     365</span>         [<span class="tlaGBC" title="Branch 0 was taken 1 time"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          36 :   if (options.xcode_resolver) {</span></span>
+<span id="L366"><span class="lineNum">     366</span>                 :<span class="tlaGNC">           1 :     ApplyXcodePlaceholders(current, options.xcode_resolver);</span></span>
+<span id="L367"><span class="lineNum">     367</span>                 :<span class="tlaGNC">           1 :   }</span></span>
+<span id="L368"><span class="lineNum">     368</span>                 :             : </span>
+<span id="L369"><span class="lineNum">     369</span>         [<span class="tlaGBC" title="Branch 0 was taken 1 time"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          36 :   if (options.sidecar_path.empty()) {</span></span>
+<span id="L370"><span class="lineNum">     370</span>                 :             :     // No cache: scan every action (when a scanner is configured).</span>
+<span id="L371"><span class="lineNum">     371</span>                 :<span class="tlaGNC">           1 :     std::vector&lt;ActionRecord*&gt; to_scan;</span></span>
+<span id="L372"><span class="lineNum">     372</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 1 time"> + </span>]:<span class="tlaGNC">           1 :     if (options.scanner) {</span></span>
+<span id="L373"><span class="lineNum">     373</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaUNC tlaBgUNC">           0 :       for (ActionRecord&amp; record : *current.mutable_records()) {</span></span>
+<span id="L374"><span class="lineNum">     374</span>                 :<span class="tlaUNC">           0 :         to_scan.push_back(&amp;record);</span></span>
+<span id="L375"><span class="lineNum">     375</span>                 :<span class="tlaUNC">           0 :       }</span></span>
+<span id="L376"><span class="lineNum">     376</span>                 :<span class="tlaUNC">           0 :     }</span></span>
+<span id="L377"><span class="lineNum">     377</span>                 :<span class="tlaGNC tlaBgGNC">           1 :     const std::vector&lt;std::size_t&gt; failed =</span></span>
+<span id="L378"><span class="lineNum">     378</span>                 :<span class="tlaGNC">           1 :         ParallelScan(to_scan, directory, options.scanner).Run(WorkerCount(options.jobs));</span></span>
+<span id="L379"><span class="lineNum">     379</span>                 :             : </span>
+<span id="L380"><span class="lineNum">     380</span>                 :<span class="tlaGNC">           1 :     const std::vector&lt;cdb::CompileCommand&gt; entries = EntriesFromRecords(current, directory);</span></span>
+<span id="L381"><span class="lineNum">     381</span>                 :<span class="tlaGNC">           1 :     RefreshStats stats;</span></span>
+<span id="L382"><span class="lineNum">     382</span>                 :<span class="tlaGNC">           1 :     stats.entries = static_cast&lt;int&gt;(entries.size());</span></span>
+<span id="L383"><span class="lineNum">     383</span>                 :<span class="tlaGNC">           1 :     stats.scanned = static_cast&lt;int&gt;(to_scan.size());</span></span>
+<span id="L384"><span class="lineNum">     384</span>                 :<span class="tlaGNC">           1 :     stats.unresolved = static_cast&lt;int&gt;(failed.size());</span></span>
+<span id="L385"><span class="lineNum">     385</span>         [<span class="tlaGBC" title="Branch 0 was taken 2 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 1 time"> + </span>]:<span class="tlaGNC">           1 :     MBO_RETURN_IF_ERROR(cdb::Write(options.output_path, entries));</span></span>
+<span id="L386"><span class="lineNum">     386</span>                 :<span class="tlaGNC">           1 :     return stats;</span></span>
+<span id="L387"><span class="lineNum">     387</span>                 :<span class="tlaGNC">           1 :   }</span></span>
 <span id="L388"><span class="lineNum">     388</span>                 :             : </span>
-<span id="L389"><span class="lineNum">     389</span>                 :             :   // Decide serially which actions need a (re)scan: added/changed actions, plus</span>
-<span id="L390"><span class="lineNum">     390</span>                 :             :   // unchanged actions whose cached headers (or source) were edited on disk since</span>
-<span id="L391"><span class="lineNum">     391</span>                 :             :   // the scan was recorded. Truly unchanged actions reuse the stored record's</span>
-<span id="L392"><span class="lineNum">     392</span>                 :             :   // cached headers via MergeRecords below - the incremental-refresh win.</span>
-<span id="L393"><span class="lineNum">     393</span>                 :<span class="tlaGNC">          34 :   std::vector&lt;ActionRecord*&gt; to_scan;</span></span>
-<span id="L394"><span class="lineNum">     394</span>         [<span class="tlaGBC" title="Branch 0 was taken 12 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 5 times"> + </span>]:<span class="tlaGNC">          34 :   if (options.scanner) {</span></span>
-<span id="L395"><span class="lineNum">     395</span>         [<span class="tlaGBC" title="Branch 0 was taken 15 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 12 times"> + </span>]:<span class="tlaGNC">          15 :     for (ActionRecord&amp; record : *current.mutable_records()) {</span></span>
-<span id="L396"><span class="lineNum">     396</span>                 :<span class="tlaGNC">          15 :       const ActionRecord* reusable = sidecar::FindReusableRecord(stored, record, options.project_id);</span></span>
-<span id="L397"><span class="lineNum">     397</span> [<span class="tlaGBC" title="Branch 0 was taken 8 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 7 times"> + </span>][<span class="tlaGBC" title="Branch 0 was taken 5 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 2 times"> + </span>]:<span class="tlaGNC">          15 :       if (reusable == nullptr || CachedScanIsStale(*reusable, directory)) {</span></span>
-<span id="L398"><span class="lineNum">     398</span>                 :<span class="tlaGNC">          13 :         to_scan.push_back(&amp;record);</span></span>
-<span id="L399"><span class="lineNum">     399</span>                 :<span class="tlaGNC">          13 :       }</span></span>
-<span id="L400"><span class="lineNum">     400</span>                 :<span class="tlaGNC">          15 :     }</span></span>
-<span id="L401"><span class="lineNum">     401</span>                 :<span class="tlaGNC">          12 :   }</span></span>
-<span id="L402"><span class="lineNum">     402</span>                 :             : </span>
-<span id="L403"><span class="lineNum">     403</span>                 :             :   // Scan them in parallel, then build the key sets serially. `rescanned` records</span>
-<span id="L404"><span class="lineNum">     404</span>                 :             :   // which keys carry a fresh scan so the merge prefers the current record over</span>
-<span id="L405"><span class="lineNum">     405</span>                 :             :   // the stale cache; `unresolved` records which scans failed.</span>
-<span id="L406"><span class="lineNum">     406</span>                 :<span class="tlaGNC">          34 :   const std::vector&lt;std::size_t&gt; failed =</span></span>
-<span id="L407"><span class="lineNum">     407</span>                 :<span class="tlaGNC">          34 :       ParallelScan(to_scan, directory, options.scanner).Run(WorkerCount(options.jobs));</span></span>
-<span id="L408"><span class="lineNum">     408</span>                 :<span class="tlaGNC">          34 :   absl::flat_hash_set&lt;std::string_view&gt; rescanned;</span></span>
-<span id="L409"><span class="lineNum">     409</span>         [<span class="tlaGBC" title="Branch 0 was taken 13 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          34 :   for (const ActionRecord* record : to_scan) {</span></span>
-<span id="L410"><span class="lineNum">     410</span>                 :<span class="tlaGNC">          13 :     rescanned.insert(record-&gt;action_key());</span></span>
-<span id="L411"><span class="lineNum">     411</span>                 :<span class="tlaGNC">          13 :   }</span></span>
-<span id="L412"><span class="lineNum">     412</span>                 :<span class="tlaGNC">          34 :   absl::flat_hash_set&lt;std::string_view&gt; unresolved;</span></span>
-<span id="L413"><span class="lineNum">     413</span>         [<span class="tlaGBC" title="Branch 0 was taken 2 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          34 :   for (const std::size_t index : failed) {</span></span>
-<span id="L414"><span class="lineNum">     414</span>                 :<span class="tlaGNC">           2 :     unresolved.insert(to_scan[index]-&gt;action_key());</span></span>
-<span id="L415"><span class="lineNum">     415</span>                 :<span class="tlaGNC">           2 :   }</span></span>
-<span id="L416"><span class="lineNum">     416</span>                 :             : </span>
-<span id="L417"><span class="lineNum">     417</span>                 :<span class="tlaGNC">          34 :   ActionRecords merged = sidecar::MergeRecords(stored, current, options.project_id, rescanned);</span></span>
+<span id="L389"><span class="lineNum">     389</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          36 :   MBO_ASSIGN_OR_RETURN(const ActionRecords stored, sidecar::Load(options.sidecar_path));</span></span>
+<span id="L390"><span class="lineNum">     390</span>                 :             : </span>
+<span id="L391"><span class="lineNum">     391</span>                 :             :   // Decide serially which actions need a (re)scan: added/changed actions, plus</span>
+<span id="L392"><span class="lineNum">     392</span>                 :             :   // unchanged actions whose cached headers (or source) were edited on disk since</span>
+<span id="L393"><span class="lineNum">     393</span>                 :             :   // the scan was recorded. Truly unchanged actions reuse the stored record's</span>
+<span id="L394"><span class="lineNum">     394</span>                 :             :   // cached headers via MergeRecords below - the incremental-refresh win.</span>
+<span id="L395"><span class="lineNum">     395</span>                 :<span class="tlaGNC">          34 :   std::vector&lt;ActionRecord*&gt; to_scan;</span></span>
+<span id="L396"><span class="lineNum">     396</span>         [<span class="tlaGBC" title="Branch 0 was taken 12 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 5 times"> + </span>]:<span class="tlaGNC">          34 :   if (options.scanner) {</span></span>
+<span id="L397"><span class="lineNum">     397</span>         [<span class="tlaGBC" title="Branch 0 was taken 15 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 12 times"> + </span>]:<span class="tlaGNC">          15 :     for (ActionRecord&amp; record : *current.mutable_records()) {</span></span>
+<span id="L398"><span class="lineNum">     398</span>                 :<span class="tlaGNC">          15 :       const ActionRecord* reusable = sidecar::FindReusableRecord(stored, record, options.project_id);</span></span>
+<span id="L399"><span class="lineNum">     399</span> [<span class="tlaGBC" title="Branch 0 was taken 8 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 7 times"> + </span>][<span class="tlaGBC" title="Branch 0 was taken 5 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 2 times"> + </span>]:<span class="tlaGNC">          15 :       if (reusable == nullptr || CachedScanIsStale(*reusable, directory)) {</span></span>
+<span id="L400"><span class="lineNum">     400</span>                 :<span class="tlaGNC">          13 :         to_scan.push_back(&amp;record);</span></span>
+<span id="L401"><span class="lineNum">     401</span>                 :<span class="tlaGNC">          13 :       }</span></span>
+<span id="L402"><span class="lineNum">     402</span>                 :<span class="tlaGNC">          15 :     }</span></span>
+<span id="L403"><span class="lineNum">     403</span>                 :<span class="tlaGNC">          12 :   }</span></span>
+<span id="L404"><span class="lineNum">     404</span>                 :             : </span>
+<span id="L405"><span class="lineNum">     405</span>                 :             :   // Scan them in parallel, then build the key sets serially. `rescanned` records</span>
+<span id="L406"><span class="lineNum">     406</span>                 :             :   // which keys carry a fresh scan so the merge prefers the current record over</span>
+<span id="L407"><span class="lineNum">     407</span>                 :             :   // the stale cache; `unresolved` records which scans failed.</span>
+<span id="L408"><span class="lineNum">     408</span>                 :<span class="tlaGNC">          34 :   const std::vector&lt;std::size_t&gt; failed =</span></span>
+<span id="L409"><span class="lineNum">     409</span>                 :<span class="tlaGNC">          34 :       ParallelScan(to_scan, directory, options.scanner).Run(WorkerCount(options.jobs));</span></span>
+<span id="L410"><span class="lineNum">     410</span>                 :<span class="tlaGNC">          34 :   absl::flat_hash_set&lt;std::string_view&gt; rescanned;</span></span>
+<span id="L411"><span class="lineNum">     411</span>         [<span class="tlaGBC" title="Branch 0 was taken 13 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          34 :   for (const ActionRecord* record : to_scan) {</span></span>
+<span id="L412"><span class="lineNum">     412</span>                 :<span class="tlaGNC">          13 :     rescanned.insert(record-&gt;action_key());</span></span>
+<span id="L413"><span class="lineNum">     413</span>                 :<span class="tlaGNC">          13 :   }</span></span>
+<span id="L414"><span class="lineNum">     414</span>                 :<span class="tlaGNC">          34 :   absl::flat_hash_set&lt;std::string_view&gt; unresolved;</span></span>
+<span id="L415"><span class="lineNum">     415</span>         [<span class="tlaGBC" title="Branch 0 was taken 2 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          34 :   for (const std::size_t index : failed) {</span></span>
+<span id="L416"><span class="lineNum">     416</span>                 :<span class="tlaGNC">           2 :     unresolved.insert(to_scan.at(index)-&gt;action_key());</span></span>
+<span id="L417"><span class="lineNum">     417</span>                 :<span class="tlaGNC">           2 :   }</span></span>
 <span id="L418"><span class="lineNum">     418</span>                 :             : </span>
-<span id="L419"><span class="lineNum">     419</span>                 :             :   // Stamp written_at on the rows this refresh owns - added, changed, and reused</span>
-<span id="L420"><span class="lineNum">     420</span>                 :             :   // alike - so prune can GC projects that have stopped refreshing. Other</span>
-<span id="L421"><span class="lineNum">     421</span>                 :             :   // projects' rows keep their own timestamps. An action whose scan did not fully</span>
-<span id="L422"><span class="lineNum">     422</span>                 :             :   // resolve is left UNstamped (written_at stays unset, which reads as 0 = stale)</span>
-<span id="L423"><span class="lineNum">     423</span>                 :             :   // so the next refresh re-scans it rather than caching an incomplete header set</span>
-<span id="L424"><span class="lineNum">     424</span>                 :             :   // (CARVE_DESIGN.md sections 4.2, 4.4).</span>
-<span id="L425"><span class="lineNum">     425</span>         [<span class="tlaGBC" title="Branch 0 was taken 7 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 10 times"> + </span>]:<span class="tlaGNC">          34 :   if (options.now) {</span></span>
-<span id="L426"><span class="lineNum">     426</span>                 :<span class="tlaGNC">           7 :     const std::int64_t stamp = options.now();</span></span>
-<span id="L427"><span class="lineNum">     427</span>         [<span class="tlaGBC" title="Branch 0 was taken 7 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 7 times"> + </span>]:<span class="tlaGNC">           7 :     for (ActionRecord&amp; record : *merged.mutable_records()) {</span></span>
-<span id="L428"><span class="lineNum">     428</span> [<span class="tlaGBC" title="Branch 0 was taken 12 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 2 times"> + </span>][<span class="tlaGBC" title="Branch 0 was taken 5 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 2 times"> + </span>]:<span class="tlaGNC">           7 :       if (record.project_id() == options.project_id &amp;&amp; !unresolved.contains(record.action_key())) {</span></span>
-<span id="L429"><span class="lineNum">     429</span>                 :<span class="tlaGNC">           5 :         record.set_written_at(stamp);</span></span>
-<span id="L430"><span class="lineNum">     430</span>                 :<span class="tlaGNC">           5 :       }</span></span>
-<span id="L431"><span class="lineNum">     431</span>                 :<span class="tlaGNC">           7 :     }</span></span>
-<span id="L432"><span class="lineNum">     432</span>                 :<span class="tlaGNC">           7 :   }</span></span>
-<span id="L433"><span class="lineNum">     433</span>                 :             : </span>
-<span id="L434"><span class="lineNum">     434</span>         [<span class="tlaGBC" title="Branch 0 was taken 34 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          34 :   MBO_RETURN_IF_ERROR(sidecar::Save(options.sidecar_path, merged));</span></span>
+<span id="L419"><span class="lineNum">     419</span>                 :<span class="tlaGNC">          34 :   ActionRecords merged = sidecar::MergeRecords(stored, current, options.project_id, rescanned);</span></span>
+<span id="L420"><span class="lineNum">     420</span>                 :             : </span>
+<span id="L421"><span class="lineNum">     421</span>                 :             :   // Stamp written_at on the rows this refresh owns - added, changed, and reused</span>
+<span id="L422"><span class="lineNum">     422</span>                 :             :   // alike - so prune can GC projects that have stopped refreshing. Other</span>
+<span id="L423"><span class="lineNum">     423</span>                 :             :   // projects' rows keep their own timestamps. An action whose scan did not fully</span>
+<span id="L424"><span class="lineNum">     424</span>                 :             :   // resolve is left UNstamped (written_at stays unset, which reads as 0 = stale)</span>
+<span id="L425"><span class="lineNum">     425</span>                 :             :   // so the next refresh re-scans it rather than caching an incomplete header set</span>
+<span id="L426"><span class="lineNum">     426</span>                 :             :   // (CARVE_DESIGN.md sections 4.2, 4.4).</span>
+<span id="L427"><span class="lineNum">     427</span>         [<span class="tlaGBC" title="Branch 0 was taken 7 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 10 times"> + </span>]:<span class="tlaGNC">          34 :   if (options.now) {</span></span>
+<span id="L428"><span class="lineNum">     428</span>                 :<span class="tlaGNC">           7 :     const std::int64_t stamp = options.now();</span></span>
+<span id="L429"><span class="lineNum">     429</span>         [<span class="tlaGBC" title="Branch 0 was taken 7 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 7 times"> + </span>]:<span class="tlaGNC">           7 :     for (ActionRecord&amp; record : *merged.mutable_records()) {</span></span>
+<span id="L430"><span class="lineNum">     430</span> [<span class="tlaGBC" title="Branch 0 was taken 12 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 2 times"> + </span>][<span class="tlaGBC" title="Branch 0 was taken 5 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 2 times"> + </span>]:<span class="tlaGNC">           7 :       if (record.project_id() == options.project_id &amp;&amp; !unresolved.contains(record.action_key())) {</span></span>
+<span id="L431"><span class="lineNum">     431</span>                 :<span class="tlaGNC">           5 :         record.set_written_at(stamp);</span></span>
+<span id="L432"><span class="lineNum">     432</span>                 :<span class="tlaGNC">           5 :       }</span></span>
+<span id="L433"><span class="lineNum">     433</span>                 :<span class="tlaGNC">           7 :     }</span></span>
+<span id="L434"><span class="lineNum">     434</span>                 :<span class="tlaGNC">           7 :   }</span></span>
 <span id="L435"><span class="lineNum">     435</span>                 :             : </span>
-<span id="L436"><span class="lineNum">     436</span>                 :             :   // Persist the header -&gt; owning-action index alongside the entries sidecar</span>
-<span id="L437"><span class="lineNum">     437</span>                 :             :   // (the design's second cache file). It is a deterministic projection of the</span>
-<span id="L438"><span class="lineNum">     438</span>                 :             :   // merged records, so it is rebuilt from scratch each refresh - the reverse</span>
-<span id="L439"><span class="lineNum">     439</span>                 :             :   // lookup that maps an edited header to the action(s) to re-scan. See</span>
-<span id="L440"><span class="lineNum">     440</span>                 :             :   // CARVE_DESIGN.md sections 4.4-4.5.</span>
-<span id="L441"><span class="lineNum">     441</span>                 :<span class="tlaGNC">          17 :   const std::filesystem::path index_path =</span></span>
-<span id="L442"><span class="lineNum">     442</span>                 :<span class="tlaGNC">          17 :       std::filesystem::path(options.sidecar_path).parent_path() / &quot;headers-index.binpb&quot;;</span></span>
-<span id="L443"><span class="lineNum">     443</span>         [<span class="tlaGBC" title="Branch 0 was taken 34 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          17 :   MBO_RETURN_IF_ERROR(sidecar::SaveHeaderIndex(index_path, sidecar::BuildHeaderIndex(merged)));</span></span>
-<span id="L444"><span class="lineNum">     444</span>                 :             : </span>
-<span id="L445"><span class="lineNum">     445</span>                 :<span class="tlaGNC">          17 :   const std::vector&lt;cdb::CompileCommand&gt; entries = EntriesFromRecords(merged, directory);</span></span>
-<span id="L446"><span class="lineNum">     446</span>                 :<span class="tlaGNC">          17 :   RefreshStats stats;</span></span>
-<span id="L447"><span class="lineNum">     447</span>                 :<span class="tlaGNC">          17 :   stats.entries = static_cast&lt;int&gt;(entries.size());</span></span>
-<span id="L448"><span class="lineNum">     448</span>                 :<span class="tlaGNC">          17 :   stats.scanned = static_cast&lt;int&gt;(rescanned.size());</span></span>
-<span id="L449"><span class="lineNum">     449</span>                 :<span class="tlaGNC">          17 :   stats.unresolved = static_cast&lt;int&gt;(unresolved.size());</span></span>
-<span id="L450"><span class="lineNum">     450</span>                 :<span class="tlaGNC">          17 :   stats.reused = current.records_size() - stats.scanned;  // Own-project actions not rescanned.</span></span>
-<span id="L451"><span class="lineNum">     451</span>         [<span class="tlaGBC" title="Branch 0 was taken 34 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          17 :   MBO_RETURN_IF_ERROR(cdb::Write(options.output_path, entries));</span></span>
-<span id="L452"><span class="lineNum">     452</span>                 :<span class="tlaGNC">          17 :   return stats;</span></span>
-<span id="L453"><span class="lineNum">     453</span>                 :<span class="tlaGNC">          17 : }</span></span>
-<span id="L454"><span class="lineNum">     454</span>                 :             : </span>
-<span id="L455"><span class="lineNum">     455</span>                 :             : }  // namespace carve::refresh</span>
+<span id="L436"><span class="lineNum">     436</span>         [<span class="tlaGBC" title="Branch 0 was taken 34 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          34 :   MBO_RETURN_IF_ERROR(sidecar::Save(options.sidecar_path, merged));</span></span>
+<span id="L437"><span class="lineNum">     437</span>                 :             : </span>
+<span id="L438"><span class="lineNum">     438</span>                 :             :   // Persist the header -&gt; owning-action index alongside the entries sidecar</span>
+<span id="L439"><span class="lineNum">     439</span>                 :             :   // (the design's second cache file). It is a deterministic projection of the</span>
+<span id="L440"><span class="lineNum">     440</span>                 :             :   // merged records, so it is rebuilt from scratch each refresh - the reverse</span>
+<span id="L441"><span class="lineNum">     441</span>                 :             :   // lookup that maps an edited header to the action(s) to re-scan. See</span>
+<span id="L442"><span class="lineNum">     442</span>                 :             :   // CARVE_DESIGN.md sections 4.4-4.5.</span>
+<span id="L443"><span class="lineNum">     443</span>                 :<span class="tlaGNC">          17 :   const std::filesystem::path index_path =</span></span>
+<span id="L444"><span class="lineNum">     444</span>                 :<span class="tlaGNC">          17 :       std::filesystem::path(options.sidecar_path).parent_path() / &quot;headers-index.binpb&quot;;</span></span>
+<span id="L445"><span class="lineNum">     445</span>         [<span class="tlaGBC" title="Branch 0 was taken 34 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          17 :   MBO_RETURN_IF_ERROR(sidecar::SaveHeaderIndex(index_path, sidecar::BuildHeaderIndex(merged)));</span></span>
+<span id="L446"><span class="lineNum">     446</span>                 :             : </span>
+<span id="L447"><span class="lineNum">     447</span>                 :<span class="tlaGNC">          17 :   const std::vector&lt;cdb::CompileCommand&gt; entries = EntriesFromRecords(merged, directory);</span></span>
+<span id="L448"><span class="lineNum">     448</span>                 :<span class="tlaGNC">          17 :   RefreshStats stats;</span></span>
+<span id="L449"><span class="lineNum">     449</span>                 :<span class="tlaGNC">          17 :   stats.entries = static_cast&lt;int&gt;(entries.size());</span></span>
+<span id="L450"><span class="lineNum">     450</span>                 :<span class="tlaGNC">          17 :   stats.scanned = static_cast&lt;int&gt;(rescanned.size());</span></span>
+<span id="L451"><span class="lineNum">     451</span>                 :<span class="tlaGNC">          17 :   stats.unresolved = static_cast&lt;int&gt;(unresolved.size());</span></span>
+<span id="L452"><span class="lineNum">     452</span>                 :<span class="tlaGNC">          17 :   stats.reused = current.records_size() - stats.scanned;  // Own-project actions not rescanned.</span></span>
+<span id="L453"><span class="lineNum">     453</span>         [<span class="tlaGBC" title="Branch 0 was taken 34 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          17 :   MBO_RETURN_IF_ERROR(cdb::Write(options.output_path, entries));</span></span>
+<span id="L454"><span class="lineNum">     454</span>                 :<span class="tlaGNC">          17 :   return stats;</span></span>
+<span id="L455"><span class="lineNum">     455</span>                 :<span class="tlaGNC">          17 : }</span></span>
+<span id="L456"><span class="lineNum">     456</span>                 :             : </span>
+<span id="L457"><span class="lineNum">     457</span>                 :             : }  // namespace carve::refresh</span>
         </pre>
               </td>
             </tr>

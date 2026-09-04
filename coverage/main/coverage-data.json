@@ -107,36 +107,28 @@
           "execution_count": 11
         },
         {
-          "line": 64,
+          "line": 66,
           "execution_count": 10
         },
         {
-          "line": 65,
-          "execution_count": 5
-        },
-        {
-          "line": 66,
-          "execution_count": 1
-        },
-        {
           "line": 67,
-          "execution_count": 1
+          "execution_count": 5
         },
         {
           "line": 68,
-          "execution_count": 4
+          "execution_count": 1
         },
         {
           "line": 69,
-          "execution_count": 5
+          "execution_count": 1
         },
         {
           "line": 70,
-          "execution_count": 11
+          "execution_count": 4
         },
         {
           "line": 71,
-          "execution_count": 11
+          "execution_count": 5
         },
         {
           "line": 72,
@@ -144,19 +136,19 @@
         },
         {
           "line": 73,
-          "execution_count": 10
+          "execution_count": 11
         },
         {
           "line": 74,
+          "execution_count": 11
+        },
+        {
+          "line": 75,
           "execution_count": 10
         },
         {
-          "line": 79,
-          "execution_count": 4
-        },
-        {
-          "line": 80,
-          "execution_count": 4
+          "line": 76,
+          "execution_count": 10
         },
         {
           "line": 81,
@@ -164,11 +156,11 @@
         },
         {
           "line": 82,
-          "execution_count": 6
+          "execution_count": 4
         },
         {
           "line": 83,
-          "execution_count": 6
+          "execution_count": 4
         },
         {
           "line": 84,
@@ -179,23 +171,23 @@
           "execution_count": 6
         },
         {
-          "line": 87,
-          "execution_count": 4
+          "line": 86,
+          "execution_count": 6
         },
         {
-          "line": 88,
-          "execution_count": 4
+          "line": 87,
+          "execution_count": 6
         },
         {
           "line": 89,
           "execution_count": 4
         },
         {
-          "line": 99,
+          "line": 90,
           "execution_count": 4
         },
         {
-          "line": 100,
+          "line": 91,
           "execution_count": 4
         },
         {
@@ -205,12 +197,20 @@
         {
           "line": 102,
           "execution_count": 4
+        },
+        {
+          "line": 103,
+          "execution_count": 4
+        },
+        {
+          "line": 104,
+          "execution_count": 4
         }
       ],
       "functions": [
         {
           "name": "_ZN5carve9aggregate12RunAggregateEN4absl12lts_202608174SpanIKNSt10filesystem7__cxx114pathEEERS7_St17basic_string_viewIcSt11char_traitsIcEE",
-          "start_line": 79,
+          "start_line": 81,
           "execution_count": 4
         },
         {
@@ -220,7 +220,7 @@
         },
         {
           "name": "aggregate.cc:_ZZN5carve9aggregate7CombineEN4absl12lts_202608174SpanIKNS_13ActionRecordsEEEENK3$_0clEPKNS_12ActionRecordESA_",
-          "start_line": 64,
+          "start_line": 66,
           "execution_count": 5
         }
       ],
@@ -310,73 +310,73 @@
           "taken": 10
         },
         {
-          "line": 65,
+          "line": 67,
           "block": "0",
           "branch": "0",
           "taken": 1
         },
         {
-          "line": 65,
+          "line": 67,
           "block": "0",
           "branch": "1",
           "taken": 4
         },
         {
-          "line": 70,
+          "line": 72,
           "block": "0",
           "branch": "0",
           "taken": 11
         },
         {
-          "line": 70,
+          "line": 72,
           "block": "0",
           "branch": "1",
           "taken": 10
         },
         {
-          "line": 82,
+          "line": 84,
           "block": "0",
           "branch": "0",
           "taken": 6
         },
         {
-          "line": 82,
+          "line": 84,
           "block": "0",
           "branch": "1",
           "taken": 4
         },
         {
-          "line": 83,
+          "line": 85,
           "block": "0",
           "branch": "0",
           "taken": 0
         },
         {
-          "line": 83,
+          "line": 85,
           "block": "0",
           "branch": "1",
           "taken": 6
         },
         {
-          "line": 89,
+          "line": 91,
           "block": "0",
           "branch": "0",
           "taken": 8
         },
         {
-          "line": 89,
+          "line": 91,
           "block": "0",
           "branch": "1",
           "taken": 4
         },
         {
-          "line": 100,
+          "line": 102,
           "block": "0",
           "branch": "0",
           "taken": 8
         },
         {
-          "line": 100,
+          "line": 102,
           "block": "0",
           "branch": "1",
           "taken": 4
@@ -392,10 +392,6 @@
     {
       "path": "carve/aquery/aquery.cc",
       "lines": [
-        {
-          "line": 35,
-          "execution_count": 30
-        },
         {
           "line": 36,
           "execution_count": 30
@@ -413,8 +409,8 @@
           "execution_count": 30
         },
         {
-          "line": 46,
-          "execution_count": 29
+          "line": 40,
+          "execution_count": 30
         },
         {
           "line": 47,
@@ -422,7 +418,7 @@
         },
         {
           "line": 48,
-          "execution_count": 28
+          "execution_count": 29
         },
         {
           "line": 49,
@@ -430,7 +426,7 @@
         },
         {
           "line": 50,
-          "execution_count": 1
+          "execution_count": 28
         },
         {
           "line": 51,
@@ -449,7 +445,7 @@
           "execution_count": 1
         },
         {
-          "line": 56,
+          "line": 55,
           "execution_count": 1
         },
         {
@@ -461,7 +457,7 @@
           "execution_count": 1
         },
         {
-          "line": 60,
+          "line": 59,
           "execution_count": 1
         },
         {
@@ -478,15 +474,15 @@
         },
         {
           "line": 64,
-          "execution_count": 9
+          "execution_count": 1
         },
         {
           "line": 65,
-          "execution_count": 8
+          "execution_count": 9
         },
         {
           "line": 66,
-          "execution_count": 2
+          "execution_count": 8
         },
         {
           "line": 67,
@@ -498,7 +494,7 @@
         },
         {
           "line": 69,
-          "execution_count": 6
+          "execution_count": 2
         },
         {
           "line": 70,
@@ -510,7 +506,7 @@
         },
         {
           "line": 72,
-          "execution_count": 1
+          "execution_count": 6
         },
         {
           "line": 73,
@@ -546,7 +542,7 @@
         },
         {
           "line": 81,
-          "execution_count": 5
+          "execution_count": 1
         },
         {
           "line": 82,
@@ -554,15 +550,15 @@
         },
         {
           "line": 83,
-          "execution_count": 1
+          "execution_count": 5
         },
         {
           "line": 84,
-          "execution_count": 29
+          "execution_count": 1
         },
         {
-          "line": 91,
-          "execution_count": 1
+          "line": 85,
+          "execution_count": 29
         },
         {
           "line": 92,
@@ -574,11 +570,11 @@
         },
         {
           "line": 94,
-          "execution_count": 3
+          "execution_count": 1
         },
         {
           "line": 95,
-          "execution_count": 2
+          "execution_count": 3
         },
         {
           "line": 96,
@@ -586,7 +582,7 @@
         },
         {
           "line": 97,
-          "execution_count": 0
+          "execution_count": 2
         },
         {
           "line": 98,
@@ -594,7 +590,7 @@
         },
         {
           "line": 99,
-          "execution_count": 2
+          "execution_count": 0
         },
         {
           "line": 100,
@@ -606,11 +602,11 @@
         },
         {
           "line": 102,
-          "execution_count": 1
+          "execution_count": 2
         },
         {
           "line": 103,
-          "execution_count": 3
+          "execution_count": 1
         },
         {
           "line": 104,
@@ -618,7 +614,7 @@
         },
         {
           "line": 105,
-          "execution_count": 1
+          "execution_count": 2
         },
         {
           "line": 106,
@@ -626,7 +622,7 @@
         },
         {
           "line": 107,
-          "execution_count": 2
+          "execution_count": 1
         },
         {
           "line": 108,
@@ -634,15 +630,15 @@
         },
         {
           "line": 109,
-          "execution_count": 1
+          "execution_count": 2
         },
         {
           "line": 110,
           "execution_count": 1
         },
         {
-          "line": 114,
-          "execution_count": 28
+          "line": 111,
+          "execution_count": 1
         },
         {
           "line": 115,
@@ -654,15 +650,15 @@
         },
         {
           "line": 117,
-          "execution_count": 0
+          "execution_count": 28
         },
         {
           "line": 118,
           "execution_count": 0
         },
         {
-          "line": 120,
-          "execution_count": 28
+          "line": 119,
+          "execution_count": 0
         },
         {
           "line": 121,
@@ -674,15 +670,15 @@
         },
         {
           "line": 123,
-          "execution_count": 2
+          "execution_count": 28
         },
         {
           "line": 124,
           "execution_count": 2
         },
         {
-          "line": 126,
-          "execution_count": 28
+          "line": 125,
+          "execution_count": 2
         },
         {
           "line": 127,
@@ -694,19 +690,19 @@
         },
         {
           "line": 129,
-          "execution_count": 1
+          "execution_count": 28
         },
         {
           "line": 130,
           "execution_count": 1
         },
         {
-          "line": 132,
-          "execution_count": 28
+          "line": 131,
+          "execution_count": 1
         },
         {
           "line": 133,
-          "execution_count": 30
+          "execution_count": 28
         },
         {
           "line": 134,
@@ -714,7 +710,7 @@
         },
         {
           "line": 135,
-          "execution_count": 1
+          "execution_count": 30
         },
         {
           "line": 136,
@@ -722,7 +718,7 @@
         },
         {
           "line": 137,
-          "execution_count": 29
+          "execution_count": 1
         },
         {
           "line": 138,
@@ -746,7 +742,7 @@
         },
         {
           "line": 143,
-          "execution_count": 1
+          "execution_count": 29
         },
         {
           "line": 144,
@@ -754,7 +750,7 @@
         },
         {
           "line": 145,
-          "execution_count": 29
+          "execution_count": 1
         },
         {
           "line": 146,
@@ -762,185 +758,177 @@
         },
         {
           "line": 147,
-          "execution_count": 28
+          "execution_count": 29
         },
         {
           "line": 148,
+          "execution_count": 28
+        },
+        {
+          "line": 149,
           "execution_count": 28
         }
       ],
       "functions": [
         {
           "name": "_ZN5carve6aquery19ParseCompileActionsESt17basic_string_viewIcSt11char_traitsIcEE",
-          "start_line": 114,
+          "start_line": 115,
           "execution_count": 28
         },
         {
           "name": "aquery.cc:_ZN5carve6aquery12_GLOBAL__N_111ResolvePathB5cxx11EjRKN4absl12lts_2026081713flat_hash_mapIjPKN8analysis12PathFragmentENS3_13hash_internal4HashIjEESt8equal_toIjESaISt4pairIKjS8_EEEE",
-          "start_line": 91,
+          "start_line": 92,
           "execution_count": 1
         },
         {
           "name": "aquery.cc:_ZN5carve6aquery12_GLOBAL__N_116ExpandParamFilesB5cxx11ERKN8analysis6ActionE",
-          "start_line": 46,
+          "start_line": 47,
           "execution_count": 29
         },
         {
           "name": "aquery.cc:_ZN5carve6aquery12_GLOBAL__N_117IsCompileMnemonicESt17basic_string_viewIcSt11char_traitsIcEE",
-          "start_line": 35,
+          "start_line": 36,
           "execution_count": 30
         }
       ],
       "branches": [
         {
-          "line": 47,
+          "line": 48,
           "block": "0",
           "branch": "0",
           "taken": 28
         },
         {
-          "line": 47,
+          "line": 48,
           "block": "0",
           "branch": "1",
           "taken": 1
         },
         {
-          "line": 52,
+          "line": 53,
           "block": "0",
           "branch": "0",
           "taken": 1
         },
         {
-          "line": 52,
+          "line": 53,
           "block": "0",
           "branch": "1",
           "taken": 1
         },
         {
-          "line": 64,
+          "line": 65,
           "block": "0",
           "branch": "0",
           "taken": 8
         },
         {
-          "line": 64,
+          "line": 65,
           "block": "0",
           "branch": "1",
           "taken": 1
         },
         {
-          "line": 65,
+          "line": 66,
           "block": "0",
           "branch": "0",
           "taken": 2
         },
         {
-          "line": 65,
+          "line": 66,
           "block": "0",
           "branch": "1",
           "taken": 6
         },
         {
-          "line": 71,
+          "line": 72,
           "block": "0",
           "branch": "0",
           "taken": 6
         },
         {
-          "line": 71,
+          "line": 72,
           "block": "0",
           "branch": "1",
           "taken": 0
         },
         {
-          "line": 71,
+          "line": 72,
           "block": "1",
           "branch": "2",
           "taken": 1
         },
         {
-          "line": 71,
+          "line": 72,
           "block": "1",
           "branch": "3",
           "taken": 5
         },
         {
-          "line": 71,
+          "line": 72,
           "block": "2",
           "branch": "4",
           "taken": 1
         },
         {
-          "line": 71,
+          "line": 72,
           "block": "2",
           "branch": "5",
           "taken": 0
         },
         {
-          "line": 73,
+          "line": 74,
           "block": "0",
           "branch": "0",
           "taken": 1
         },
         {
-          "line": 73,
+          "line": 74,
           "block": "0",
           "branch": "1",
           "taken": 0
         },
         {
-          "line": 94,
+          "line": 95,
           "block": "0",
           "branch": "0",
           "taken": 3
         },
         {
-          "line": 94,
+          "line": 95,
           "block": "0",
           "branch": "1",
           "taken": 0
         },
         {
-          "line": 94,
+          "line": 95,
           "block": "1",
           "branch": "2",
           "taken": 2
         },
         {
-          "line": 94,
+          "line": 95,
           "block": "1",
           "branch": "3",
           "taken": 1
         },
         {
-          "line": 96,
+          "line": 97,
           "block": "0",
           "branch": "0",
           "taken": 0
         },
         {
-          "line": 96,
+          "line": 97,
           "block": "0",
           "branch": "1",
           "taken": 2
-        },
-        {
-          "line": 103,
-          "block": "0",
-          "branch": "0",
-          "taken": 2
-        },
-        {
-          "line": 103,
-          "block": "0",
-          "branch": "1",
-          "taken": 1
         },
         {
           "line": 104,
           "block": "0",
           "branch": "0",
-          "taken": 1
+          "taken": 2
         },
         {
           "line": 104,
@@ -949,73 +937,85 @@
           "taken": 1
         },
         {
-          "line": 116,
-          "block": "0",
-          "branch": "0",
-          "taken": 0
-        },
-        {
-          "line": 116,
-          "block": "0",
-          "branch": "1",
-          "taken": 28
-        },
-        {
-          "line": 122,
-          "block": "0",
-          "branch": "0",
-          "taken": 2
-        },
-        {
-          "line": 122,
-          "block": "0",
-          "branch": "1",
-          "taken": 28
-        },
-        {
-          "line": 128,
+          "line": 105,
           "block": "0",
           "branch": "0",
           "taken": 1
         },
         {
-          "line": 128,
+          "line": 105,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 117,
+          "block": "0",
+          "branch": "0",
+          "taken": 0
+        },
+        {
+          "line": 117,
           "block": "0",
           "branch": "1",
           "taken": 28
         },
         {
-          "line": 133,
+          "line": 123,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 123,
+          "block": "0",
+          "branch": "1",
+          "taken": 28
+        },
+        {
+          "line": 129,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 129,
+          "block": "0",
+          "branch": "1",
+          "taken": 28
+        },
+        {
+          "line": 134,
           "block": "0",
           "branch": "0",
           "taken": 30
         },
         {
-          "line": 133,
+          "line": 134,
           "block": "0",
           "branch": "1",
           "taken": 28
         },
         {
-          "line": 134,
+          "line": 135,
           "block": "0",
           "branch": "0",
           "taken": 1
         },
         {
-          "line": 134,
+          "line": 135,
           "block": "0",
           "branch": "1",
           "taken": 29
         },
         {
-          "line": 142,
+          "line": 143,
           "block": "0",
           "branch": "0",
           "taken": 1
         },
         {
-          "line": 142,
+          "line": 143,
           "block": "0",
           "branch": "1",
           "taken": 28
@@ -1208,11 +1208,7 @@
           "execution_count": 62
         },
         {
-          "line": 83,
-          "execution_count": 34
-        },
-        {
-          "line": 84,
+          "line": 85,
           "execution_count": 34
         },
         {
@@ -1220,11 +1216,11 @@
           "execution_count": 34
         },
         {
-          "line": 87,
+          "line": 88,
           "execution_count": 34
         },
         {
-          "line": 88,
+          "line": 89,
           "execution_count": 34
         },
         {
@@ -1232,7 +1228,7 @@
           "execution_count": 34
         },
         {
-          "line": 91,
+          "line": 92,
           "execution_count": 34
         },
         {
@@ -1240,12 +1236,8 @@
           "execution_count": 34
         },
         {
-          "line": 94,
-          "execution_count": 30
-        },
-        {
           "line": 95,
-          "execution_count": 30
+          "execution_count": 34
         },
         {
           "line": 96,
@@ -1253,15 +1245,15 @@
         },
         {
           "line": 97,
-          "execution_count": 119
+          "execution_count": 30
         },
         {
           "line": 98,
-          "execution_count": 89
+          "execution_count": 30
         },
         {
           "line": 99,
-          "execution_count": 89
+          "execution_count": 119
         },
         {
           "line": 100,
@@ -1273,23 +1265,23 @@
         },
         {
           "line": 102,
-          "execution_count": 30
+          "execution_count": 89
         },
         {
           "line": 103,
+          "execution_count": 89
+        },
+        {
+          "line": 104,
           "execution_count": 30
         },
         {
           "line": 105,
-          "execution_count": 34
-        },
-        {
-          "line": 106,
-          "execution_count": 3
+          "execution_count": 30
         },
         {
           "line": 107,
-          "execution_count": 3
+          "execution_count": 34
         },
         {
           "line": 108,
@@ -1300,12 +1292,12 @@
           "execution_count": 3
         },
         {
-          "line": 111,
-          "execution_count": 34
+          "line": 110,
+          "execution_count": 3
         },
         {
-          "line": 112,
-          "execution_count": 34
+          "line": 111,
+          "execution_count": 3
         },
         {
           "line": 113,
@@ -1313,33 +1305,41 @@
         },
         {
           "line": 114,
-          "execution_count": 28
+          "execution_count": 34
         },
         {
           "line": 115,
-          "execution_count": 28
+          "execution_count": 34
         },
         {
           "line": 116,
-          "execution_count": 30
+          "execution_count": 28
+        },
+        {
+          "line": 117,
+          "execution_count": 28
         },
         {
           "line": 118,
-          "execution_count": 23
-        },
-        {
-          "line": 119,
-          "execution_count": 23
+          "execution_count": 30
         },
         {
           "line": 120,
+          "execution_count": 23
+        },
+        {
+          "line": 121,
+          "execution_count": 23
+        },
+        {
+          "line": 122,
           "execution_count": 23
         }
       ],
       "functions": [
         {
           "name": "_ZN5carve3cdb5WriteERKNSt10filesystem7__cxx114pathEN4absl12lts_202608174SpanIKNS0_14CompileCommandEEE",
-          "start_line": 118,
+          "start_line": 120,
           "execution_count": 23
         },
         {
@@ -1504,61 +1504,61 @@
           "taken": 28
         },
         {
-          "line": 93,
+          "line": 95,
           "block": "0",
           "branch": "0",
           "taken": 30
         },
         {
-          "line": 93,
+          "line": 95,
           "block": "0",
           "branch": "1",
           "taken": 4
         },
         {
-          "line": 97,
+          "line": 99,
           "block": "0",
           "branch": "0",
           "taken": 89
         },
         {
-          "line": 97,
+          "line": 99,
           "block": "0",
           "branch": "1",
           "taken": 30
         },
         {
-          "line": 100,
+          "line": 102,
           "block": "0",
           "branch": "0",
           "taken": 59
         },
         {
-          "line": 100,
+          "line": 102,
           "block": "0",
           "branch": "1",
           "taken": 30
         },
         {
-          "line": 105,
+          "line": 107,
           "block": "0",
           "branch": "0",
           "taken": 3
         },
         {
-          "line": 105,
+          "line": 107,
           "block": "0",
           "branch": "1",
           "taken": 31
         },
         {
-          "line": 112,
+          "line": 114,
           "block": "0",
           "branch": "0",
           "taken": 6
         },
         {
-          "line": 112,
+          "line": 114,
           "block": "0",
           "branch": "1",
           "taken": 28
@@ -2072,84 +2072,76 @@
           "execution_count": 204
         },
         {
-          "line": 64,
+          "line": 66,
           "execution_count": 158
-        },
-        {
-          "line": 67,
-          "execution_count": 158
-        },
-        {
-          "line": 68,
-          "execution_count": 2
         },
         {
           "line": 69,
-          "execution_count": 2
+          "execution_count": 158
         },
         {
           "line": 70,
-          "execution_count": 156
+          "execution_count": 2
         },
         {
           "line": 71,
-          "execution_count": 298
+          "execution_count": 2
         },
         {
           "line": 72,
-          "execution_count": 9
+          "execution_count": 156
         },
         {
           "line": 73,
-          "execution_count": 9
+          "execution_count": 298
         },
         {
           "line": 74,
-          "execution_count": 147
+          "execution_count": 9
         },
         {
           "line": 75,
-          "execution_count": 4
+          "execution_count": 9
         },
         {
           "line": 76,
-          "execution_count": 3
+          "execution_count": 147
         },
         {
           "line": 77,
-          "execution_count": 3
+          "execution_count": 4
         },
         {
           "line": 78,
-          "execution_count": 4
+          "execution_count": 3
         },
         {
           "line": 79,
-          "execution_count": 4
+          "execution_count": 3
         },
         {
           "line": 80,
-          "execution_count": 143
+          "execution_count": 4
         },
         {
           "line": 81,
-          "execution_count": 143
+          "execution_count": 4
         },
         {
           "line": 82,
-          "execution_count": 46
+          "execution_count": 143
         },
         {
           "line": 83,
+          "execution_count": 143
+        },
+        {
+          "line": 84,
           "execution_count": 46
         },
         {
-          "line": 88,
-          "execution_count": 4
-        },
-        {
-          "line": 89,
-          "execution_count": 4
+          "line": 85,
+          "execution_count": 46
         },
         {
           "line": 90,
@@ -2157,39 +2149,39 @@
         },
         {
           "line": 91,
-          "execution_count": 2
+          "execution_count": 4
         },
         {
           "line": 92,
-          "execution_count": 2
+          "execution_count": 4
         },
         {
           "line": 93,
-          "execution_count": 4
+          "execution_count": 2
         },
         {
           "line": 94,
-          "execution_count": 3
+          "execution_count": 2
         },
         {
           "line": 95,
-          "execution_count": 3
+          "execution_count": 4
         },
         {
           "line": 96,
-          "execution_count": 4
+          "execution_count": 3
         },
         {
           "line": 97,
-          "execution_count": 4
+          "execution_count": 3
         },
         {
           "line": 98,
-          "execution_count": 15
+          "execution_count": 4
         },
         {
           "line": 99,
-          "execution_count": 15
+          "execution_count": 4
         },
         {
           "line": 100,
@@ -2197,19 +2189,19 @@
         },
         {
           "line": 101,
-          "execution_count": 4
+          "execution_count": 15
         },
         {
           "line": 102,
+          "execution_count": 15
+        },
+        {
+          "line": 103,
           "execution_count": 4
         },
         {
           "line": 104,
-          "execution_count": 26
-        },
-        {
-          "line": 105,
-          "execution_count": 26
+          "execution_count": 4
         },
         {
           "line": 106,
@@ -2217,43 +2209,43 @@
         },
         {
           "line": 107,
-          "execution_count": 16
+          "execution_count": 26
         },
         {
           "line": 108,
+          "execution_count": 26
+        },
+        {
+          "line": 109,
           "execution_count": 16
         },
         {
-          "line": 111,
-          "execution_count": 10
-        },
-        {
-          "line": 112,
-          "execution_count": 10
+          "line": 110,
+          "execution_count": 16
         },
         {
           "line": 113,
-          "execution_count": 2
-        },
-        {
-          "line": 114,
-          "execution_count": 2
-        },
-        {
-          "line": 115,
-          "execution_count": 8
-        },
-        {
-          "line": 116,
           "execution_count": 10
         },
         {
-          "line": 118,
-          "execution_count": 6
+          "line": 114,
+          "execution_count": 10
         },
         {
-          "line": 119,
-          "execution_count": 6
+          "line": 115,
+          "execution_count": 2
+        },
+        {
+          "line": 116,
+          "execution_count": 2
+        },
+        {
+          "line": 117,
+          "execution_count": 8
+        },
+        {
+          "line": 118,
+          "execution_count": 10
         },
         {
           "line": 120,
@@ -2269,31 +2261,31 @@
         },
         {
           "line": 123,
-          "execution_count": 107
+          "execution_count": 6
         },
         {
           "line": 124,
-          "execution_count": 101
+          "execution_count": 6
         },
         {
           "line": 125,
-          "execution_count": 101
+          "execution_count": 107
         },
         {
           "line": 126,
-          "execution_count": 4
+          "execution_count": 101
         },
         {
           "line": 127,
-          "execution_count": 4
+          "execution_count": 101
         },
         {
           "line": 128,
-          "execution_count": 2
+          "execution_count": 4
         },
         {
           "line": 129,
-          "execution_count": 2
+          "execution_count": 4
         },
         {
           "line": 130,
@@ -2321,23 +2313,23 @@
         },
         {
           "line": 136,
-          "execution_count": 0
+          "execution_count": 2
         },
         {
           "line": 137,
-          "execution_count": 97
+          "execution_count": 2
         },
         {
           "line": 138,
-          "execution_count": 16
+          "execution_count": 0
         },
         {
           "line": 139,
-          "execution_count": 8
+          "execution_count": 97
         },
         {
           "line": 140,
-          "execution_count": 8
+          "execution_count": 16
         },
         {
           "line": 141,
@@ -2345,11 +2337,11 @@
         },
         {
           "line": 142,
-          "execution_count": 81
+          "execution_count": 8
         },
         {
           "line": 143,
-          "execution_count": 81
+          "execution_count": 8
         },
         {
           "line": 144,
@@ -2357,43 +2349,51 @@
         },
         {
           "line": 145,
-          "execution_count": 101
+          "execution_count": 81
         },
         {
           "line": 146,
-          "execution_count": 6
+          "execution_count": 81
         },
         {
           "line": 147,
-          "execution_count": 3
+          "execution_count": 101
         },
         {
           "line": 148,
-          "execution_count": 3
-        },
-        {
-          "line": 149,
           "execution_count": 6
         },
         {
+          "line": 149,
+          "execution_count": 3
+        },
+        {
           "line": 150,
+          "execution_count": 3
+        },
+        {
+          "line": 151,
+          "execution_count": 6
+        },
+        {
+          "line": 152,
           "execution_count": 6
         }
       ],
       "functions": [
         {
           "name": "_ZN5carve7command20RelativizeToExecrootB5cxx11ESt17basic_string_viewIcSt11char_traitsIcEES4_",
-          "start_line": 104,
+          "start_line": 106,
           "execution_count": 26
         },
         {
           "name": "_ZN5carve7command21ParseMakeDependenciesB5cxx11ESt17basic_string_viewIcSt11char_traitsIcEE",
-          "start_line": 118,
+          "start_line": 120,
           "execution_count": 6
         },
         {
           "name": "_ZN5carve7command24ResolveXcodePlaceholdersEN4absl12lts_202608174SpanIKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEESt17basic_string_viewIcS7_ESD_",
-          "start_line": 88,
+          "start_line": 90,
           "execution_count": 4
         },
         {
@@ -2408,7 +2408,7 @@
         },
         {
           "name": "command.cc:_ZZN5carve7command7DeBazelEN4absl12lts_202608174SpanIKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEEENK3$_0clESt17basic_string_viewIcS7_E",
-          "start_line": 71,
+          "start_line": 73,
           "execution_count": 298
         }
       ],
@@ -2426,325 +2426,325 @@
           "taken": 46
         },
         {
-          "line": 67,
+          "line": 69,
           "block": "0",
           "branch": "0",
           "taken": 45
         },
         {
-          "line": 67,
+          "line": 69,
           "block": "0",
           "branch": "1",
           "taken": 113
         },
         {
-          "line": 67,
+          "line": 69,
           "block": "1",
           "branch": "2",
           "taken": 2
         },
         {
-          "line": 67,
+          "line": 69,
           "block": "1",
           "branch": "3",
           "taken": 43
         },
         {
-          "line": 70,
+          "line": 72,
           "block": "0",
           "branch": "0",
           "taken": 15
         },
         {
-          "line": 70,
+          "line": 72,
           "block": "0",
           "branch": "1",
           "taken": 297
         },
         {
-          "line": 71,
+          "line": 73,
           "block": "0",
           "branch": "0",
           "taken": 3
         },
         {
-          "line": 71,
+          "line": 73,
           "block": "0",
           "branch": "1",
           "taken": 147
         },
         {
-          "line": 74,
+          "line": 76,
           "block": "0",
           "branch": "0",
           "taken": 4
         },
         {
-          "line": 74,
+          "line": 76,
           "block": "0",
           "branch": "1",
           "taken": 143
         },
         {
-          "line": 75,
+          "line": 77,
           "block": "0",
           "branch": "0",
           "taken": 3
         },
         {
-          "line": 75,
+          "line": 77,
           "block": "0",
           "branch": "1",
           "taken": 1
         },
         {
-          "line": 90,
+          "line": 92,
           "block": "0",
           "branch": "0",
           "taken": 2
         },
         {
-          "line": 90,
+          "line": 92,
           "block": "0",
           "branch": "1",
           "taken": 2
         },
         {
-          "line": 93,
+          "line": 95,
           "block": "0",
           "branch": "0",
           "taken": 3
         },
         {
-          "line": 93,
+          "line": 95,
           "block": "0",
           "branch": "1",
           "taken": 1
         },
         {
-          "line": 98,
+          "line": 100,
           "block": "0",
           "branch": "0",
           "taken": 15
         },
         {
-          "line": 98,
+          "line": 100,
           "block": "0",
           "branch": "1",
           "taken": 4
         },
         {
-          "line": 99,
+          "line": 101,
           "block": "0",
           "branch": "0",
           "taken": 3
         },
         {
-          "line": 99,
+          "line": 101,
           "block": "0",
           "branch": "1",
           "taken": 12
         },
         {
-          "line": 106,
+          "line": 108,
           "block": "0",
           "branch": "0",
           "taken": 2
         },
         {
-          "line": 106,
+          "line": 108,
           "block": "0",
           "branch": "1",
           "taken": 24
         },
         {
-          "line": 106,
+          "line": 108,
           "block": "1",
           "branch": "2",
           "taken": 14
         },
         {
-          "line": 106,
+          "line": 108,
           "block": "1",
           "branch": "3",
           "taken": 10
         },
         {
-          "line": 112,
+          "line": 114,
           "block": "0",
           "branch": "0",
           "taken": 2
         },
         {
-          "line": 112,
+          "line": 114,
           "block": "0",
           "branch": "1",
           "taken": 18
         },
         {
-          "line": 112,
+          "line": 114,
           "block": "1",
           "branch": "2",
           "taken": 2
         },
         {
-          "line": 112,
+          "line": 114,
           "block": "1",
           "branch": "3",
           "taken": 8
         },
         {
-          "line": 120,
+          "line": 122,
           "block": "0",
           "branch": "0",
           "taken": 2
         },
         {
-          "line": 120,
+          "line": 122,
           "block": "0",
           "branch": "1",
           "taken": 4
         },
         {
-          "line": 123,
+          "line": 125,
           "block": "0",
           "branch": "0",
           "taken": 101
         },
         {
-          "line": 123,
+          "line": 125,
           "block": "0",
           "branch": "1",
           "taken": 6
         },
         {
-          "line": 125,
+          "line": 127,
           "block": "0",
           "branch": "0",
           "taken": 4
         },
         {
-          "line": 125,
+          "line": 127,
           "block": "0",
           "branch": "1",
           "taken": 97
         },
         {
-          "line": 125,
+          "line": 127,
           "block": "1",
           "branch": "2",
           "taken": 4
         },
         {
-          "line": 125,
+          "line": 127,
           "block": "1",
           "branch": "3",
           "taken": 0
         },
         {
-          "line": 127,
+          "line": 129,
           "block": "0",
           "branch": "0",
           "taken": 2
         },
         {
-          "line": 127,
+          "line": 129,
           "block": "0",
           "branch": "1",
           "taken": 2
         },
         {
-          "line": 127,
+          "line": 129,
           "block": "1",
           "branch": "2",
           "taken": 0
         },
         {
-          "line": 127,
+          "line": 129,
           "block": "1",
           "branch": "3",
           "taken": 2
         },
         {
-          "line": 131,
+          "line": 133,
           "block": "0",
           "branch": "0",
           "taken": 2
         },
         {
-          "line": 131,
+          "line": 133,
           "block": "0",
           "branch": "1",
           "taken": 0
         },
         {
-          "line": 137,
+          "line": 139,
           "block": "0",
           "branch": "0",
           "taken": 14
         },
         {
-          "line": 137,
+          "line": 139,
           "block": "0",
           "branch": "1",
           "taken": 83
         },
         {
-          "line": 137,
+          "line": 139,
           "block": "1",
           "branch": "2",
           "taken": 0
         },
         {
-          "line": 137,
+          "line": 139,
           "block": "1",
           "branch": "3",
           "taken": 83
         },
         {
-          "line": 137,
+          "line": 139,
           "block": "2",
           "branch": "4",
           "taken": 2
         },
         {
-          "line": 137,
+          "line": 139,
           "block": "2",
           "branch": "5",
           "taken": 81
         },
         {
-          "line": 137,
+          "line": 139,
           "block": "3",
           "branch": "6",
           "taken": 0
         },
         {
-          "line": 137,
+          "line": 139,
           "block": "3",
           "branch": "7",
           "taken": 81
         },
         {
-          "line": 138,
+          "line": 140,
           "block": "0",
           "branch": "0",
           "taken": 8
         },
         {
-          "line": 138,
+          "line": 140,
           "block": "0",
           "branch": "1",
           "taken": 8
         },
         {
-          "line": 146,
+          "line": 148,
           "block": "0",
           "branch": "0",
           "taken": 3
         },
         {
-          "line": 146,
+          "line": 148,
           "block": "0",
           "branch": "1",
           "taken": 3
@@ -3509,19 +3509,19 @@
           "line": 68,
           "block": "0",
           "branch": "0",
-          "taken": 12
+          "taken": 1
         },
         {
           "line": 68,
           "block": "0",
           "branch": "1",
-          "taken": 98
+          "taken": 109
         },
         {
           "line": 68,
           "block": "1",
           "branch": "2",
-          "taken": 39
+          "taken": 50
         },
         {
           "line": 68,
@@ -4690,14 +4690,6 @@
           "execution_count": 5
         },
         {
-          "line": 344,
-          "execution_count": 19
-        },
-        {
-          "line": 345,
-          "execution_count": 19
-        },
-        {
           "line": 346,
           "execution_count": 19
         },
@@ -4711,11 +4703,11 @@
         },
         {
           "line": 349,
-          "execution_count": 0
+          "execution_count": 19
         },
         {
           "line": 350,
-          "execution_count": 0
+          "execution_count": 19
         },
         {
           "line": 351,
@@ -4727,63 +4719,63 @@
         },
         {
           "line": 353,
+          "execution_count": 0
+        },
+        {
+          "line": 354,
+          "execution_count": 0
+        },
+        {
+          "line": 355,
           "execution_count": 19
         },
         {
-          "line": 356,
-          "execution_count": 18
-        },
-        {
-          "line": 357,
-          "execution_count": 18
-        },
-        {
           "line": 358,
-          "execution_count": 0
+          "execution_count": 18
         },
         {
           "line": 359,
-          "execution_count": 0
+          "execution_count": 18
         },
         {
           "line": 360,
           "execution_count": 0
         },
         {
-          "line": 362,
-          "execution_count": 36
+          "line": 361,
+          "execution_count": 0
         },
         {
-          "line": 363,
-          "execution_count": 36
+          "line": 362,
+          "execution_count": 0
         },
         {
           "line": 364,
-          "execution_count": 1
+          "execution_count": 36
         },
         {
           "line": 365,
+          "execution_count": 36
+        },
+        {
+          "line": 366,
           "execution_count": 1
         },
         {
           "line": 367,
-          "execution_count": 36
+          "execution_count": 1
         },
         {
           "line": 369,
-          "execution_count": 1
-        },
-        {
-          "line": 370,
-          "execution_count": 1
+          "execution_count": 36
         },
         {
           "line": 371,
-          "execution_count": 0
+          "execution_count": 1
         },
         {
           "line": 372,
-          "execution_count": 0
+          "execution_count": 1
         },
         {
           "line": 373,
@@ -4795,18 +4787,18 @@
         },
         {
           "line": 375,
-          "execution_count": 1
+          "execution_count": 0
         },
         {
           "line": 376,
+          "execution_count": 0
+        },
+        {
+          "line": 377,
           "execution_count": 1
         },
         {
           "line": 378,
-          "execution_count": 1
-        },
-        {
-          "line": 379,
           "execution_count": 1
         },
         {
@@ -4834,24 +4826,24 @@
           "execution_count": 1
         },
         {
+          "line": 386,
+          "execution_count": 1
+        },
+        {
           "line": 387,
+          "execution_count": 1
+        },
+        {
+          "line": 389,
           "execution_count": 36
         },
         {
-          "line": 393,
-          "execution_count": 34
-        },
-        {
-          "line": 394,
-          "execution_count": 34
-        },
-        {
           "line": 395,
-          "execution_count": 15
+          "execution_count": 34
         },
         {
           "line": 396,
-          "execution_count": 15
+          "execution_count": 34
         },
         {
           "line": 397,
@@ -4859,27 +4851,27 @@
         },
         {
           "line": 398,
-          "execution_count": 13
-        },
-        {
-          "line": 399,
-          "execution_count": 13
-        },
-        {
-          "line": 400,
           "execution_count": 15
         },
         {
+          "line": 399,
+          "execution_count": 15
+        },
+        {
+          "line": 400,
+          "execution_count": 13
+        },
+        {
           "line": 401,
+          "execution_count": 13
+        },
+        {
+          "line": 402,
+          "execution_count": 15
+        },
+        {
+          "line": 403,
           "execution_count": 12
-        },
-        {
-          "line": 406,
-          "execution_count": 34
-        },
-        {
-          "line": 407,
-          "execution_count": 34
         },
         {
           "line": 408,
@@ -4891,43 +4883,43 @@
         },
         {
           "line": 410,
-          "execution_count": 13
+          "execution_count": 34
         },
         {
           "line": 411,
-          "execution_count": 13
+          "execution_count": 34
         },
         {
           "line": 412,
-          "execution_count": 34
+          "execution_count": 13
         },
         {
           "line": 413,
-          "execution_count": 34
+          "execution_count": 13
         },
         {
           "line": 414,
-          "execution_count": 2
+          "execution_count": 34
         },
         {
           "line": 415,
+          "execution_count": 34
+        },
+        {
+          "line": 416,
           "execution_count": 2
         },
         {
           "line": 417,
-          "execution_count": 34
+          "execution_count": 2
         },
         {
-          "line": 425,
+          "line": 419,
           "execution_count": 34
-        },
-        {
-          "line": 426,
-          "execution_count": 7
         },
         {
           "line": 427,
-          "execution_count": 7
+          "execution_count": 34
         },
         {
           "line": 428,
@@ -4935,42 +4927,42 @@
         },
         {
           "line": 429,
-          "execution_count": 5
-        },
-        {
-          "line": 430,
-          "execution_count": 5
-        },
-        {
-          "line": 431,
           "execution_count": 7
         },
         {
+          "line": 430,
+          "execution_count": 7
+        },
+        {
+          "line": 431,
+          "execution_count": 5
+        },
+        {
           "line": 432,
+          "execution_count": 5
+        },
+        {
+          "line": 433,
           "execution_count": 7
         },
         {
           "line": 434,
+          "execution_count": 7
+        },
+        {
+          "line": 436,
           "execution_count": 34
-        },
-        {
-          "line": 441,
-          "execution_count": 17
-        },
-        {
-          "line": 442,
-          "execution_count": 17
         },
         {
           "line": 443,
           "execution_count": 17
         },
         {
-          "line": 445,
+          "line": 444,
           "execution_count": 17
         },
         {
-          "line": 446,
+          "line": 445,
           "execution_count": 17
         },
         {
@@ -5000,12 +4992,20 @@
         {
           "line": 453,
           "execution_count": 17
+        },
+        {
+          "line": 454,
+          "execution_count": 17
+        },
+        {
+          "line": 455,
+          "execution_count": 17
         }
       ],
       "functions": [
         {
           "name": "_ZN5carve7refresh10RunRefreshERKNS0_11FileOptionsE",
-          "start_line": 344,
+          "start_line": 346,
           "execution_count": 19
         },
         {
@@ -5618,301 +5618,301 @@
           "taken": 5
         },
         {
-          "line": 346,
+          "line": 348,
           "block": "0",
           "branch": "0",
           "taken": 19
         },
         {
-          "line": 346,
+          "line": 348,
           "block": "0",
           "branch": "1",
           "taken": 0
         },
         {
-          "line": 348,
+          "line": 350,
           "block": "0",
           "branch": "0",
           "taken": null
         },
         {
-          "line": 348,
+          "line": 350,
           "block": "0",
           "branch": "1",
           "taken": null
         },
         {
-          "line": 353,
+          "line": 355,
           "block": "0",
           "branch": "0",
           "taken": 37
         },
         {
-          "line": 353,
+          "line": 355,
           "block": "0",
           "branch": "1",
           "taken": 20
         },
         {
-          "line": 357,
+          "line": 359,
           "block": "0",
           "branch": "0",
           "taken": 0
         },
         {
-          "line": 357,
+          "line": 359,
           "block": "0",
           "branch": "1",
           "taken": 18
         },
         {
-          "line": 358,
+          "line": 360,
           "block": "0",
           "branch": "0",
           "taken": null
         },
         {
-          "line": 358,
+          "line": 360,
           "block": "0",
           "branch": "1",
           "taken": null
         },
         {
-          "line": 362,
+          "line": 364,
           "block": "0",
           "branch": "0",
           "taken": 0
         },
         {
-          "line": 362,
+          "line": 364,
           "block": "0",
           "branch": "1",
           "taken": 18
         },
         {
-          "line": 363,
+          "line": 365,
           "block": "0",
           "branch": "0",
           "taken": 1
         },
         {
-          "line": 363,
+          "line": 365,
           "block": "0",
           "branch": "1",
           "taken": 17
         },
         {
-          "line": 367,
+          "line": 369,
           "block": "0",
           "branch": "0",
           "taken": 1
         },
         {
-          "line": 367,
+          "line": 369,
           "block": "0",
           "branch": "1",
           "taken": 17
         },
         {
-          "line": 370,
+          "line": 372,
           "block": "0",
           "branch": "0",
           "taken": 0
         },
         {
-          "line": 370,
+          "line": 372,
           "block": "0",
           "branch": "1",
           "taken": 1
         },
         {
-          "line": 371,
+          "line": 373,
           "block": "0",
           "branch": "0",
           "taken": null
         },
         {
-          "line": 371,
+          "line": 373,
           "block": "0",
           "branch": "1",
           "taken": null
         },
         {
-          "line": 383,
+          "line": 385,
           "block": "0",
           "branch": "0",
           "taken": 2
         },
         {
-          "line": 383,
+          "line": 385,
           "block": "0",
           "branch": "1",
           "taken": 1
         },
         {
-          "line": 387,
+          "line": 389,
           "block": "0",
           "branch": "0",
           "taken": 0
         },
         {
-          "line": 387,
+          "line": 389,
           "block": "0",
           "branch": "1",
           "taken": 17
         },
         {
-          "line": 394,
+          "line": 396,
           "block": "0",
           "branch": "0",
           "taken": 12
         },
         {
-          "line": 394,
+          "line": 396,
           "block": "0",
           "branch": "1",
           "taken": 5
         },
         {
-          "line": 395,
+          "line": 397,
           "block": "0",
           "branch": "0",
           "taken": 15
         },
         {
-          "line": 395,
+          "line": 397,
           "block": "0",
           "branch": "1",
           "taken": 12
         },
         {
-          "line": 397,
+          "line": 399,
           "block": "0",
           "branch": "0",
           "taken": 8
         },
         {
-          "line": 397,
+          "line": 399,
           "block": "0",
           "branch": "1",
           "taken": 7
         },
         {
-          "line": 397,
+          "line": 399,
           "block": "1",
           "branch": "2",
           "taken": 5
         },
         {
-          "line": 397,
+          "line": 399,
           "block": "1",
           "branch": "3",
           "taken": 2
         },
         {
-          "line": 409,
+          "line": 411,
           "block": "0",
           "branch": "0",
           "taken": 13
         },
         {
-          "line": 409,
+          "line": 411,
           "block": "0",
           "branch": "1",
           "taken": 17
         },
         {
-          "line": 413,
+          "line": 415,
           "block": "0",
           "branch": "0",
           "taken": 2
         },
         {
-          "line": 413,
+          "line": 415,
           "block": "0",
           "branch": "1",
           "taken": 17
         },
         {
-          "line": 425,
+          "line": 427,
           "block": "0",
           "branch": "0",
           "taken": 7
         },
         {
-          "line": 425,
+          "line": 427,
           "block": "0",
           "branch": "1",
           "taken": 10
         },
         {
-          "line": 427,
+          "line": 429,
           "block": "0",
           "branch": "0",
           "taken": 7
         },
         {
-          "line": 427,
+          "line": 429,
           "block": "0",
           "branch": "1",
           "taken": 7
         },
         {
-          "line": 428,
+          "line": 430,
           "block": "0",
           "branch": "0",
           "taken": 12
         },
         {
-          "line": 428,
+          "line": 430,
           "block": "0",
           "branch": "1",
           "taken": 2
         },
         {
-          "line": 428,
+          "line": 430,
           "block": "1",
           "branch": "2",
           "taken": 5
         },
         {
-          "line": 428,
+          "line": 430,
           "block": "1",
           "branch": "3",
           "taken": 2
         },
         {
-          "line": 434,
+          "line": 436,
           "block": "0",
           "branch": "0",
           "taken": 34
         },
         {
-          "line": 434,
+          "line": 436,
           "block": "0",
           "branch": "1",
           "taken": 17
         },
         {
-          "line": 443,
+          "line": 445,
           "block": "0",
           "branch": "0",
           "taken": 34
         },
         {
-          "line": 443,
+          "line": 445,
           "block": "0",
           "branch": "1",
           "taken": 17
         },
         {
-          "line": 451,
+          "line": 453,
           "block": "0",
           "branch": "0",
           "taken": 34
         },
         {
-          "line": 451,
+          "line": 453,
           "block": "0",
           "branch": "1",
           "taken": 17
