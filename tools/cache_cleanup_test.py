@@ -35,6 +35,17 @@ class ExpiredCacheIdsTest(unittest.TestCase):
         ]
         self.assertEqual(cache_cleanup.expired_cache_ids(caches), [])
 
+    def test_oversized_cache_is_deleted_even_when_it_is_newest(self):
+        caches = [
+            {
+                "id": 7,
+                "key": "bazel-ubuntu-current",
+                "createdAt": "2026-09-04T12:00:00Z",
+                "sizeInBytes": 7_877_743_205,
+            }
+        ]
+        self.assertEqual(cache_cleanup.expired_cache_ids(caches), [7])
+
 
 if __name__ == "__main__":
     unittest.main()

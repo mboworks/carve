@@ -6,6 +6,8 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Limit CI persistence to bounded Bazel compiled-action caches, exclude downloaded LLVM repository
+  contents, use stable dependency/configuration keys, and delete oversized cache entries.
 - Retain and cross-link coverage overview tables for `main`, every release, and every pull request,
   with per-report category summaries and source, commit, workflow, and detailed-LCOV links.
 - Add first-party Clang coverage reporting with a tested checked-in policy,

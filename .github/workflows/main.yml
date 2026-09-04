@@ -43,21 +43,21 @@ jobs:
         with:
           fetch-depth: 0
       - uses: bazelbuild/setup-bazelisk@v3
-      - name: Mount Bazel caches
-        uses: actions/cache@v6
+      - name: Restore Bazel disk cache
+        uses: actions/cache/restore@v6
         with:
-          path: |
-            ~/.cache/bazel-disk
-            ~/.cache/bazel-repo
-          key: bazel-clang-tidy-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.sha }}
+          path: ~/.cache/bazel-disk
+          key: bazel-clang-tidy-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
+            bazel-clang-tidy-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.ref }}
+            bazel-clang-tidy-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-refs/heads/main
             bazel-clang-tidy-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-
             bazel-clang-tidy-ubuntu-
             bazel-ubuntu-latest-
       - name: Materialize generated and external headers
-        run: bazel build --config=clang //... --disk_cache="$HOME/.cache/bazel-disk" --repository_cache="$HOME/.cache/bazel-repo"
+        run: bazel build --config=clang //... --disk_cache="$HOME/.cache/bazel-disk" --experimental_disk_cache_gc_max_size=600M --repository_cache="$HOME/.cache/bazel-repo"
       - name: Generate the Clang compilation database
-        run: bazel run --disk_cache="$HOME/.cache/bazel-disk" --repository_cache="$HOME/.cache/bazel-repo" //:refresh_compile_commands
+        run: bazel run --disk_cache="$HOME/.cache/bazel-disk" --experimental_disk_cache_gc_max_size=600M --repository_cache="$HOME/.cache/bazel-repo" //:refresh_compile_commands
       - name: Locate the matching hermetic clang-tidy
         id: clang_tidy
         run: |
@@ -85,6 +85,12 @@ jobs:
         # Database generation and tool discovery above remain enforcing.
         continue-on-error: true
         run: python3 tools/clang_tidy.py --clang-tidy "${{ steps.clang_tidy.outputs.executable }}" --files-from .clang-tidy-inputs
+      - name: Save Bazel disk cache
+        if: always() && github.ref == 'refs/heads/main'
+        uses: actions/cache/save@v6
+        with:
+          path: ~/.cache/bazel-disk
+          key: bazel-clang-tidy-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.ref }}-${{ github.sha }}
 
   test:
     strategy:
@@ -96,25 +102,20 @@ jobs:
       - uses: actions/checkout@v7
       # bazelisk launches the Bazel release pinned in .bazelversion.
       - uses: bazelbuild/setup-bazelisk@v3
-      # Persist Bazel's repository cache (downloaded external deps) and disk cache
-      # (compiled action outputs) so each run reuses prior work instead of fetching
-      # and rebuilding from scratch -- especially useful for the large prebuilt
-      # LLVM distribution and normal C++ dependencies. MODULE.bazel.lock is gitignored, so
-      # the key hashes MODULE.bazel + .bazelversion; the github.sha suffix saves a
-      # fresh entry per run and restore-keys fall back to the newest prior cache
-      # for this OS (busted when MODULE.bazel or the Bazel version changes).
-      - name: Mount Bazel caches
-        uses: actions/cache@v6
+      # Cache compiled actions only. The repository cache contains the multi-gigabyte LLVM
+      # distribution and must not consume GitHub's shared 10 GB cache allowance.
+      - name: Restore Bazel disk cache
+        uses: actions/cache/restore@v6
         with:
-          path: |
-            ~/.cache/bazel-disk
-            ~/.cache/bazel-repo
-          key: bazel-${{ matrix.os }}-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.sha }}
+          path: ~/.cache/bazel-disk
+          key: bazel-${{ matrix.os }}-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
+            bazel-${{ matrix.os }}-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.ref }}
+            bazel-${{ matrix.os }}-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-refs/heads/main
             bazel-${{ matrix.os }}-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-
             bazel-${{ matrix.os }}-
       - name: bazel test
-        run: bazel test --config=clang //... --disk_cache="$HOME/.cache/bazel-disk" --repository_cache="$HOME/.cache/bazel-repo"
+        run: bazel test --config=clang //... --disk_cache="$HOME/.cache/bazel-disk" --experimental_disk_cache_gc_max_size=600M --repository_cache="$HOME/.cache/bazel-repo"
       - name: Test release archive as a consumer
         env:
           CARVE_RELEASE_VERSION: "0.1.0"
@@ -122,7 +123,14 @@ jobs:
           .github/workflows/release_prep.sh >release-notes.md
           tools/release_archive_test.sh carve-0.1.0.tar.gz \
             --disk_cache="$HOME/.cache/bazel-disk" \
+            --experimental_disk_cache_gc_max_size=600M \
             --repository_cache="$HOME/.cache/bazel-repo"
+      - name: Save Bazel disk cache
+        if: always() && github.ref == 'refs/heads/main'
+        uses: actions/cache/save@v6
+        with:
+          path: ~/.cache/bazel-disk
+          key: bazel-${{ matrix.os }}-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.ref }}-${{ github.sha }}
 
   # Sanitizers run on ubuntu only. The LLVM-linking targets are tagged `no_san`
   # and skipped; the remaining //carve/... targets are instrumented.
@@ -131,38 +139,50 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: bazelbuild/setup-bazelisk@v3
-      - name: Mount Bazel caches
-        uses: actions/cache@v6
+      - name: Restore Bazel disk cache
+        uses: actions/cache/restore@v6
         with:
-          path: |
-            ~/.cache/bazel-disk
-            ~/.cache/bazel-repo
-          key: bazel-asan-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.sha }}
+          path: ~/.cache/bazel-disk
+          key: bazel-asan-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
+            bazel-asan-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.ref }}
+            bazel-asan-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-refs/heads/main
             bazel-asan-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-
             bazel-asan-ubuntu-
             bazel-ubuntu-latest-
       - name: bazel test (asan + ubsan)
-        run: bazel test --config=clang --config=asan --config=ubsan //carve/... --disk_cache="$HOME/.cache/bazel-disk" --repository_cache="$HOME/.cache/bazel-repo"
+        run: bazel test --config=clang --config=asan --config=ubsan //carve/... --disk_cache="$HOME/.cache/bazel-disk" --experimental_disk_cache_gc_max_size=600M --repository_cache="$HOME/.cache/bazel-repo"
+      - name: Save Bazel disk cache
+        if: always() && github.ref == 'refs/heads/main'
+        uses: actions/cache/save@v6
+        with:
+          path: ~/.cache/bazel-disk
+          key: bazel-asan-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.ref }}-${{ github.sha }}
 
   tsan:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: bazelbuild/setup-bazelisk@v3
-      - name: Mount Bazel caches
-        uses: actions/cache@v6
+      - name: Restore Bazel disk cache
+        uses: actions/cache/restore@v6
         with:
-          path: |
-            ~/.cache/bazel-disk
-            ~/.cache/bazel-repo
-          key: bazel-tsan-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.sha }}
+          path: ~/.cache/bazel-disk
+          key: bazel-tsan-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
+            bazel-tsan-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.ref }}
+            bazel-tsan-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-refs/heads/main
             bazel-tsan-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-
             bazel-tsan-ubuntu-
             bazel-ubuntu-latest-
       - name: bazel test (tsan)
-        run: bazel test --config=clang --config=tsan //carve/... --disk_cache="$HOME/.cache/bazel-disk" --repository_cache="$HOME/.cache/bazel-repo"
+        run: bazel test --config=clang --config=tsan //carve/... --disk_cache="$HOME/.cache/bazel-disk" --experimental_disk_cache_gc_max_size=600M --repository_cache="$HOME/.cache/bazel-repo"
+      - name: Save Bazel disk cache
+        if: always() && github.ref == 'refs/heads/main'
+        uses: actions/cache/save@v6
+        with:
+          path: ~/.cache/bazel-disk
+          key: bazel-tsan-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.ref }}-${{ github.sha }}
 
   # MemorySanitizer catches uninitialized reads that ASan does not. It is Linux
   # x86-64 only and uses toolchains_llvm's instrumented libc++ overlay. Targets
@@ -173,19 +193,25 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: bazelbuild/setup-bazelisk@v3
-      - name: Mount Bazel caches
-        uses: actions/cache@v6
+      - name: Restore Bazel disk cache
+        uses: actions/cache/restore@v6
         with:
-          path: |
-            ~/.cache/bazel-disk
-            ~/.cache/bazel-repo
-          key: bazel-msan-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.sha }}
+          path: ~/.cache/bazel-disk
+          key: bazel-msan-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
+            bazel-msan-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.ref }}
+            bazel-msan-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-refs/heads/main
             bazel-msan-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-
             bazel-msan-ubuntu-
             bazel-ubuntu-latest-
       - name: bazel test (msan)
-        run: bazel test --config=clang --config=msan //carve/... --disk_cache="$HOME/.cache/bazel-disk" --repository_cache="$HOME/.cache/bazel-repo"
+        run: bazel test --config=clang --config=msan //carve/... --disk_cache="$HOME/.cache/bazel-disk" --experimental_disk_cache_gc_max_size=600M --repository_cache="$HOME/.cache/bazel-repo"
+      - name: Save Bazel disk cache
+        if: always() && github.ref == 'refs/heads/main'
+        uses: actions/cache/save@v6
+        with:
+          path: ~/.cache/bazel-disk
+          key: bazel-msan-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.ref }}-${{ github.sha }}
 
   coverage:
     runs-on: ubuntu-latest
@@ -194,19 +220,19 @@ jobs:
       - uses: bazelbuild/setup-bazelisk@v3
       - name: Install LCOV
         run: sudo apt-get update && sudo apt-get install --yes lcov
-      - name: Mount Bazel caches
-        uses: actions/cache@v6
+      - name: Restore Bazel disk cache
+        uses: actions/cache/restore@v6
         with:
-          path: |
-            ~/.cache/bazel-disk
-            ~/.cache/bazel-repo
-          key: bazel-coverage-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.sha }}
+          path: ~/.cache/bazel-disk
+          key: bazel-coverage-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
+            bazel-coverage-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.ref }}
+            bazel-coverage-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-refs/heads/main
             bazel-coverage-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-
             bazel-coverage-ubuntu-
             bazel-ubuntu-latest-
       - name: Collect coverage
-        run: bazel coverage --config=coverage //carve/... --disk_cache="$HOME/.cache/bazel-disk" --repository_cache="$HOME/.cache/bazel-repo"
+        run: bazel coverage --config=coverage //carve/... --disk_cache="$HOME/.cache/bazel-disk" --experimental_disk_cache_gc_max_size=600M --repository_cache="$HOME/.cache/bazel-repo"
       - name: Enforce coverage policy
         run: |
           python3 tools/coverage_policy.py \
@@ -240,6 +266,12 @@ jobs:
             coverage-html
             coverage-target.txt
           retention-days: 30
+      - name: Save Bazel disk cache
+        if: always() && github.ref == 'refs/heads/main'
+        uses: actions/cache/save@v6
+        with:
+          path: ~/.cache/bazel-disk
+          key: bazel-coverage-ubuntu-${{ hashFiles('MODULE.bazel', '.bazelversion') }}-${{ github.ref }}-${{ github.sha }}
 
   # Single required status check: one job that gates merge on the whole matrix,
   # so branch protection needs only `done`. A yq/jq step self-checks that every
