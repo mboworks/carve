@@ -6,6 +6,9 @@ name: Cleanup caches
 on:
   pull_request:
     types: [closed]
+  workflow_run:
+    workflows: [Test]
+    types: [completed]
   schedule:
     - cron: "37 4 * * 1"
   workflow_dispatch: {}
@@ -29,12 +32,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           PR_REF: refs/pull/${{ github.event.pull_request.number }}/merge
         run: gh cache delete --all --ref "${PR_REF}" --succeed-on-no-caches
-      - name: Retain only the newest main cache in each key family
+      - name: Delete oversized and superseded caches
         if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh cache list --ref refs/heads/main --limit 10000 --json id,key,createdAt \
+          gh cache list --limit 10000 --json id,key,createdAt,sizeInBytes \
             | python3 tools/cache_cleanup.py >expired-cache-ids
           while read -r cache_id; do
             [[ -z "${cache_id}" ]] || gh cache delete "${cache_id}"
