@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 name: Publish coverage
+run-name: Publish retained coverage after Test run ${{ github.event.workflow_run.id }}
 
 on:
   workflow_run:
@@ -121,7 +122,7 @@ jobs:
             git -C site push
           fi
           mkdir -p public
-          rsync --archive site/coverage/ public/coverage/
+          rsync --archive site/coverage/ public/
       - uses: actions/upload-pages-artifact@v5
         if: steps.target.outputs.publish == 'true'
         with:

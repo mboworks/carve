@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 name: Cleanup caches
+run-name: Clean Actions caches after ${{ github.event.workflow_run.name || github.event_name }} run ${{ github.event.workflow_run.id || github.run_id }}
 
 on:
   pull_request:

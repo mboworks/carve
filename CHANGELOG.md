@@ -6,6 +6,9 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Serve the retained coverage overview at the documented Pages root, publish complete per-file line,
+  function, and branch coverage as JSON, cross-link the underlying LCOV trace, and distinguish
+  coverage publishing from cache cleanup in GitHub Actions.
 - Limit CI persistence to bounded Bazel compiled-action caches, exclude downloaded LLVM repository
   contents, use stable dependency/configuration keys, and delete oversized cache entries.
 - Retain and cross-link coverage overview tables for `main`, every release, and every pull request,

@@ -83,7 +83,9 @@ def render_report(summary: dict, target: str) -> str:
 """
     body += (
         '    <p><a href="lcov/">Detailed source coverage</a> · '
-        '<a href="coverage-summary.json">Summary JSON</a> · '
+        '<a href="coverage-data.json">Complete coverage JSON</a> · '
+        '<a href="coverage.lcov">LCOV trace</a> · '
+        '<a href="coverage-summary.json">Aggregate summary JSON</a> · '
         '<a href="coverage-meta.json">Metadata JSON</a> · '
         f'<a href="{overview}">All coverage reports</a></p>'
     )
