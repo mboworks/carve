@@ -20,6 +20,11 @@ follows [SemVer](https://semver.org/).
 - Enforce MBO Works C++ target naming, header ownership and guards, direct
   library-test coverage, explicit Bazel test sizes, and matcher/status
   assertion conventions with tested local pre-commit checks.
+- Add a clang-tidy CI job using the compilation database and the clang-tidy
+  binary from the pinned hermetic LLVM distribution; report the existing lint
+  backlog without blocking CI, scope diagnostics to first-party headers, work
+  around an LLVM 22.1.8 dataflow-check crash, and document the active
+  static-analysis and ThreadSanitizer gates accurately.
 - Point the README's extractor comparison at the maintained `helly25` fork and
   call out that the original Hedron repository is unmaintained.
 - Accept Bazel's `amd64` and `arm64` host architecture names when selecting the
