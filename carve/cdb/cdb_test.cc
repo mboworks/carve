@@ -36,7 +36,7 @@ using ::testing::HasSubstr;
 
 std::string ReadFile(const std::filesystem::path& path) {
   std::ifstream stream(path, std::ios::binary);
-  return std::string(std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>());
+  return {std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>()};
 }
 
 TEST(ToJsonTest, EmptyIsBracketsAndNewline) {

@@ -38,7 +38,7 @@ def run_one(executable: str, database: Path, source: str) -> tuple[str, int, str
             "-p",
             str(database.parent),
             "--header-filter=^carve/",
-            "--exclude-header-filter=^(bazel-out|external)/",
+            "--exclude-header-filter=(^|.*/)(bazel-out|external)/",
             source,
         ],
         text=True,

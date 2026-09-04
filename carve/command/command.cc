@@ -61,6 +61,8 @@ std::vector<std::string> DeBazel(absl::Span<const std::string> argv) {
   std::vector<std::string> result;
   result.reserve(argv.size());
   for (std::size_t i = 0; i < argv.size(); ++i) {
+    // The loop bound proves this index valid; Span has no bounds-checked accessor.
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
     const std::string& arg = argv[i];
     // A leading `ccache` is a compiler wrapper (and only ever the first token);
     // drop it so argv[0] is the real compiler clangd can introspect.
@@ -121,9 +123,9 @@ std::vector<std::string> ParseMakeDependencies(std::string_view make) {
   std::vector<std::string> deps;
   std::string current;
   for (std::string_view::size_type i = 0; i < rest.size(); ++i) {
-    const char character = rest[i];
+    const char character = rest.at(i);
     if (character == '\\' && i + 1 < rest.size()) {
-      const char next = rest[i + 1];
+      const char next = rest.at(i + 1);
       if (next == '\n' || next == '\r') {
         ++i;  // Line continuation.
         continue;

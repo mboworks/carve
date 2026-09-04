@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -45,7 +46,7 @@ bool IsCompileMnemonic(std::string_view mnemonic) {
 // with a guard against cycles.
 std::vector<std::string> ExpandParamFiles(const analysis::Action& action) {
   if (action.param_files().empty()) {
-    return std::vector<std::string>(action.arguments().begin(), action.arguments().end());
+    return {action.arguments().begin(), action.arguments().end()};
   }
   absl::flat_hash_map<std::string_view, const analysis::ParamFile*> by_exec_path;
   by_exec_path.reserve(static_cast<std::size_t>(action.param_files_size()));
@@ -59,21 +60,21 @@ std::vector<std::string> ExpandParamFiles(const analysis::Action& action) {
   // Worklist of pending argument ranges; start with the action's own arguments.
   std::vector<std::vector<std::string_view>> stack;
   std::vector<std::string_view> initial(action.arguments().begin(), action.arguments().end());
-  std::reverse(initial.begin(), initial.end());
+  std::ranges::reverse(initial);
   stack.push_back(std::move(initial));
   while (!stack.empty()) {
     if (stack.back().empty()) {
       stack.pop_back();
       continue;
     }
-    std::string_view arg = stack.back().back();
+    const std::string_view arg = stack.back().back();
     stack.back().pop_back();
     if (arg.size() > 1 && arg.front() == '@' && expansions < expansion_cap) {
       const auto it = by_exec_path.find(arg.substr(1));
       if (it != by_exec_path.end()) {
         ++expansions;
         std::vector<std::string_view> nested(it->second->arguments().begin(), it->second->arguments().end());
-        std::reverse(nested.begin(), nested.end());
+        std::ranges::reverse(nested);
         stack.push_back(std::move(nested));
         continue;
       }
@@ -90,21 +91,21 @@ std::string ResolvePath(
     std::uint32_t fragment_id,
     const absl::flat_hash_map<std::uint32_t, const analysis::PathFragment*>& by_id) {
   std::vector<std::string_view> parts;
-  std::uint32_t id = fragment_id;
-  for (std::size_t guard = 0; guard <= by_id.size() && id != 0; ++guard) {
-    const auto it = by_id.find(id);
+  std::uint32_t current_id = fragment_id;
+  for (std::size_t guard = 0; guard <= by_id.size() && current_id != 0; ++guard) {
+    const auto it = by_id.find(current_id);
     if (it == by_id.end()) {
       break;
     }
     parts.emplace_back(it->second->label());
-    id = it->second->parent_id();
+    current_id = it->second->parent_id();
   }
   std::string path;
-  for (auto it = parts.rbegin(); it != parts.rend(); ++it) {
+  for (const std::string_view part : std::views::reverse(parts)) {
     if (!path.empty()) {
       path.push_back('/');
     }
-    path.append(it->data(), it->size());
+    path.append(part.data(), part.size());
   }
   return path;
 }

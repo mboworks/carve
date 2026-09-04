@@ -84,7 +84,7 @@ std::filesystem::path WriteText(const std::filesystem::path& path, std::string_v
 // Reads the raw bytes of `path`. Used to compare a written sidecar byte-for-byte.
 std::string ReadBytes(const std::filesystem::path& path) {
   std::ifstream file(path, std::ios::binary);
-  return std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+  return {std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
 }
 
 analysis::Action* AddCompile(analysis::ActionGraphContainer& container, std::string_view key) {
@@ -97,7 +97,7 @@ analysis::Action* AddCompile(analysis::ActionGraphContainer& container, std::str
 TEST(BuildEntriesTest, MapsCompileActionToDeBazeledEntry) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : kCompileArgsWithOutput) {
+  for (const std::string_view arg : kCompileArgsWithOutput) {
     compile->add_arguments(std::string(arg));
   }
 
@@ -150,7 +150,7 @@ TEST(BuildEntriesTest, EmptyInputYieldsNoEntries) {
 TEST(RunRefreshTest, ReadsProtoFileAndWritesCompileCommands) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : kCompileArgs) {
+  for (const std::string_view arg : kCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
 
@@ -207,7 +207,7 @@ FileOptions TempRefresh(std::string_view name, const analysis::ActionGraphContai
 TEST(RunRefreshTest, UnchangedActionReusesStoredRecordWithCachedHeaders) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : kCompileArgs) {
+  for (const std::string_view arg : kCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
   const FileOptions options = TempRefresh("carve_incremental_reuse", container);
@@ -218,7 +218,7 @@ TEST(RunRefreshTest, UnchangedActionReusesStoredRecordWithCachedHeaders) {
   ActionRecord* seeded = seed.add_records();
   seeded->set_action_key("k1");
   seeded->add_sources("src/a.cc");
-  for (std::string_view arg : kCompileArgs) {
+  for (const std::string_view arg : kCompileArgs) {
     seeded->add_command(std::string(arg));
   }
   seeded->add_headers("cached.h");
@@ -235,7 +235,7 @@ TEST(RunRefreshTest, UnchangedActionReusesStoredRecordWithCachedHeaders) {
 TEST(RunRefreshTest, ChangedCommandRebuildsRecordDroppingStaleCache) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : kCompileArgs) {
+  for (const std::string_view arg : kCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
   const FileOptions options = TempRefresh("carve_incremental_changed", container);
@@ -257,7 +257,7 @@ TEST(RunRefreshTest, ChangedCommandRebuildsRecordDroppingStaleCache) {
   ActionRecord* rebuilt = expected.add_records();
   rebuilt->set_action_key("k1");
   rebuilt->add_sources("src/a.cc");
-  for (std::string_view arg : kCompileArgs) {
+  for (const std::string_view arg : kCompileArgs) {
     rebuilt->add_command(std::string(arg));
   }
   EXPECT_THAT(
@@ -268,7 +268,7 @@ TEST(RunRefreshTest, ChangedCommandRebuildsRecordDroppingStaleCache) {
 TEST(RunRefreshTest, PopulatesHeadersFromTheInjectedScanner) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : kCompileArgs) {
+  for (const std::string_view arg : kCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
   FileOptions options = TempRefresh("carve_scan_headers", container);
@@ -298,7 +298,7 @@ TEST(RunRefreshTest, PopulatesHeadersFromTheInjectedScanner) {
 TEST(RunRefreshTest, UnchangedActionIsNotRescanned) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : kCompileArgs) {
+  for (const std::string_view arg : kCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
   FileOptions options = TempRefresh("carve_scan_skip", container);
@@ -338,7 +338,7 @@ TEST(RunRefreshTest, UnchangedActionIsNotRescanned) {
 TEST(RunRefreshTest, StampsWrittenAtUsingTheInjectedClock) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : kCompileArgs) {
+  for (const std::string_view arg : kCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
   FileOptions options = TempRefresh("carve_written_at", container);
@@ -364,7 +364,7 @@ TEST(RunRefreshTest, StampsWrittenAtUsingTheInjectedClock) {
 TEST(RunRefreshTest, ReusedRecordIsRestampedKeepingCachedHeaders) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : kCompileArgs) {
+  for (const std::string_view arg : kCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
   FileOptions options = TempRefresh("carve_written_at_reuse", container);
@@ -406,7 +406,7 @@ TEST(RunRefreshTest, ReusedRecordIsRestampedKeepingCachedHeaders) {
 TEST(RunRefreshTest, WritesHeaderIndexAlongsideTheSidecar) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : kCompileArgs) {
+  for (const std::string_view arg : kCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
   FileOptions options = TempRefresh("carve_header_index", container);
@@ -449,7 +449,7 @@ StalenessFixture MakeStalenessFixture(std::string_view name, std::int64_t writte
 
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : kRootCompileArgs) {
+  for (const std::string_view arg : kRootCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
   fixture.options = FileOptions{
@@ -559,10 +559,10 @@ TEST(RunRefreshTest, SidecarHoldsNoAbsolutePathsForCrossHostDeterminism) {
 
   MBO_ASSERT_OK_AND_ASSIGN(const ActionRecords stored, sidecar::Load(fixture.options.sidecar_path));
   for (const ActionRecord& record : stored.records()) {
-    for (std::string_view source : record.sources()) {
+    for (const std::string_view source : record.sources()) {
       EXPECT_FALSE(source.starts_with("/")) << "absolute source leaked into the sidecar: " << source;
     }
-    for (std::string_view header : record.headers()) {
+    for (const std::string_view header : record.headers()) {
       EXPECT_FALSE(header.starts_with("/")) << "absolute header leaked into the sidecar: " << header;
     }
   }
@@ -595,7 +595,7 @@ TEST(RunRefreshTest, RefreshTwiceYieldsAByteIdenticalSidecar) {
 TEST(RunRefreshTest, FailedScanIsLeftUnstampedAndCounted) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : kCompileArgs) {
+  for (const std::string_view arg : kCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
   FileOptions options = TempRefresh("carve_unresolved", container);
@@ -626,7 +626,7 @@ TEST(RunRefreshTest, FailedScanIsLeftUnstampedAndCounted) {
 TEST(RunRefreshTest, FailedScanIsRetriedOnTheNextRefresh) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg : kCompileArgs) {
+  for (const std::string_view arg : kCompileArgs) {
     compile->add_arguments(std::string(arg));
   }
   FileOptions options = TempRefresh("carve_unresolved_retry", container);
@@ -668,7 +668,7 @@ TEST(RunRefreshTest, ScansActionsInParallel) {
   // interleaving. Run under tsan in CI to exercise the worker pool.
   analysis::ActionGraphContainer container;
   constexpr auto kActionKeys = std::to_array<std::string_view>({"k1", "k2", "k3", "k4"});
-  for (std::string_view key : kActionKeys) {
+  for (const std::string_view key : kActionKeys) {
     analysis::Action* compile = AddCompile(container, key);
     compile->add_arguments("clang");
     compile->add_arguments("-c");
@@ -723,7 +723,7 @@ TEST(RunRefreshTest, ScansActionsInParallel) {
 TEST(RunRefreshTest, ResolvesXcodePlaceholdersViaTheInjectedResolver) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
-  for (std::string_view arg :
+  for (const std::string_view arg :
        {"__BAZEL_XCODE_DEVELOPER_DIR__/usr/bin/clang", "-isysroot__BAZEL_XCODE_SDKROOT__", "-c", "a.cc"}) {
     compile->add_arguments(std::string(arg));
   }

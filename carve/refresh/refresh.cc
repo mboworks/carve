@@ -55,7 +55,7 @@ bool IsSourceFile(std::string_view arg) {
   if (dot == std::string_view::npos) {
     return false;
   }
-  std::string_view ext = arg.substr(dot + 1);
+  const std::string_view ext = arg.substr(dot + 1);
   static const absl::flat_hash_set<std::string_view>* const kSourceExt =
       new absl::flat_hash_set<std::string_view>{"c", "cc", "cpp", "cxx", "c++", "cu", "m", "mm"};
   return kSourceExt->contains(ext);
@@ -90,7 +90,7 @@ std::string AbsoluteFile(std::string_view directory, std::string_view source) {
 // be identified (such an action cannot form a valid compilation-database entry).
 std::optional<ActionRecord> MakeRecord(const aquery::CompileAction& action, std::string_view project_id) {
   std::vector<std::string> arguments = command::DeBazel(action.arguments);
-  std::string_view source = FindSource(arguments);
+  const std::string_view source = FindSource(arguments);
   if (source.empty()) {
     return std::nullopt;
   }
@@ -201,15 +201,15 @@ class ParallelScan {
         }
       }
     }
-    absl::MutexLock lock(mu_);
-    std::sort(failed_.begin(), failed_.end());
+    const absl::MutexLock lock(mu_);
+    std::ranges::sort(failed_);
     return failed_;
   }
 
  private:
   // Returns the next record index to scan, or nullopt once all are claimed.
   std::optional<std::size_t> ClaimNext() ABSL_LOCKS_EXCLUDED(mu_) {
-    absl::MutexLock lock(mu_);
+    const absl::MutexLock lock(mu_);
     if (next_ >= records_.size()) {
       return std::nullopt;
     }
@@ -220,8 +220,8 @@ class ParallelScan {
   void Worker() ABSL_LOCKS_EXCLUDED(mu_) {
     while (const std::optional<std::size_t> index = ClaimNext()) {
       // Sole owner of records_[*index] (see class comment): scan without the lock.
-      if (!ScanHeaders(*records_[*index], directory_, scanner_)) {
-        absl::MutexLock lock(mu_);
+      if (!ScanHeaders(*records_.at(*index), directory_, scanner_)) {
+        const absl::MutexLock lock(mu_);
         failed_.push_back(*index);
       }
     }
@@ -341,6 +341,8 @@ absl::StatusOr<std::vector<cdb::CompileCommand>> BuildEntries(std::string_view a
   return EntriesFromRecords(records, options.directory);
 }
 
+// Status-propagation macros inflate clang-tidy's measured complexity here.
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 absl::StatusOr<RefreshStats> RunRefresh(const FileOptions& options) {
   absl::StatusOr<std::string> proto;
   if (!options.aquery_proto_path.empty()) {
@@ -411,7 +413,7 @@ absl::StatusOr<RefreshStats> RunRefresh(const FileOptions& options) {
   }
   absl::flat_hash_set<std::string_view> unresolved;
   for (const std::size_t index : failed) {
-    unresolved.insert(to_scan[index]->action_key());
+    unresolved.insert(to_scan.at(index)->action_key());
   }
 
   ActionRecords merged = sidecar::MergeRecords(stored, current, options.project_id, rescanned);

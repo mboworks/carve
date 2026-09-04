@@ -6,6 +6,8 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Align clang-tidy with the shared MBO Works triage, resolve the remaining first-party findings, and
+  make the CI job enforcing instead of reporting failures as success.
 - Serve the retained coverage overview at the documented Pages root, publish complete per-file line,
   function, and branch coverage as JSON, cross-link the underlying LCOV trace, and distinguish
   coverage publishing from cache cleanup in GitHub Actions.
