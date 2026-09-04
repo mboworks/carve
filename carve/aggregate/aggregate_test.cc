@@ -42,17 +42,17 @@ using ::testing::HasSubstr;
 
 std::string ReadFile(const std::filesystem::path& path) {
   std::ifstream stream(path, std::ios::binary);
-  return std::string(std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>());
+  return {std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>()};
 }
 
 TEST(CombineTest, UnionsAndSortsByProjectThenActionKey) {
-  const ActionRecords a = ParseTextProtoOrDie(R"pb(records { project_id: "p1" action_key: "b" })pb");
-  const ActionRecords b = ParseTextProtoOrDie(
+  const ActionRecords first = ParseTextProtoOrDie(R"pb(records { project_id: "p1" action_key: "b" })pb");
+  const ActionRecords second = ParseTextProtoOrDie(
       R"pb(
         records { project_id: "p2" action_key: "a" }
         records { project_id: "p1" action_key: "a" })pb");
 
-  const std::vector<ActionRecords> inputs = {a, b};
+  const std::vector<ActionRecords> inputs = {first, second};
   EXPECT_THAT(  // NL
       Combine(inputs),
       EqualsProto(  // NL

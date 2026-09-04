@@ -61,7 +61,9 @@ ActionRecords Combine(absl::Span<const ActionRecords> inputs) {
   for (const auto& [key, record] : best) {
     ordered.push_back(record);
   }
-  std::sort(ordered.begin(), ordered.end(), [](const ActionRecord* lhs, const ActionRecord* rhs) {
+  // The comparator orders pointed-to stable keys, never pointer values.
+  // NOLINTNEXTLINE(bugprone-nondeterministic-pointer-iteration-order)
+  std::ranges::sort(ordered, [](const ActionRecord* lhs, const ActionRecord* rhs) {
     if (lhs->project_id() != rhs->project_id()) {
       return lhs->project_id() < rhs->project_id();
     }

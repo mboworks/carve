@@ -81,9 +81,6 @@ jobs:
         if: github.event_name != 'pull_request'
         run: find carve -name '*.cc' -type f | sort >.clang-tidy-inputs
       - name: Run clang-tidy
-        # Keep findings visible while the existing tree is brought to zero.
-        # Database generation and tool discovery above remain enforcing.
-        continue-on-error: true
         run: python3 tools/clang_tidy.py --clang-tidy "${{ steps.clang_tidy.outputs.executable }}" --files-from .clang-tidy-inputs
       - name: Save Bazel disk cache
         if: always() && github.ref == 'refs/heads/main'

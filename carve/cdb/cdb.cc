@@ -53,8 +53,8 @@ void AppendJsonString(std::string& out, std::string_view value) {
         if (byte < kFirstUnescapedAscii) {
           // Other control characters require the \u00XX escape form.
           out.append("\\u00");
-          out.push_back(kHexDigits[byte >> kNibbleBits]);
-          out.push_back(kHexDigits[byte & kLowNibbleMask]);
+          out.push_back(kHexDigits.at(byte >> kNibbleBits));
+          out.push_back(kHexDigits.at(byte & kLowNibbleMask));
         } else {
           out.push_back(character);
         }
@@ -80,6 +80,8 @@ std::string ToJson(absl::Span<const CompileCommand> entries) {
   }
   std::string out = "[\n";
   for (std::size_t i = 0; i < entries.size(); ++i) {
+    // Indexing is paired with the loop bound and is required for separator placement.
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
     const CompileCommand& entry = entries[i];
     out.append("  {\n");
 
@@ -96,7 +98,7 @@ std::string ToJson(absl::Span<const CompileCommand> entries) {
       out.append("[\n");
       for (std::size_t arg_index = 0; arg_index < entry.arguments.size(); ++arg_index) {
         out.append("      ");
-        AppendJsonString(out, entry.arguments[arg_index]);
+        AppendJsonString(out, entry.arguments.at(arg_index));
         out.append(arg_index + 1 < entry.arguments.size() ? ",\n" : "\n");
       }
       out.append("    ]");

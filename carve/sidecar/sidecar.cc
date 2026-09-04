@@ -79,17 +79,17 @@ KeyDiff DiffActionKeys(const ActionRecords& stored, absl::Span<const std::string
   const absl::flat_hash_set<std::string_view> current_set(current_keys.begin(), current_keys.end());
 
   KeyDiff diff;
-  for (std::string_view key : current_set) {
+  for (const std::string_view key : current_set) {
     (stored_set.contains(key) ? diff.common : diff.added).emplace_back(key);
   }
-  for (std::string_view key : stored_set) {
+  for (const std::string_view key : stored_set) {
     if (!current_set.contains(key)) {
       diff.removed.emplace_back(key);
     }
   }
-  std::sort(diff.added.begin(), diff.added.end());
-  std::sort(diff.removed.begin(), diff.removed.end());
-  std::sort(diff.common.begin(), diff.common.end());
+  std::ranges::sort(diff.added);
+  std::ranges::sort(diff.removed);
+  std::ranges::sort(diff.common);
   return diff;
 }
 
@@ -157,8 +157,8 @@ HeaderIndex BuildHeaderIndex(const ActionRecords& records) {
   // `records`, which outlives this function.
   absl::btree_map<std::string_view, absl::btree_set<std::string_view>> owners;
   for (const ActionRecord& record : records.records()) {
-    for (std::string_view header : record.headers()) {
-      owners[header].insert(record.action_key());
+    for (const std::string_view header : record.headers()) {
+      owners.try_emplace(header).first->second.insert(record.action_key());
     }
   }
 
@@ -167,7 +167,7 @@ HeaderIndex BuildHeaderIndex(const ActionRecords& records) {
   for (const auto& [header_path, action_keys] : owners) {
     HeaderOwners* entry = index.add_owners();
     entry->set_header_path(header_path);
-    for (std::string_view action_key : action_keys) {
+    for (const std::string_view action_key : action_keys) {
       entry->add_action_keys(action_key);
     }
   }

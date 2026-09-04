@@ -83,11 +83,14 @@ TEST_F(JsonMatcherTest, InvalidExpectedJsonFailsWithClearMessage) {
 }
 
 TEST_F(JsonMatcherTest, MismatchMessageIncludesBothJsonStrings) {
+  // The analyzer cannot follow GoogleTest matcher's shared ownership through EXPECT_THAT.
+  // NOLINTBEGIN(clang-analyzer-cplusplus.NewDeleteLeaks)
   const Matcher<std::string> matcher = EqJson(R"json(["b.cc"])json");
   const std::string explanation = ExplainMismatch(matcher, R"json(["a.cc"])json");
   EXPECT_THAT(explanation, HasSubstr("a.cc"));
   EXPECT_THAT(explanation, HasSubstr("b.cc"));
-}
+  // NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
+}  // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
 
 // An integer and the same value written as a float parse to the same
 // `google::protobuf::Value`: JSON has a single number type, backed by a double,

@@ -270,7 +270,7 @@ int RealMain(int argc, char** argv) {
     return 2;
   }
 
-  const absl::StatusOr<carve::cli::Subcommand> cmd = carve::cli::ParseSubcommand(positional[1]);
+  const absl::StatusOr<carve::cli::Subcommand> cmd = carve::cli::ParseSubcommand(positional.at(1));
   if (!cmd.ok()) {
     PrintError(cmd.status().message());
     return 2;
@@ -279,7 +279,7 @@ int RealMain(int argc, char** argv) {
   std::vector<std::string_view> args;
   args.reserve(positional.size() - 2);
   for (std::size_t i = 2; i < positional.size(); ++i) {
-    args.emplace_back(positional[i]);
+    args.emplace_back(positional.at(i));
   }
 
   // Implemented subcommands are handled here from flags; the rest fall through

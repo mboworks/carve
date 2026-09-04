@@ -37,7 +37,6 @@ namespace carve::shard {
 namespace {
 
 using ::mbo::proto::EqualsProto;
-using ::mbo::proto::ParseTextProtoOrDie;
 using ::mbo::testing::IsOk;
 using ::mbo::testing::IsOkAndHolds;
 using ::testing::Not;

@@ -65,16 +65,16 @@ void DrainPipes(int out_fd, int err_fd, CommandResult& result) {
     for (std::size_t i = 0; i < fds.size(); ++i) {
       // POSIX poll flags are signed int macros; the bitmask test is the idiomatic form.
       // NOLINTNEXTLINE(hicpp-signed-bitwise)
-      if (fds[i].fd < 0 || (fds[i].revents & (POLLIN | POLLHUP | POLLERR)) == 0) {
+      if (fds.at(i).fd < 0 || (fds.at(i).revents & (POLLIN | POLLHUP | POLLERR)) == 0) {
         continue;
       }
       std::array<char, kReadChunkBytes> buffer{};
-      const ssize_t got = ::read(fds[i].fd, buffer.data(), buffer.size());
+      const ssize_t got = ::read(fds.at(i).fd, buffer.data(), buffer.size());
       if (got > 0) {
-        sinks[i]->append(buffer.data(), static_cast<std::size_t>(got));
+        sinks.at(i)->append(buffer.data(), static_cast<std::size_t>(got));
       } else if (got == 0 || errno != EINTR) {
-        ::close(fds[i].fd);
-        fds[i].fd = -1;
+        ::close(fds.at(i).fd);
+        fds.at(i).fd = -1;
         --open_fds;
       }
     }
@@ -103,11 +103,11 @@ absl::StatusOr<CommandResult> Run(absl::Span<const std::string> argv) {
   }
   // NOLINTNEXTLINE(android-cloexec-pipe)
   if (::pipe(err_pipe.data()) != 0) {
-    ::close(out_pipe[0]);
-    ::close(out_pipe[1]);
+    ::close(out_pipe.at(0));
+    ::close(out_pipe.at(1));
     return ErrnoError("pipe(stderr)");
   }
-  const std::array descriptors = {out_pipe[0], out_pipe[1], err_pipe[0], err_pipe[1]};
+  const std::array descriptors = {out_pipe.at(0), out_pipe.at(1), err_pipe.at(0), err_pipe.at(1)};
 
   const pid_t pid = ::fork();
   if (pid < 0) {
@@ -119,8 +119,8 @@ absl::StatusOr<CommandResult> Run(absl::Span<const std::string> argv) {
 
   if (pid == 0) {
     // Child: wire stdout/stderr to the pipes and exec.
-    ::dup2(out_pipe[1], STDOUT_FILENO);
-    ::dup2(err_pipe[1], STDERR_FILENO);
+    ::dup2(out_pipe.at(1), STDOUT_FILENO);
+    ::dup2(err_pipe.at(1), STDERR_FILENO);
     for (const int descriptor : descriptors) {
       ::close(descriptor);
     }
@@ -132,15 +132,15 @@ absl::StatusOr<CommandResult> Run(absl::Span<const std::string> argv) {
       c_argv.push_back(const_cast<char*>(arg.c_str()));
     }
     c_argv.push_back(nullptr);
-    ::execvp(c_argv[0], c_argv.data());
+    ::execvp(c_argv.front(), c_argv.data());
     ::_exit(kExecFailedExitCode);  // Reached only if exec failed (e.g. program not found).
   }
 
   // Parent: close write ends, drain, and reap.
-  ::close(out_pipe[1]);
-  ::close(err_pipe[1]);
+  ::close(out_pipe.at(1));
+  ::close(err_pipe.at(1));
   CommandResult result;
-  DrainPipes(out_pipe[0], err_pipe[0], result);
+  DrainPipes(out_pipe.at(0), err_pipe.at(0), result);
 
   int status = 0;
   while (::waitpid(pid, &status, 0) < 0) {

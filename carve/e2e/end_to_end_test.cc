@@ -49,13 +49,15 @@ std::string CarveBinary() {
   std::string error;
   const std::unique_ptr<Runfiles> runfiles(Runfiles::CreateForTest(&error));
   EXPECT_THAT(runfiles, NotNull()) << error;
+  // Tests are single-threaded here; no concurrent environment mutation occurs.
+  // NOLINTNEXTLINE(concurrency-mt-unsafe)
   const char* workspace = std::getenv("TEST_WORKSPACE");
   return runfiles->Rlocation(std::string(workspace != nullptr ? workspace : "_main") + "/carve/carve");
 }
 
 std::string ReadFile(const std::filesystem::path& path) {
   std::ifstream stream(path, std::ios::binary);
-  return std::string(std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>());
+  return {std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>()};
 }
 
 std::filesystem::path WriteAqueryProto(const std::filesystem::path& path) {

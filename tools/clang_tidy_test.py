@@ -49,7 +49,7 @@ class SelectedSourcesTest(unittest.TestCase):
                 "-p",
                 ".",
                 "--header-filter=^carve/",
-                "--exclude-header-filter=^(bazel-out|external)/",
+                "--exclude-header-filter=(^|.*/)(bazel-out|external)/",
                 "carve/a/a.cc",
             ],
         )
