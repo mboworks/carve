@@ -6,6 +6,8 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Retain and cross-link coverage overview tables for `main`, every release, and every pull request,
+  with per-report category summaries and source, commit, workflow, and detailed-LCOV links.
 - Add first-party Clang coverage reporting with a tested checked-in policy,
   HTML and LCOV artifacts, main-branch GitHub Pages publishing, and enforcement
   through the required CI gate; link CI and coverage from the README; update
