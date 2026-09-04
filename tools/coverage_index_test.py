@@ -40,6 +40,10 @@ class CoverageIndexTest(unittest.TestCase):
         self.assertIn("Carve coverage: pr/81", rendered)
         self.assertIn("75.00%", rendered)
         self.assertIn('href="lcov/"', rendered)
+        self.assertIn('href="coverage-data.json"', rendered)
+        self.assertIn('href="coverage.lcov"', rendered)
+        self.assertIn('href="coverage-summary.json"', rendered)
+        self.assertIn('href="coverage-meta.json"', rendered)
         self.assertIn('href="../../"', rendered)
 
     def test_site_contains_main_all_releases_and_all_prs_in_order(self):
