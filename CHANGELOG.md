@@ -6,6 +6,7 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Restore the shared MBO Works coverage-site hierarchy and policy-aware overview tables.
 - Align clang-tidy with the shared MBO Works triage, resolve the remaining first-party findings, and
   make the CI job enforcing instead of reporting failures as success.
 - Serve the retained coverage overview at the documented Pages root, publish complete per-file line,
