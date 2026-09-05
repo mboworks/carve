@@ -6,6 +6,8 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Normalize LLVM LCOV using tested source-owned exclusion directives; prepare subprocess arguments
+  before `fork()` and exclude only the child syscall block that cannot emit a coverage profile.
 - Cover subprocess fork, poll, read, and wait failures and interrupted-system-call retries; report
   output-capture failures after reaping the child instead of silently discarding them.
 - Cover subprocess pipe-creation failures and descriptor cleanup using real OS limits.
