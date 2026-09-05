@@ -35,7 +35,8 @@ using ::testing::Eq;
 using ::testing::HasSubstr;
 
 std::string ReadFile(const std::filesystem::path& path) {
-  std::ifstream stream(path, std::ios::binary);
+  // std::istreambuf_iterator consumes a mutable stream.
+  std::ifstream stream(path, std::ios::binary);  // NOLINT(misc-const-correctness)
   return {std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>()};
 }
 

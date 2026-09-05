@@ -55,7 +55,11 @@ jobs:
             bazel-clang-tidy-ubuntu-
             bazel-ubuntu-latest-
       - name: Materialize generated and external headers
-        run: bazel build --config=clang //... --disk_cache="$HOME/.cache/bazel-disk" --experimental_disk_cache_gc_max_size=600M --repository_cache="$HOME/.cache/bazel-repo"
+        # A cached top-level test object does not necessarily materialize its
+        # generated transitive headers. clang-tidy reads those headers directly
+        # from the execroot, so make protobuf's generated Struct header a
+        # top-level output before extracting the compilation database.
+        run: bazel build --config=clang //... @protobuf//:struct_cc_proto --disk_cache="$HOME/.cache/bazel-disk" --experimental_disk_cache_gc_max_size=600M --repository_cache="$HOME/.cache/bazel-repo"
       - name: Generate the Clang compilation database
         run: bazel run --disk_cache="$HOME/.cache/bazel-disk" --experimental_disk_cache_gc_max_size=600M --repository_cache="$HOME/.cache/bazel-repo" //:refresh_compile_commands
       - name: Locate the matching hermetic clang-tidy

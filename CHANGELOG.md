@@ -6,6 +6,7 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Materialize protobuf's generated headers before clang-tidy and document the mutable test stream.
 - Restore the shared MBO Works coverage-site hierarchy and policy-aware overview tables.
 - Align clang-tidy with the shared MBO Works triage, resolve the remaining first-party findings, and
   make the CI job enforcing instead of reporting failures as success.
