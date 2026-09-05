@@ -50,10 +50,13 @@ common --host_per_file_copt=//carve/.*@-Werror
 common --per_file_copt=//carve/.*@-Wthread-safety
 common --host_per_file_copt=//carve/.*@-Wthread-safety
 
-# Treat third-party (external repo) headers as system headers, so their warnings
-# do not trip our first-party -Werror (e.g. googletest's char8_t->char32_t under
-# clang 22, or other deps' diagnostics). Our own code stays fully warned.
-common --features=external_include_paths
+# Treat third-party (external repo) headers as system headers and mute warnings
+# while compiling external sources themselves. Apply both policies to target
+# and host/tool configurations; our own code stays fully warned and uses
+# -Werror above.
+common --features=external_include_paths --host_features=external_include_paths
+common --per_file_copt=external/.*@-w
+common --host_per_file_copt=external/.*@-w
 
 # The scan_deps subtree links libclang (LLVM is built with -fno-rtti). Match it
 # so deriving from clang's polymorphic types (e.g. DiagnosticConsumer) does not
