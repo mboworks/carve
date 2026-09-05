@@ -3,14 +3,14 @@
   "measurements": {
     "overall": {
       "lines": {
-        "covered": 897,
+        "covered": 899,
         "total": 971,
-        "percent": 92.38
+        "percent": 92.58
       },
       "functions": {
-        "covered": 67,
+        "covered": 69,
         "total": 70,
-        "percent": 95.71
+        "percent": 98.57
       },
       "branches": {
         "covered": 404,
@@ -54,14 +54,14 @@
     },
     "cdb": {
       "lines": {
-        "covered": 107,
+        "covered": 109,
         "total": 109,
-        "percent": 98.17
+        "percent": 100.0
       },
       "functions": {
-        "covered": 8,
+        "covered": 10,
         "total": 10,
-        "percent": 80.0
+        "percent": 100.0
       },
       "branches": {
         "covered": 40,

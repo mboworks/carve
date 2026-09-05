@@ -3,11 +3,11 @@
   "totals": {
     "lines": {
       "found": 971,
-      "hit": 897
+      "hit": 899
     },
     "functions": {
       "found": 70,
-      "hit": 67
+      "hit": 69
     },
     "branches": {
       "found": 468,
@@ -1588,15 +1588,15 @@
         },
         {
           "line": 48,
-          "execution_count": 29
+          "execution_count": 30
         },
         {
           "line": 50,
-          "execution_count": 0
+          "execution_count": 1
         },
         {
           "line": 52,
-          "execution_count": 0
+          "execution_count": 1
         },
         {
           "line": 54,
@@ -1708,22 +1708,22 @@
         },
         {
           "line": 109,
-          "execution_count": 29
+          "execution_count": 30
         },
         {
           "line": 110,
-          "execution_count": 29
+          "execution_count": 30
         },
         {
           "line": 111,
-          "execution_count": 29
+          "execution_count": 30
         }
       ],
       "functions": [
         {
           "name": "_ZN5carve3cdb21json_matcher_internal13EqJsonMatcherC2ESt17basic_string_viewIcSt11char_traitsIcEE",
           "start_line": 48,
-          "execution_count": 29
+          "execution_count": 30
         },
         {
           "name": "_ZN5carve3cdb21json_matcher_internal14ParseJsonValueESt17basic_string_viewIcSt11char_traitsIcEERN6google8protobuf5ValueE",
@@ -1733,12 +1733,12 @@
         {
           "name": "_ZN5carve3cdb6EqJsonB5cxx11ESt17basic_string_viewIcSt11char_traitsIcEE",
           "start_line": 109,
-          "execution_count": 29
+          "execution_count": 30
         },
         {
           "name": "_ZNK5carve3cdb21json_matcher_internal13EqJsonMatcher10DescribeToEPSo",
           "start_line": 50,
-          "execution_count": 0
+          "execution_count": 1
         },
         {
           "name": "_ZNK5carve3cdb21json_matcher_internal13EqJsonMatcher15MatchAndExplainENSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPN7testing19MatchResultListenerE",
@@ -1748,7 +1748,7 @@
         {
           "name": "_ZNK5carve3cdb21json_matcher_internal13EqJsonMatcher18DescribeNegationToEPSo",
           "start_line": 52,
-          "execution_count": 0
+          "execution_count": 1
         }
       ],
       "branches": [
