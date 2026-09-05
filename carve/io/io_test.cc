@@ -129,7 +129,11 @@ TEST_F(IoFailureTest, ReportsWriteFailureAndRemovesTemporaryFile) {
   ASSERT_THAT(restore_limit_result, Eq(0));
   ASSERT_THAT(restore_handler_result, Not(Eq(SIG_ERR)));
   EXPECT_THAT(status, StatusIs(absl::StatusCode::kUnknown, HasSubstr("failed to write temp file")));
-  EXPECT_THAT(std::filesystem::directory_iterator(dir), IsEmpty());
+  std::vector<std::filesystem::path> entries;
+  for (const auto& entry : std::filesystem::directory_iterator(dir)) {
+    entries.push_back(entry.path());
+  }
+  EXPECT_THAT(entries, IsEmpty());
 }
 
 TEST(ReadFileTest, MissingFileIsNotFound) {
