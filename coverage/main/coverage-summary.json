@@ -3,19 +3,19 @@
   "measurements": {
     "overall": {
       "lines": {
-        "covered": 916,
+        "covered": 925,
         "total": 971,
-        "percent": 94.34
+        "percent": 95.26
       },
       "functions": {
-        "covered": 69,
+        "covered": 70,
         "total": 70,
-        "percent": 98.57
+        "percent": 100.0
       },
       "branches": {
-        "covered": 412,
+        "covered": 414,
         "total": 468,
-        "percent": 88.03
+        "percent": 88.46
       }
     },
     "aggregate": {
@@ -139,19 +139,19 @@
     },
     "process": {
       "lines": {
-        "covered": 50,
+        "covered": 59,
         "total": 89,
-        "percent": 56.18
+        "percent": 66.29
       },
       "functions": {
-        "covered": 2,
+        "covered": 3,
         "total": 3,
-        "percent": 66.67
+        "percent": 100.0
       },
       "branches": {
-        "covered": 25,
+        "covered": 27,
         "total": 46,
-        "percent": 54.35
+        "percent": 58.7
       }
     },
     "prune": {
