@@ -1,0 +1,543 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - _coverage_report.dat - refresh/carve/refresh/refresh.cc</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">refresh/carve/refresh</a> - refresh.cc<span style="font-size: 80%;"> (source / <a href="refresh.cc.func-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">_coverage_report.dat</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryMed">84.1&nbsp;%</td>
+            <td class="headerCovTableEntry">271</td>
+            <td class="headerCovTableEntry">228</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2026-09-05 12:40:15</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntryHi">91.7&nbsp;%</td>
+            <td class="headerCovTableEntry">24</td>
+            <td class="headerCovTableEntry">22</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntryLo">72.0&nbsp;%</td>
+            <td class="headerCovTableEntry">132</td>
+            <td class="headerCovTableEntry">95</td>
+          </tr>
+                  <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">             Branch data     Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>                 :             : // SPDX-FileCopyrightText: Copyright (c) M. Boerger, the MBO Works authors</span>
+<span id="L2"><span class="lineNum">       2</span>                 :             : // SPDX-License-Identifier: Apache-2.0</span>
+<span id="L3"><span class="lineNum">       3</span>                 :             : //</span>
+<span id="L4"><span class="lineNum">       4</span>                 :             : // Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span id="L5"><span class="lineNum">       5</span>                 :             : // you may not use this file except in compliance with the License.</span>
+<span id="L6"><span class="lineNum">       6</span>                 :             : // You may obtain a copy of the License at</span>
+<span id="L7"><span class="lineNum">       7</span>                 :             : //</span>
+<span id="L8"><span class="lineNum">       8</span>                 :             : //      http://www.apache.org/licenses/LICENSE-2.0</span>
+<span id="L9"><span class="lineNum">       9</span>                 :             : //</span>
+<span id="L10"><span class="lineNum">      10</span>                 :             : // Unless required by applicable law or agreed to in writing, software</span>
+<span id="L11"><span class="lineNum">      11</span>                 :             : // distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span id="L12"><span class="lineNum">      12</span>                 :             : // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span id="L13"><span class="lineNum">      13</span>                 :             : // See the License for the specific language governing permissions and</span>
+<span id="L14"><span class="lineNum">      14</span>                 :             : // limitations under the License.</span>
+<span id="L15"><span class="lineNum">      15</span>                 :             : </span>
+<span id="L16"><span class="lineNum">      16</span>                 :             : #include &quot;carve/refresh/refresh.h&quot;</span>
+<span id="L17"><span class="lineNum">      17</span>                 :             : </span>
+<span id="L18"><span class="lineNum">      18</span>                 :             : #include &lt;algorithm&gt;</span>
+<span id="L19"><span class="lineNum">      19</span>                 :             : #include &lt;chrono&gt;</span>
+<span id="L20"><span class="lineNum">      20</span>                 :             : #include &lt;cstddef&gt;</span>
+<span id="L21"><span class="lineNum">      21</span>                 :             : #include &lt;cstdint&gt;</span>
+<span id="L22"><span class="lineNum">      22</span>                 :             : #include &lt;filesystem&gt;</span>
+<span id="L23"><span class="lineNum">      23</span>                 :             : #include &lt;optional&gt;</span>
+<span id="L24"><span class="lineNum">      24</span>                 :             : #include &lt;string&gt;</span>
+<span id="L25"><span class="lineNum">      25</span>                 :             : #include &lt;string_view&gt;</span>
+<span id="L26"><span class="lineNum">      26</span>                 :             : #include &lt;system_error&gt;</span>
+<span id="L27"><span class="lineNum">      27</span>                 :             : #include &lt;thread&gt;</span>
+<span id="L28"><span class="lineNum">      28</span>                 :             : #include &lt;utility&gt;</span>
+<span id="L29"><span class="lineNum">      29</span>                 :             : #include &lt;vector&gt;</span>
+<span id="L30"><span class="lineNum">      30</span>                 :             : </span>
+<span id="L31"><span class="lineNum">      31</span>                 :             : #include &quot;absl/algorithm/container.h&quot;</span>
+<span id="L32"><span class="lineNum">      32</span>                 :             : #include &quot;absl/base/thread_annotations.h&quot;</span>
+<span id="L33"><span class="lineNum">      33</span>                 :             : #include &quot;absl/container/flat_hash_set.h&quot;</span>
+<span id="L34"><span class="lineNum">      34</span>                 :             : #include &quot;absl/status/status.h&quot;</span>
+<span id="L35"><span class="lineNum">      35</span>                 :             : #include &quot;absl/status/statusor.h&quot;</span>
+<span id="L36"><span class="lineNum">      36</span>                 :             : #include &quot;absl/strings/match.h&quot;</span>
+<span id="L37"><span class="lineNum">      37</span>                 :             : #include &quot;absl/strings/str_cat.h&quot;</span>
+<span id="L38"><span class="lineNum">      38</span>                 :             : #include &quot;absl/strings/str_join.h&quot;</span>
+<span id="L39"><span class="lineNum">      39</span>                 :             : #include &quot;absl/synchronization/mutex.h&quot;</span>
+<span id="L40"><span class="lineNum">      40</span>                 :             : #include &quot;carve/aquery/aquery.h&quot;</span>
+<span id="L41"><span class="lineNum">      41</span>                 :             : #include &quot;carve/cdb/cdb.h&quot;</span>
+<span id="L42"><span class="lineNum">      42</span>                 :             : #include &quot;carve/command/command.h&quot;</span>
+<span id="L43"><span class="lineNum">      43</span>                 :             : #include &quot;carve/io/io.h&quot;</span>
+<span id="L44"><span class="lineNum">      44</span>                 :             : #include &quot;carve/process/process.h&quot;</span>
+<span id="L45"><span class="lineNum">      45</span>                 :             : #include &quot;carve/sidecar/carve.pb.h&quot;</span>
+<span id="L46"><span class="lineNum">      46</span>                 :             : #include &quot;carve/sidecar/sidecar.h&quot;</span>
+<span id="L47"><span class="lineNum">      47</span>                 :             : #include &quot;mbo/status/status_macros.h&quot;</span>
+<span id="L48"><span class="lineNum">      48</span>                 :             : </span>
+<span id="L49"><span class="lineNum">      49</span>                 :             : namespace carve::refresh {</span>
+<span id="L50"><span class="lineNum">      50</span>                 :             : namespace {</span>
+<span id="L51"><span class="lineNum">      51</span>                 :             : </span>
+<span id="L52"><span class="lineNum">      52</span>                 :             : // True if `arg` names a C/C++/Objective-C/CUDA translation unit by extension.</span>
+<span id="L53"><span class="lineNum">      53</span>                 :<span class="tlaGNC tlaBgGNC">          77 : bool IsSourceFile(std::string_view arg) {</span></span>
+<span id="L54"><span class="lineNum">      54</span>                 :<span class="tlaGNC">          77 :   const std::string_view::size_type dot = arg.rfind('.');</span></span>
+<span id="L55"><span class="lineNum">      55</span>         [<span class="tlaGBC" title="Branch 0 was taken 52 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 25 times"> + </span>]:<span class="tlaGNC">          77 :   if (dot == std::string_view::npos) {</span></span>
+<span id="L56"><span class="lineNum">      56</span>                 :<span class="tlaGNC">          52 :     return false;</span></span>
+<span id="L57"><span class="lineNum">      57</span>                 :<span class="tlaGNC">          52 :   }</span></span>
+<span id="L58"><span class="lineNum">      58</span>                 :<span class="tlaGNC">          25 :   const std::string_view ext = arg.substr(dot + 1);</span></span>
+<span id="L59"><span class="lineNum">      59</span>                 :<span class="tlaGNC">          25 :   static const absl::flat_hash_set&lt;std::string_view&gt;* const kSourceExt =</span></span>
+<span id="L60"><span class="lineNum">      60</span>                 :<span class="tlaGNC">          25 :       new absl::flat_hash_set&lt;std::string_view&gt;{&quot;c&quot;, &quot;cc&quot;, &quot;cpp&quot;, &quot;cxx&quot;, &quot;c++&quot;, &quot;cu&quot;, &quot;m&quot;, &quot;mm&quot;};</span></span>
+<span id="L61"><span class="lineNum">      61</span>                 :<span class="tlaGNC">          25 :   return kSourceExt-&gt;contains(ext);</span></span>
+<span id="L62"><span class="lineNum">      62</span>                 :<span class="tlaGNC">          77 : }</span></span>
+<span id="L63"><span class="lineNum">      63</span>                 :             : </span>
+<span id="L64"><span class="lineNum">      64</span>                 :             : // Returns the source operand of a compile command: the last argv token that</span>
+<span id="L65"><span class="lineNum">      65</span>                 :             : // looks like a source file. Empty if none is present.</span>
+<span id="L66"><span class="lineNum">      66</span>                 :<span class="tlaGNC">          25 : std::string_view FindSource(const std::vector&lt;std::string&gt;&amp; argv) {</span></span>
+<span id="L67"><span class="lineNum">      67</span>                 :<span class="tlaGNC">          25 :   std::string_view source;</span></span>
+<span id="L68"><span class="lineNum">      68</span>         [<span class="tlaGBC" title="Branch 0 was taken 77 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 25 times"> + </span>]:<span class="tlaGNC">          77 :   for (const std::string&amp; arg : argv) {</span></span>
+<span id="L69"><span class="lineNum">      69</span>         [<span class="tlaGBC" title="Branch 0 was taken 24 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 53 times"> + </span>]:<span class="tlaGNC">          77 :     if (IsSourceFile(arg)) {</span></span>
+<span id="L70"><span class="lineNum">      70</span>                 :<span class="tlaGNC">          24 :       source = arg;</span></span>
+<span id="L71"><span class="lineNum">      71</span>                 :<span class="tlaGNC">          24 :     }</span></span>
+<span id="L72"><span class="lineNum">      72</span>                 :<span class="tlaGNC">          77 :   }</span></span>
+<span id="L73"><span class="lineNum">      73</span>                 :<span class="tlaGNC">          25 :   return source;</span></span>
+<span id="L74"><span class="lineNum">      74</span>                 :<span class="tlaGNC">          25 : }</span></span>
+<span id="L75"><span class="lineNum">      75</span>                 :             : </span>
+<span id="L76"><span class="lineNum">      76</span>                 :             : // Resolves a (possibly exec-root-relative) source path to an absolute path so</span>
+<span id="L77"><span class="lineNum">      77</span>                 :             : // clangd matches it unambiguously. A path that is already absolute, or any path</span>
+<span id="L78"><span class="lineNum">      78</span>                 :             : // when `directory` is empty, is returned unchanged.</span>
+<span id="L79"><span class="lineNum">      79</span>                 :<span class="tlaGNC">           8 : std::string AbsoluteFile(std::string_view directory, std::string_view source) {</span></span>
+<span id="L80"><span class="lineNum">      80</span>                 :<span class="tlaGNC">           8 :   const std::filesystem::path path(source);</span></span>
+<span id="L81"><span class="lineNum">      81</span> [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 8 times"> + </span>][<span class="tlaGBC" title="Branch 0 was taken 1 time"> + </span><span class="tlaGBC" title="Branch 1 was taken 7 times"> + </span>]:<span class="tlaGNC">           8 :   if (directory.empty() || path.is_absolute()) {</span></span>
+<span id="L82"><span class="lineNum">      82</span>                 :<span class="tlaGNC">           1 :     return std::string(source);</span></span>
+<span id="L83"><span class="lineNum">      83</span>                 :<span class="tlaGNC">           1 :   }</span></span>
+<span id="L84"><span class="lineNum">      84</span>                 :<span class="tlaGNC">           7 :   return (std::filesystem::path(directory) / path).lexically_normal().string();</span></span>
+<span id="L85"><span class="lineNum">      85</span>                 :<span class="tlaGNC">           8 : }</span></span>
+<span id="L86"><span class="lineNum">      86</span>                 :             : </span>
+<span id="L87"><span class="lineNum">      87</span>                 :             : // Maps one compile action to an ActionRecord, de-Bazeling its argv and detecting</span>
+<span id="L88"><span class="lineNum">      88</span>                 :             : // the source operand. Headers are NOT scanned here; `RunRefresh` scans only the</span>
+<span id="L89"><span class="lineNum">      89</span>                 :             : // added/changed records (see `ScanHeaders`). Returns nullopt when no source can</span>
+<span id="L90"><span class="lineNum">      90</span>                 :             : // be identified (such an action cannot form a valid compilation-database entry).</span>
+<span id="L91"><span class="lineNum">      91</span>                 :<span class="tlaGNC">          25 : std::optional&lt;ActionRecord&gt; MakeRecord(const aquery::CompileAction&amp; action, std::string_view project_id) {</span></span>
+<span id="L92"><span class="lineNum">      92</span>                 :<span class="tlaGNC">          25 :   std::vector&lt;std::string&gt; arguments = command::DeBazel(action.arguments);</span></span>
+<span id="L93"><span class="lineNum">      93</span>                 :<span class="tlaGNC">          25 :   const std::string_view source = FindSource(arguments);</span></span>
+<span id="L94"><span class="lineNum">      94</span>         [<span class="tlaGBC" title="Branch 0 was taken 1 time"> + </span><span class="tlaGBC" title="Branch 1 was taken 24 times"> + </span>]:<span class="tlaGNC">          25 :   if (source.empty()) {</span></span>
+<span id="L95"><span class="lineNum">      95</span>                 :<span class="tlaGNC">           1 :     return std::nullopt;</span></span>
+<span id="L96"><span class="lineNum">      96</span>                 :<span class="tlaGNC">           1 :   }</span></span>
+<span id="L97"><span class="lineNum">      97</span>                 :<span class="tlaGNC">          24 :   ActionRecord record;</span></span>
+<span id="L98"><span class="lineNum">      98</span>                 :<span class="tlaGNC">          24 :   record.set_action_key(action.action_key);</span></span>
+<span id="L99"><span class="lineNum">      99</span>                 :<span class="tlaGNC">          24 :   record.add_sources(std::string(source));  // Copies before `arguments` is moved.</span></span>
+<span id="L100"><span class="lineNum">     100</span>         [<span class="tlaGBC" title="Branch 0 was taken 75 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 24 times"> + </span>]:<span class="tlaGNC">          75 :   for (std::string&amp; arg : arguments) {</span></span>
+<span id="L101"><span class="lineNum">     101</span>                 :<span class="tlaGNC">          75 :     record.add_command(std::move(arg));</span></span>
+<span id="L102"><span class="lineNum">     102</span>                 :<span class="tlaGNC">          75 :   }</span></span>
+<span id="L103"><span class="lineNum">     103</span>                 :             :   // Edition 2024 fields have explicit presence, so only set optional fields when</span>
+<span id="L104"><span class="lineNum">     104</span>                 :             :   // they exist; otherwise an empty value would serialize and differ from a</span>
+<span id="L105"><span class="lineNum">     105</span>                 :             :   // record that never had one.</span>
+<span id="L106"><span class="lineNum">     106</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 24 times"> + </span>]:<span class="tlaGNC">          24 :   if (!action.primary_output.empty()) {</span></span>
+<span id="L107"><span class="lineNum">     107</span>                 :<span class="tlaUNC tlaBgUNC">           0 :     record.set_primary_output(action.primary_output);</span></span>
+<span id="L108"><span class="lineNum">     108</span>                 :<span class="tlaUNC">           0 :   }</span></span>
+<span id="L109"><span class="lineNum">     109</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 24 times"> + </span>]:<span class="tlaGNC tlaBgGNC">          24 :   if (!project_id.empty()) {</span></span>
+<span id="L110"><span class="lineNum">     110</span>                 :<span class="tlaUNC tlaBgUNC">           0 :     record.set_project_id(project_id);</span></span>
+<span id="L111"><span class="lineNum">     111</span>                 :<span class="tlaUNC">           0 :   }</span></span>
+<span id="L112"><span class="lineNum">     112</span>                 :<span class="tlaGNC tlaBgGNC">          24 :   return record;</span></span>
+<span id="L113"><span class="lineNum">     113</span>                 :<span class="tlaGNC">          25 : }</span></span>
+<span id="L114"><span class="lineNum">     114</span>                 :             : </span>
+<span id="L115"><span class="lineNum">     115</span>                 :             : // Builds the current action records (all stamped with `project_id`, no headers</span>
+<span id="L116"><span class="lineNum">     116</span>                 :             : // yet) from serialized aquery bytes.</span>
+<span id="L117"><span class="lineNum">     117</span>                 :<span class="tlaGNC">          23 : absl::StatusOr&lt;ActionRecords&gt; BuildRecords(std::string_view aquery_proto, std::string_view project_id) {</span></span>
+<span id="L118"><span class="lineNum">     118</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 23 times"> + </span>]:<span class="tlaGNC">          23 :   MBO_ASSIGN_OR_RETURN(const std::vector&lt;aquery::CompileAction&gt; actions, aquery::ParseCompileActions(aquery_proto));</span></span>
+<span id="L119"><span class="lineNum">     119</span>                 :<span class="tlaGNC">          23 :   ActionRecords records;</span></span>
+<span id="L120"><span class="lineNum">     120</span>         [<span class="tlaGBC" title="Branch 0 was taken 25 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 23 times"> + </span>]:<span class="tlaGNC">          25 :   for (const aquery::CompileAction&amp; action : actions) {</span></span>
+<span id="L121"><span class="lineNum">     121</span>                 :<span class="tlaGNC">          25 :     std::optional&lt;ActionRecord&gt; record = MakeRecord(action, project_id);</span></span>
+<span id="L122"><span class="lineNum">     122</span>         [<span class="tlaGBC" title="Branch 0 was taken 24 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 1 time"> + </span>]:<span class="tlaGNC">          25 :     if (record.has_value()) {</span></span>
+<span id="L123"><span class="lineNum">     123</span>                 :<span class="tlaGNC">          24 :       *records.add_records() = *std::move(record);</span></span>
+<span id="L124"><span class="lineNum">     124</span>                 :<span class="tlaGNC">          24 :     }</span></span>
+<span id="L125"><span class="lineNum">     125</span>                 :<span class="tlaGNC">          25 :   }</span></span>
+<span id="L126"><span class="lineNum">     126</span>                 :<span class="tlaGNC">          23 :   return records;</span></span>
+<span id="L127"><span class="lineNum">     127</span>                 :<span class="tlaGNC">          23 : }</span></span>
+<span id="L128"><span class="lineNum">     128</span>                 :             : </span>
+<span id="L129"><span class="lineNum">     129</span>                 :             : // Substitutes Apple `wrapped_clang` placeholders in every record's command so</span>
+<span id="L130"><span class="lineNum">     130</span>                 :             : // the commands clangd and scan-deps see carry real SDK/developer paths. The</span>
+<span id="L131"><span class="lineNum">     131</span>                 :             : // resolver (IO: `xcode-select`/`xcrun`) is only invoked when some command</span>
+<span id="L132"><span class="lineNum">     132</span>                 :             : // actually contains a `__BAZEL_XCODE_` placeholder, so non-Apple builds pay</span>
+<span id="L133"><span class="lineNum">     133</span>                 :             : // nothing. See CARVE_DESIGN.md section 4.3.</span>
+<span id="L134"><span class="lineNum">     134</span>                 :<span class="tlaGNC">           1 : void ApplyXcodePlaceholders(ActionRecords&amp; records, const XcodeResolver&amp; resolver) {</span></span>
+<span id="L135"><span class="lineNum">     135</span>                 :<span class="tlaGNC">           1 :   const auto has_placeholder = [](const ActionRecord&amp; record) {</span></span>
+<span id="L136"><span class="lineNum">     136</span>                 :<span class="tlaGNC">           1 :     return absl::c_any_of(</span></span>
+<span id="L137"><span class="lineNum">     137</span>                 :<span class="tlaGNC">           1 :         record.command(), [](std::string_view arg) { return absl::StrContains(arg, &quot;__BAZEL_XCODE_&quot;); });</span></span>
+<span id="L138"><span class="lineNum">     138</span>                 :<span class="tlaGNC">           1 :   };</span></span>
+<span id="L139"><span class="lineNum">     139</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 1 time"> + </span>]:<span class="tlaGNC">           1 :   if (!absl::c_any_of(records.records(), has_placeholder)) {</span></span>
+<span id="L140"><span class="lineNum">     140</span>                 :<span class="tlaUNC tlaBgUNC">           0 :     return;</span></span>
+<span id="L141"><span class="lineNum">     141</span>                 :<span class="tlaUNC">           0 :   }</span></span>
+<span id="L142"><span class="lineNum">     142</span>                 :<span class="tlaGNC tlaBgGNC">           1 :   const XcodePaths xcode = resolver();</span></span>
+<span id="L143"><span class="lineNum">     143</span>         [<span class="tlaGBC" title="Branch 0 was taken 1 time"> + </span><span class="tlaGBC" title="Branch 1 was taken 1 time"> + </span>]:<span class="tlaGNC">           1 :   for (ActionRecord&amp; record : *records.mutable_records()) {</span></span>
+<span id="L144"><span class="lineNum">     144</span>                 :<span class="tlaGNC">           1 :     const std::vector&lt;std::string&gt; command(record.command().begin(), record.command().end());</span></span>
+<span id="L145"><span class="lineNum">     145</span>                 :<span class="tlaGNC">           1 :     record.clear_command();</span></span>
+<span id="L146"><span class="lineNum">     146</span>         [<span class="tlaGBC" title="Branch 0 was taken 4 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 1 time"> + </span>]:<span class="tlaGNC">           4 :     for (const std::string&amp; arg : command::ResolveXcodePlaceholders(command, xcode.developer_dir, xcode.sdkroot)) {</span></span>
+<span id="L147"><span class="lineNum">     147</span>                 :<span class="tlaGNC">           4 :       record.add_command(arg);</span></span>
+<span id="L148"><span class="lineNum">     148</span>                 :<span class="tlaGNC">           4 :     }</span></span>
+<span id="L149"><span class="lineNum">     149</span>                 :<span class="tlaGNC">           1 :   }</span></span>
+<span id="L150"><span class="lineNum">     150</span>                 :<span class="tlaGNC">           1 : }</span></span>
+<span id="L151"><span class="lineNum">     151</span>                 :             : </span>
+<span id="L152"><span class="lineNum">     152</span>                 :             : // Scans `record`'s command for header dependencies (against `directory`) and</span>
+<span id="L153"><span class="lineNum">     153</span>                 :             : // stores them on the record. Returns true if the scan succeeded; false if it</span>
+<span id="L154"><span class="lineNum">     154</span>                 :             : // failed (e.g. an unbuilt generated header that scan-deps cannot resolve), in</span>
+<span id="L155"><span class="lineNum">     155</span>                 :             : // which case `headers` is left unset and the caller should not treat the record</span>
+<span id="L156"><span class="lineNum">     156</span>                 :             : // as completely cached (CARVE_DESIGN.md section 4.2).</span>
+<span id="L157"><span class="lineNum">     157</span>                 :<span class="tlaGNC">          13 : bool ScanHeaders(ActionRecord&amp; record, std::string_view directory, const HeaderScanner&amp; scanner) {</span></span>
+<span id="L158"><span class="lineNum">     158</span>                 :<span class="tlaGNC">          13 :   const std::vector&lt;std::string&gt; argv(record.command().begin(), record.command().end());</span></span>
+<span id="L159"><span class="lineNum">     159</span>                 :<span class="tlaGNC">          13 :   absl::StatusOr&lt;std::vector&lt;std::string&gt;&gt; headers = scanner(argv, directory);</span></span>
+<span id="L160"><span class="lineNum">     160</span>         [<span class="tlaGBC" title="Branch 0 was taken 2 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 11 times"> + </span>]:<span class="tlaGNC">          13 :   if (!headers.ok()) {</span></span>
+<span id="L161"><span class="lineNum">     161</span>                 :<span class="tlaGNC">           2 :     return false;</span></span>
+<span id="L162"><span class="lineNum">     162</span>                 :<span class="tlaGNC">           2 :   }</span></span>
+<span id="L163"><span class="lineNum">     163</span>         [<span class="tlaGBC" title="Branch 0 was taken 14 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 11 times"> + </span>]:<span class="tlaGNC">          14 :   for (const std::string&amp; header : *headers) {</span></span>
+<span id="L164"><span class="lineNum">     164</span>                 :             :     // scan-deps resolves headers to absolute, per-host cache paths; store them</span>
+<span id="L165"><span class="lineNum">     165</span>                 :             :     // execroot-relative (like the sources) so the sidecar is host-independent.</span>
+<span id="L166"><span class="lineNum">     166</span>                 :<span class="tlaGNC">          14 :     record.add_headers(command::RelativizeToExecroot(header, directory));</span></span>
+<span id="L167"><span class="lineNum">     167</span>                 :<span class="tlaGNC">          14 :   }</span></span>
+<span id="L168"><span class="lineNum">     168</span>                 :<span class="tlaGNC">          11 :   return true;</span></span>
+<span id="L169"><span class="lineNum">     169</span>                 :<span class="tlaGNC">          13 : }</span></span>
+<span id="L170"><span class="lineNum">     170</span>                 :             : </span>
+<span id="L171"><span class="lineNum">     171</span>                 :             : // Scans a fixed set of action records concurrently. Each worker repeatedly</span>
+<span id="L172"><span class="lineNum">     172</span>                 :             : // claims the next unscanned record and scans it; `workers` threads run at once</span>
+<span id="L173"><span class="lineNum">     173</span>                 :             : // (the scanner must be safe to call concurrently - see HeaderScanner).</span>
+<span id="L174"><span class="lineNum">     174</span>                 :             : //</span>
+<span id="L175"><span class="lineNum">     175</span>                 :             : // The single mutex `mu_` controls exactly two members: the claim cursor `next_`</span>
+<span id="L176"><span class="lineNum">     176</span>                 :             : // and the failure list `failed_`. Everything else is immutable after</span>
+<span id="L177"><span class="lineNum">     177</span>                 :             : // construction. A record's own contents are mutated WITHOUT the lock: that is</span>
+<span id="L178"><span class="lineNum">     178</span>                 :             : // safe because `ClaimNext` hands each index to exactly one worker, so no two</span>
+<span id="L179"><span class="lineNum">     179</span>                 :             : // workers ever touch the same record (and distinct repeated-field elements have</span>
+<span id="L180"><span class="lineNum">     180</span>                 :             : // disjoint storage - the parent field is never resized here).</span>
+<span id="L181"><span class="lineNum">     181</span>                 :             : class ParallelScan {</span>
+<span id="L182"><span class="lineNum">     182</span>                 :             :  public:</span>
+<span id="L183"><span class="lineNum">     183</span>                 :             :   ParallelScan(std::vector&lt;ActionRecord*&gt; records, std::string_view directory, const HeaderScanner&amp; scanner)</span>
+<span id="L184"><span class="lineNum">     184</span>                 :<span class="tlaGNC">          18 :       : records_(std::move(records)), directory_(directory), scanner_(scanner) {}</span></span>
+<span id="L185"><span class="lineNum">     185</span>                 :             : </span>
+<span id="L186"><span class="lineNum">     186</span>                 :             :   // Scans every record using min(`workers`, size) threads (&gt;=1), and returns the</span>
+<span id="L187"><span class="lineNum">     187</span>                 :             :   // ascending indices of records whose scan failed.</span>
+<span id="L188"><span class="lineNum">     188</span>                 :<span class="tlaGNC">          18 :   std::vector&lt;std::size_t&gt; Run(unsigned workers) ABSL_LOCKS_EXCLUDED(mu_) {</span></span>
+<span id="L189"><span class="lineNum">     189</span>         [<span class="tlaGBC" title="Branch 0 was taken 10 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 8 times"> + </span>]:<span class="tlaGNC">          18 :     if (!records_.empty()) {</span></span>
+<span id="L190"><span class="lineNum">     190</span>                 :<span class="tlaGNC">          10 :       const unsigned threads = std::min&lt;unsigned&gt;(std::max(workers, 1U), records_.size());</span></span>
+<span id="L191"><span class="lineNum">     191</span>         [<span class="tlaGBC" title="Branch 0 was taken 9 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 1 time"> + </span>]:<span class="tlaGNC">          10 :       if (threads == 1) {</span></span>
+<span id="L192"><span class="lineNum">     192</span>                 :<span class="tlaGNC">           9 :         Worker();  // Serial: run on the calling thread, spawn nothing.</span></span>
+<span id="L193"><span class="lineNum">     193</span>                 :<span class="tlaGNC">           9 :       } else {</span></span>
+<span id="L194"><span class="lineNum">     194</span>                 :<span class="tlaGNC">           1 :         std::vector&lt;std::thread&gt; pool;</span></span>
+<span id="L195"><span class="lineNum">     195</span>                 :<span class="tlaGNC">           1 :         pool.reserve(threads);</span></span>
+<span id="L196"><span class="lineNum">     196</span>         [<span class="tlaGBC" title="Branch 0 was taken 4 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 1 time"> + </span>]:<span class="tlaGNC">           5 :         for (unsigned i = 0; i &lt; threads; ++i) {</span></span>
+<span id="L197"><span class="lineNum">     197</span>                 :<span class="tlaGNC">           4 :           pool.emplace_back([this] { Worker(); });</span></span>
+<span id="L198"><span class="lineNum">     198</span>                 :<span class="tlaGNC">           4 :         }</span></span>
+<span id="L199"><span class="lineNum">     199</span>         [<span class="tlaGBC" title="Branch 0 was taken 4 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 1 time"> + </span>]:<span class="tlaGNC">           4 :         for (std::thread&amp; thread : pool) {</span></span>
+<span id="L200"><span class="lineNum">     200</span>                 :<span class="tlaGNC">           4 :           thread.join();</span></span>
+<span id="L201"><span class="lineNum">     201</span>                 :<span class="tlaGNC">           4 :         }</span></span>
+<span id="L202"><span class="lineNum">     202</span>                 :<span class="tlaGNC">           1 :       }</span></span>
+<span id="L203"><span class="lineNum">     203</span>                 :<span class="tlaGNC">          10 :     }</span></span>
+<span id="L204"><span class="lineNum">     204</span>                 :<span class="tlaGNC">          18 :     const absl::MutexLock lock(mu_);</span></span>
+<span id="L205"><span class="lineNum">     205</span>                 :<span class="tlaGNC">          18 :     std::ranges::sort(failed_);</span></span>
+<span id="L206"><span class="lineNum">     206</span>                 :<span class="tlaGNC">          18 :     return failed_;</span></span>
+<span id="L207"><span class="lineNum">     207</span>                 :<span class="tlaGNC">          18 :   }</span></span>
+<span id="L208"><span class="lineNum">     208</span>                 :             : </span>
+<span id="L209"><span class="lineNum">     209</span>                 :             :  private:</span>
+<span id="L210"><span class="lineNum">     210</span>                 :             :   // Returns the next record index to scan, or nullopt once all are claimed.</span>
+<span id="L211"><span class="lineNum">     211</span>                 :<span class="tlaGNC">          26 :   std::optional&lt;std::size_t&gt; ClaimNext() ABSL_LOCKS_EXCLUDED(mu_) {</span></span>
+<span id="L212"><span class="lineNum">     212</span>                 :<span class="tlaGNC">          26 :     const absl::MutexLock lock(mu_);</span></span>
+<span id="L213"><span class="lineNum">     213</span>         [<span class="tlaGBC" title="Branch 0 was taken 13 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 13 times"> + </span>]:<span class="tlaGNC">          26 :     if (next_ &gt;= records_.size()) {</span></span>
+<span id="L214"><span class="lineNum">     214</span>                 :<span class="tlaGNC">          13 :       return std::nullopt;</span></span>
+<span id="L215"><span class="lineNum">     215</span>                 :<span class="tlaGNC">          13 :     }</span></span>
+<span id="L216"><span class="lineNum">     216</span>                 :<span class="tlaGNC">          13 :     return next_++;</span></span>
+<span id="L217"><span class="lineNum">     217</span>                 :<span class="tlaGNC">          26 :   }</span></span>
+<span id="L218"><span class="lineNum">     218</span>                 :             : </span>
+<span id="L219"><span class="lineNum">     219</span>                 :             :   // Worker loop: claim and scan records until none remain.</span>
+<span id="L220"><span class="lineNum">     220</span>                 :<span class="tlaGNC">          13 :   void Worker() ABSL_LOCKS_EXCLUDED(mu_) {</span></span>
+<span id="L221"><span class="lineNum">     221</span>         [<span class="tlaGBC" title="Branch 0 was taken 13 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 13 times"> + </span>]:<span class="tlaGNC">          26 :     while (const std::optional&lt;std::size_t&gt; index = ClaimNext()) {</span></span>
+<span id="L222"><span class="lineNum">     222</span>                 :             :       // Sole owner of records_[*index] (see class comment): scan without the lock.</span>
+<span id="L223"><span class="lineNum">     223</span>         [<span class="tlaGBC" title="Branch 0 was taken 2 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 11 times"> + </span>]:<span class="tlaGNC">          13 :       if (!ScanHeaders(*records_.at(*index), directory_, scanner_)) {</span></span>
+<span id="L224"><span class="lineNum">     224</span>                 :<span class="tlaGNC">           2 :         const absl::MutexLock lock(mu_);</span></span>
+<span id="L225"><span class="lineNum">     225</span>                 :<span class="tlaGNC">           2 :         failed_.push_back(*index);</span></span>
+<span id="L226"><span class="lineNum">     226</span>                 :<span class="tlaGNC">           2 :       }</span></span>
+<span id="L227"><span class="lineNum">     227</span>                 :<span class="tlaGNC">          13 :     }</span></span>
+<span id="L228"><span class="lineNum">     228</span>                 :<span class="tlaGNC">          13 :   }</span></span>
+<span id="L229"><span class="lineNum">     229</span>                 :             : </span>
+<span id="L230"><span class="lineNum">     230</span>                 :             :   const std::vector&lt;ActionRecord*&gt; records_;</span>
+<span id="L231"><span class="lineNum">     231</span>                 :             :   const std::string_view directory_;</span>
+<span id="L232"><span class="lineNum">     232</span>                 :             :   const HeaderScanner&amp; scanner_;</span>
+<span id="L233"><span class="lineNum">     233</span>                 :             : </span>
+<span id="L234"><span class="lineNum">     234</span>                 :             :   absl::Mutex mu_;</span>
+<span id="L235"><span class="lineNum">     235</span>                 :             :   std::size_t next_ ABSL_GUARDED_BY(mu_) = 0;             // Next record index to claim.</span>
+<span id="L236"><span class="lineNum">     236</span>                 :             :   std::vector&lt;std::size_t&gt; failed_ ABSL_GUARDED_BY(mu_);  // Indices of records whose scan failed.</span>
+<span id="L237"><span class="lineNum">     237</span>                 :             : };</span>
+<span id="L238"><span class="lineNum">     238</span>                 :             : </span>
+<span id="L239"><span class="lineNum">     239</span>                 :             : // Resolves the configured `jobs` to a worker-thread count (&gt;=1).</span>
+<span id="L240"><span class="lineNum">     240</span>                 :<span class="tlaGNC">          18 : unsigned WorkerCount(int jobs) {</span></span>
+<span id="L241"><span class="lineNum">     241</span>         [<span class="tlaGBC" title="Branch 0 was taken 1 time"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          18 :   return jobs &gt; 0 ? static_cast&lt;unsigned&gt;(jobs) : 1U;</span></span>
+<span id="L242"><span class="lineNum">     242</span>                 :<span class="tlaGNC">          18 : }</span></span>
+<span id="L243"><span class="lineNum">     243</span>                 :             : </span>
+<span id="L244"><span class="lineNum">     244</span>                 :             : // True if `path` exists and was last modified strictly after `since` (unix</span>
+<span id="L245"><span class="lineNum">     245</span>                 :             : // seconds). A path that cannot be stat'd (missing, unreadable) returns false: we</span>
+<span id="L246"><span class="lineNum">     246</span>                 :             : // cannot prove it changed, so it does not on its own force a re-scan.</span>
+<span id="L247"><span class="lineNum">     247</span>                 :<span class="tlaGNC">           8 : bool ModifiedAfter(const std::filesystem::path&amp; path, std::int64_t since) {</span></span>
+<span id="L248"><span class="lineNum">     248</span>                 :<span class="tlaGNC">           8 :   std::error_code error;</span></span>
+<span id="L249"><span class="lineNum">     249</span>                 :<span class="tlaGNC">           8 :   const std::filesystem::file_time_type mtime = std::filesystem::last_write_time(path, error);</span></span>
+<span id="L250"><span class="lineNum">     250</span>         [<span class="tlaGBC" title="Branch 0 was taken 2 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 6 times"> + </span>]:<span class="tlaGNC">           8 :   if (error) {</span></span>
+<span id="L251"><span class="lineNum">     251</span>                 :<span class="tlaGNC">           2 :     return false;</span></span>
+<span id="L252"><span class="lineNum">     252</span>                 :<span class="tlaGNC">           2 :   }</span></span>
+<span id="L253"><span class="lineNum">     253</span>                 :<span class="tlaGNC">           6 :   const auto seconds =</span></span>
+<span id="L254"><span class="lineNum">     254</span>                 :<span class="tlaGNC">           6 :       std::chrono::duration_cast&lt;std::chrono::seconds&gt;(std::chrono::file_clock::to_sys(mtime).time_since_epoch())</span></span>
+<span id="L255"><span class="lineNum">     255</span>                 :<span class="tlaGNC">           6 :           .count();</span></span>
+<span id="L256"><span class="lineNum">     256</span>                 :<span class="tlaGNC">           6 :   return seconds &gt; since;</span></span>
+<span id="L257"><span class="lineNum">     257</span>                 :<span class="tlaGNC">           8 : }</span></span>
+<span id="L258"><span class="lineNum">     258</span>                 :             : </span>
+<span id="L259"><span class="lineNum">     259</span>                 :             : // True if `stored`'s cached scan can no longer be trusted: any source or header</span>
+<span id="L260"><span class="lineNum">     260</span>                 :             : // it recorded has been modified since `written_at`, so its include set may have</span>
+<span id="L261"><span class="lineNum">     261</span>                 :             : // changed and the action must be re-scanned. An unstamped record (written_at 0)</span>
+<span id="L262"><span class="lineNum">     262</span>                 :             : // has no baseline and is always treated as stale. Sources and scan-deps headers</span>
+<span id="L263"><span class="lineNum">     263</span>                 :             : // are both stored execroot-relative, resolved against `directory` to stat them.</span>
+<span id="L264"><span class="lineNum">     264</span>                 :             : //</span>
+<span id="L265"><span class="lineNum">     265</span>                 :             : // `written_at` has one-second granularity, so an edit made in the same second as</span>
+<span id="L266"><span class="lineNum">     266</span>                 :             : // the previous refresh's stamp is not detected until the next edit or refresh -</span>
+<span id="L267"><span class="lineNum">     267</span>                 :             : // acceptable for a CDB cache, and clangd re-preprocesses regardless.</span>
+<span id="L268"><span class="lineNum">     268</span>                 :<span class="tlaGNC">           7 : bool CachedScanIsStale(const ActionRecord&amp; stored, std::string_view directory) {</span></span>
+<span id="L269"><span class="lineNum">     269</span>         [<span class="tlaGBC" title="Branch 0 was taken 1 time"> + </span><span class="tlaGBC" title="Branch 1 was taken 6 times"> + </span>]:<span class="tlaGNC">           7 :   if (stored.written_at() == 0) {</span></span>
+<span id="L270"><span class="lineNum">     270</span>                 :<span class="tlaGNC">           1 :     return true;  // No baseline timestamp: re-scan to establish one.</span></span>
+<span id="L271"><span class="lineNum">     271</span>                 :<span class="tlaGNC">           1 :   }</span></span>
+<span id="L272"><span class="lineNum">     272</span>                 :<span class="tlaGNC">           6 :   const std::int64_t since = stored.written_at();</span></span>
+<span id="L273"><span class="lineNum">     273</span>                 :             :   // Sources and scan-deps headers are both execroot-relative; resolve each</span>
+<span id="L274"><span class="lineNum">     274</span>                 :             :   // against `directory` (the execroot) to stat the file on disk.</span>
+<span id="L275"><span class="lineNum">     275</span>         [<span class="tlaGBC" title="Branch 0 was taken 4 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 2 times"> + </span>]:<span class="tlaGNC">           6 :   return absl::c_any_of(</span></span>
+<span id="L276"><span class="lineNum">     276</span>                 :<span class="tlaGNC">           6 :              stored.sources(),</span></span>
+<span id="L277"><span class="lineNum">     277</span>                 :<span class="tlaGNC">           6 :              [&amp;](std::string_view source) { return ModifiedAfter(AbsoluteFile(directory, source), since); })</span></span>
+<span id="L278"><span class="lineNum">     278</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 2 times"> + </span>]:<span class="tlaGNC">           2 :          || absl::c_any_of(stored.headers(), [&amp;](std::string_view header) {</span></span>
+<span id="L279"><span class="lineNum">     279</span>                 :<span class="tlaGNC">           2 :               return ModifiedAfter(AbsoluteFile(directory, header), since);</span></span>
+<span id="L280"><span class="lineNum">     280</span>                 :<span class="tlaGNC">           2 :             });</span></span>
+<span id="L281"><span class="lineNum">     281</span>                 :<span class="tlaGNC">           7 : }</span></span>
+<span id="L282"><span class="lineNum">     282</span>                 :             : </span>
+<span id="L283"><span class="lineNum">     283</span>                 :             : // Returns `bazel info execution_root` (trimmed): the directory clangd should</span>
+<span id="L284"><span class="lineNum">     284</span>                 :             : // resolve each entry's relative paths against.</span>
+<span id="L285"><span class="lineNum">     285</span>                 :<span class="tlaUNC tlaBgUNC">           0 : absl::StatusOr&lt;std::string&gt; BazelExecRoot(const std::string&amp; bazel) {</span></span>
+<span id="L286"><span class="lineNum">     286</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaUNC">           0 :   MBO_ASSIGN_OR_RETURN(</span></span>
+<span id="L287"><span class="lineNum">     287</span>                 :<span class="tlaUNC">           0 :       process::CommandResult result, process::Run({bazel.empty() ? &quot;bazel&quot; : bazel, &quot;info&quot;, &quot;execution_root&quot;}));</span></span>
+<span id="L288"><span class="lineNum">     288</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaUNC">           0 :   if (result.exit_code != 0) {</span></span>
+<span id="L289"><span class="lineNum">     289</span>                 :<span class="tlaUNC">           0 :     return absl::UnknownError(</span></span>
+<span id="L290"><span class="lineNum">     290</span>                 :<span class="tlaUNC">           0 :         absl::StrCat(&quot;bazel info execution_root failed (exit &quot;, result.exit_code, &quot;): &quot;, result.stderr_data));</span></span>
+<span id="L291"><span class="lineNum">     291</span>                 :<span class="tlaUNC">           0 :   }</span></span>
+<span id="L292"><span class="lineNum">     292</span>                 :<span class="tlaUNC">           0 :   std::string root = std::move(result.stdout_data);</span></span>
+<span id="L293"><span class="lineNum">     293</span> [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>][<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaUNC">           0 :   while (!root.empty() &amp;&amp; (root.back() == '\n' || root.back() == '\r' || root.back() == ' ')) {</span></span>
+<span class="lineNum">        </span> [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>][<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]
+<span id="L294"><span class="lineNum">     294</span>                 :<span class="tlaUNC">           0 :     root.pop_back();</span></span>
+<span id="L295"><span class="lineNum">     295</span>                 :<span class="tlaUNC">           0 :   }</span></span>
+<span id="L296"><span class="lineNum">     296</span>                 :<span class="tlaUNC">           0 :   return root;</span></span>
+<span id="L297"><span class="lineNum">     297</span>                 :<span class="tlaUNC">           0 : }</span></span>
+<span id="L298"><span class="lineNum">     298</span>                 :             : </span>
+<span id="L299"><span class="lineNum">     299</span>                 :             : // Runs `bazel aquery --output=proto` over `targets`, filtered to compile</span>
+<span id="L300"><span class="lineNum">     300</span>                 :             : // mnemonics and with param files embedded, and returns the serialized</span>
+<span id="L301"><span class="lineNum">     301</span>                 :             : // ActionGraphContainer bytes.</span>
+<span id="L302"><span class="lineNum">     302</span>                 :<span class="tlaUNC">           0 : absl::StatusOr&lt;std::string&gt; RunAquery(const std::vector&lt;std::string&gt;&amp; targets, const std::string&amp; bazel) {</span></span>
+<span id="L303"><span class="lineNum">     303</span>                 :<span class="tlaUNC">           0 :   const std::string expr =</span></span>
+<span id="L304"><span class="lineNum">     304</span>                 :<span class="tlaUNC">           0 :       absl::StrCat(&quot;mnemonic(\&quot;CppCompile|ObjcCompile|CppModuleCompile\&quot;, &quot;, absl::StrJoin(targets, &quot; + &quot;), &quot;)&quot;);</span></span>
+<span id="L305"><span class="lineNum">     305</span>                 :<span class="tlaUNC">           0 :   const std::vector&lt;std::string&gt; argv = {</span></span>
+<span id="L306"><span class="lineNum">     306</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaUNC">           0 :       bazel.empty() ? &quot;bazel&quot; : bazel, &quot;aquery&quot;, &quot;--output=proto&quot;, &quot;--include_param_files&quot;, expr};</span></span>
+<span id="L307"><span class="lineNum">     307</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaUNC">           0 :   MBO_ASSIGN_OR_RETURN(process::CommandResult result, process::Run(argv));</span></span>
+<span id="L308"><span class="lineNum">     308</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaUNC">           0 :   if (result.exit_code != 0) {</span></span>
+<span id="L309"><span class="lineNum">     309</span>                 :<span class="tlaUNC">           0 :     return absl::UnknownError(absl::StrCat(&quot;bazel aquery failed (exit &quot;, result.exit_code, &quot;): &quot;, result.stderr_data));</span></span>
+<span id="L310"><span class="lineNum">     310</span>                 :<span class="tlaUNC">           0 :   }</span></span>
+<span id="L311"><span class="lineNum">     311</span>                 :<span class="tlaUNC">           0 :   return std::move(result.stdout_data);</span></span>
+<span id="L312"><span class="lineNum">     312</span>                 :<span class="tlaUNC">           0 : }</span></span>
+<span id="L313"><span class="lineNum">     313</span>                 :             : </span>
+<span id="L314"><span class="lineNum">     314</span>                 :             : }  // namespace</span>
+<span id="L315"><span class="lineNum">     315</span>                 :             : </span>
+<span id="L316"><span class="lineNum">     316</span>                 :<span class="tlaGNC tlaBgGNC">          27 : std::vector&lt;cdb::CompileCommand&gt; EntriesFromRecords(const ActionRecords&amp; records, std::string_view directory) {</span></span>
+<span id="L317"><span class="lineNum">     317</span>                 :<span class="tlaGNC">          27 :   std::vector&lt;cdb::CompileCommand&gt; entries;</span></span>
+<span id="L318"><span class="lineNum">     318</span>                 :<span class="tlaGNC">          27 :   entries.reserve(static_cast&lt;std::size_t&gt;(records.records_size()));</span></span>
+<span id="L319"><span class="lineNum">     319</span>         [<span class="tlaGBC" title="Branch 0 was taken 29 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 27 times"> + </span>]:<span class="tlaGNC">          29 :   for (const ActionRecord&amp; record : records.records()) {</span></span>
+<span id="L320"><span class="lineNum">     320</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 29 times"> + </span>]:<span class="tlaGNC">          29 :     if (record.sources_size() == 0) {</span></span>
+<span id="L321"><span class="lineNum">     321</span>                 :<span class="tlaUNC tlaBgUNC">           0 :       continue;</span></span>
+<span id="L322"><span class="lineNum">     322</span>                 :<span class="tlaUNC">           0 :     }</span></span>
+<span id="L323"><span class="lineNum">     323</span>                 :<span class="tlaGNC tlaBgGNC">          29 :     std::vector&lt;std::string&gt; arguments(record.command().begin(), record.command().end());</span></span>
+<span id="L324"><span class="lineNum">     324</span>                 :<span class="tlaGNC">          29 :     entries.push_back(</span></span>
+<span id="L325"><span class="lineNum">     325</span>                 :<span class="tlaGNC">          29 :         cdb::CompileCommand{</span></span>
+<span id="L326"><span class="lineNum">     326</span>                 :<span class="tlaGNC">          29 :             .directory = std::string(directory),</span></span>
+<span id="L327"><span class="lineNum">     327</span>                 :             :             // The source stays execroot-relative; `directory` (the execroot) is</span>
+<span id="L328"><span class="lineNum">     328</span>                 :             :             // what clangd resolves it against. Emitting it relative keeps the</span>
+<span id="L329"><span class="lineNum">     329</span>                 :             :             // database host-independent apart from `directory` (CARVE_DESIGN.md</span>
+<span id="L330"><span class="lineNum">     330</span>                 :             :             // section 9) and matches the (already relative) argv.</span>
+<span id="L331"><span class="lineNum">     331</span>                 :<span class="tlaGNC">          29 :             .file = std::string(record.sources(0)),</span></span>
+<span id="L332"><span class="lineNum">     332</span>                 :<span class="tlaGNC">          29 :             .arguments = std::move(arguments),</span></span>
+<span id="L333"><span class="lineNum">     333</span>                 :<span class="tlaGNC">          29 :             .output = std::string(record.primary_output()),</span></span>
+<span id="L334"><span class="lineNum">     334</span>                 :<span class="tlaGNC">          29 :         });</span></span>
+<span id="L335"><span class="lineNum">     335</span>                 :<span class="tlaGNC">          29 :   }</span></span>
+<span id="L336"><span class="lineNum">     336</span>                 :<span class="tlaGNC">          27 :   return entries;</span></span>
+<span id="L337"><span class="lineNum">     337</span>                 :<span class="tlaGNC">          27 : }</span></span>
+<span id="L338"><span class="lineNum">     338</span>                 :             : </span>
+<span id="L339"><span class="lineNum">     339</span>                 :<span class="tlaGNC">           5 : absl::StatusOr&lt;std::vector&lt;cdb::CompileCommand&gt;&gt; BuildEntries(std::string_view aquery_proto, const Options&amp; options) {</span></span>
+<span id="L340"><span class="lineNum">     340</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 5 times"> + </span>]:<span class="tlaGNC">           5 :   MBO_ASSIGN_OR_RETURN(const ActionRecords records, BuildRecords(aquery_proto, options.project_id));</span></span>
+<span id="L341"><span class="lineNum">     341</span>                 :<span class="tlaGNC">           5 :   return EntriesFromRecords(records, options.directory);</span></span>
+<span id="L342"><span class="lineNum">     342</span>                 :<span class="tlaGNC">           5 : }</span></span>
+<span id="L343"><span class="lineNum">     343</span>                 :             : </span>
+<span id="L344"><span class="lineNum">     344</span>                 :             : // Status-propagation macros inflate clang-tidy's measured complexity here.</span>
+<span id="L345"><span class="lineNum">     345</span>                 :             : // NOLINTNEXTLINE(readability-function-cognitive-complexity)</span>
+<span id="L346"><span class="lineNum">     346</span>                 :<span class="tlaGNC">          19 : absl::StatusOr&lt;RefreshStats&gt; RunRefresh(const FileOptions&amp; options) {</span></span>
+<span id="L347"><span class="lineNum">     347</span>                 :<span class="tlaGNC">          19 :   absl::StatusOr&lt;std::string&gt; proto;</span></span>
+<span id="L348"><span class="lineNum">     348</span>         [<span class="tlaGBC" title="Branch 0 was taken 19 times"> + </span><span class="tlaUNC" title="Branch 1 was not taken"> - </span>]:<span class="tlaGNC">          19 :   if (!options.aquery_proto_path.empty()) {</span></span>
+<span id="L349"><span class="lineNum">     349</span>                 :<span class="tlaGNC">          19 :     proto = io::ReadFile(options.aquery_proto_path);</span></span>
+<span id="L350"><span class="lineNum">     350</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaGNC">          19 :   } else if (!options.targets.empty()) {</span></span>
+<span id="L351"><span class="lineNum">     351</span>                 :<span class="tlaUNC tlaBgUNC">           0 :     proto = RunAquery(options.targets, options.bazel_path);</span></span>
+<span id="L352"><span class="lineNum">     352</span>                 :<span class="tlaUNC">           0 :   } else {</span></span>
+<span id="L353"><span class="lineNum">     353</span>                 :<span class="tlaUNC">           0 :     return absl::InvalidArgumentError(&quot;refresh needs --aquery_proto or --targets&quot;);</span></span>
+<span id="L354"><span class="lineNum">     354</span>                 :<span class="tlaUNC">           0 :   }</span></span>
+<span id="L355"><span class="lineNum">     355</span>         [<span class="tlaGBC" title="Branch 0 was taken 37 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 20 times"> + </span>]:<span class="tlaGNC tlaBgGNC">          19 :   MBO_RETURN_IF_ERROR(proto.status());  // status() so a large proto is not copied.</span></span>
+<span id="L356"><span class="lineNum">     356</span>                 :             : </span>
+<span id="L357"><span class="lineNum">     357</span>                 :             :   // Default the entry directory to the execroot so exec-relative argv resolve.</span>
+<span id="L358"><span class="lineNum">     358</span>                 :<span class="tlaGNC">          18 :   std::string directory = options.directory;</span></span>
+<span id="L359"><span class="lineNum">     359</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 18 times"> + </span>]:<span class="tlaGNC">          18 :   if (directory.empty()) {</span></span>
+<span id="L360"><span class="lineNum">     360</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaUNC tlaBgUNC">           0 :     MBO_ASSIGN_OR_RETURN(std::string execroot, BazelExecRoot(options.bazel_path));</span></span>
+<span id="L361"><span class="lineNum">     361</span>                 :<span class="tlaUNC">           0 :     directory = std::move(execroot);</span></span>
+<span id="L362"><span class="lineNum">     362</span>                 :<span class="tlaUNC">           0 :   }</span></span>
+<span id="L363"><span class="lineNum">     363</span>                 :             : </span>
+<span id="L364"><span class="lineNum">     364</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 18 times"> + </span>]:<span class="tlaGNC tlaBgGNC">          36 :   MBO_ASSIGN_OR_RETURN(ActionRecords current, BuildRecords(*proto, options.project_id));</span></span>
+<span id="L365"><span class="lineNum">     365</span>         [<span class="tlaGBC" title="Branch 0 was taken 1 time"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          36 :   if (options.xcode_resolver) {</span></span>
+<span id="L366"><span class="lineNum">     366</span>                 :<span class="tlaGNC">           1 :     ApplyXcodePlaceholders(current, options.xcode_resolver);</span></span>
+<span id="L367"><span class="lineNum">     367</span>                 :<span class="tlaGNC">           1 :   }</span></span>
+<span id="L368"><span class="lineNum">     368</span>                 :             : </span>
+<span id="L369"><span class="lineNum">     369</span>         [<span class="tlaGBC" title="Branch 0 was taken 1 time"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          36 :   if (options.sidecar_path.empty()) {</span></span>
+<span id="L370"><span class="lineNum">     370</span>                 :             :     // No cache: scan every action (when a scanner is configured).</span>
+<span id="L371"><span class="lineNum">     371</span>                 :<span class="tlaGNC">           1 :     std::vector&lt;ActionRecord*&gt; to_scan;</span></span>
+<span id="L372"><span class="lineNum">     372</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 1 time"> + </span>]:<span class="tlaGNC">           1 :     if (options.scanner) {</span></span>
+<span id="L373"><span class="lineNum">     373</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaUNC tlaBgUNC">           0 :       for (ActionRecord&amp; record : *current.mutable_records()) {</span></span>
+<span id="L374"><span class="lineNum">     374</span>                 :<span class="tlaUNC">           0 :         to_scan.push_back(&amp;record);</span></span>
+<span id="L375"><span class="lineNum">     375</span>                 :<span class="tlaUNC">           0 :       }</span></span>
+<span id="L376"><span class="lineNum">     376</span>                 :<span class="tlaUNC">           0 :     }</span></span>
+<span id="L377"><span class="lineNum">     377</span>                 :<span class="tlaGNC tlaBgGNC">           1 :     const std::vector&lt;std::size_t&gt; failed =</span></span>
+<span id="L378"><span class="lineNum">     378</span>                 :<span class="tlaGNC">           1 :         ParallelScan(to_scan, directory, options.scanner).Run(WorkerCount(options.jobs));</span></span>
+<span id="L379"><span class="lineNum">     379</span>                 :             : </span>
+<span id="L380"><span class="lineNum">     380</span>                 :<span class="tlaGNC">           1 :     const std::vector&lt;cdb::CompileCommand&gt; entries = EntriesFromRecords(current, directory);</span></span>
+<span id="L381"><span class="lineNum">     381</span>                 :<span class="tlaGNC">           1 :     RefreshStats stats;</span></span>
+<span id="L382"><span class="lineNum">     382</span>                 :<span class="tlaGNC">           1 :     stats.entries = static_cast&lt;int&gt;(entries.size());</span></span>
+<span id="L383"><span class="lineNum">     383</span>                 :<span class="tlaGNC">           1 :     stats.scanned = static_cast&lt;int&gt;(to_scan.size());</span></span>
+<span id="L384"><span class="lineNum">     384</span>                 :<span class="tlaGNC">           1 :     stats.unresolved = static_cast&lt;int&gt;(failed.size());</span></span>
+<span id="L385"><span class="lineNum">     385</span>         [<span class="tlaGBC" title="Branch 0 was taken 2 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 1 time"> + </span>]:<span class="tlaGNC">           1 :     MBO_RETURN_IF_ERROR(cdb::Write(options.output_path, entries));</span></span>
+<span id="L386"><span class="lineNum">     386</span>                 :<span class="tlaGNC">           1 :     return stats;</span></span>
+<span id="L387"><span class="lineNum">     387</span>                 :<span class="tlaGNC">           1 :   }</span></span>
+<span id="L388"><span class="lineNum">     388</span>                 :             : </span>
+<span id="L389"><span class="lineNum">     389</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          36 :   MBO_ASSIGN_OR_RETURN(const ActionRecords stored, sidecar::Load(options.sidecar_path));</span></span>
+<span id="L390"><span class="lineNum">     390</span>                 :             : </span>
+<span id="L391"><span class="lineNum">     391</span>                 :             :   // Decide serially which actions need a (re)scan: added/changed actions, plus</span>
+<span id="L392"><span class="lineNum">     392</span>                 :             :   // unchanged actions whose cached headers (or source) were edited on disk since</span>
+<span id="L393"><span class="lineNum">     393</span>                 :             :   // the scan was recorded. Truly unchanged actions reuse the stored record's</span>
+<span id="L394"><span class="lineNum">     394</span>                 :             :   // cached headers via MergeRecords below - the incremental-refresh win.</span>
+<span id="L395"><span class="lineNum">     395</span>                 :<span class="tlaGNC">          34 :   std::vector&lt;ActionRecord*&gt; to_scan;</span></span>
+<span id="L396"><span class="lineNum">     396</span>         [<span class="tlaGBC" title="Branch 0 was taken 12 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 5 times"> + </span>]:<span class="tlaGNC">          34 :   if (options.scanner) {</span></span>
+<span id="L397"><span class="lineNum">     397</span>         [<span class="tlaGBC" title="Branch 0 was taken 15 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 12 times"> + </span>]:<span class="tlaGNC">          15 :     for (ActionRecord&amp; record : *current.mutable_records()) {</span></span>
+<span id="L398"><span class="lineNum">     398</span>                 :<span class="tlaGNC">          15 :       const ActionRecord* reusable = sidecar::FindReusableRecord(stored, record, options.project_id);</span></span>
+<span id="L399"><span class="lineNum">     399</span> [<span class="tlaGBC" title="Branch 0 was taken 8 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 7 times"> + </span>][<span class="tlaGBC" title="Branch 0 was taken 5 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 2 times"> + </span>]:<span class="tlaGNC">          15 :       if (reusable == nullptr || CachedScanIsStale(*reusable, directory)) {</span></span>
+<span id="L400"><span class="lineNum">     400</span>                 :<span class="tlaGNC">          13 :         to_scan.push_back(&amp;record);</span></span>
+<span id="L401"><span class="lineNum">     401</span>                 :<span class="tlaGNC">          13 :       }</span></span>
+<span id="L402"><span class="lineNum">     402</span>                 :<span class="tlaGNC">          15 :     }</span></span>
+<span id="L403"><span class="lineNum">     403</span>                 :<span class="tlaGNC">          12 :   }</span></span>
+<span id="L404"><span class="lineNum">     404</span>                 :             : </span>
+<span id="L405"><span class="lineNum">     405</span>                 :             :   // Scan them in parallel, then build the key sets serially. `rescanned` records</span>
+<span id="L406"><span class="lineNum">     406</span>                 :             :   // which keys carry a fresh scan so the merge prefers the current record over</span>
+<span id="L407"><span class="lineNum">     407</span>                 :             :   // the stale cache; `unresolved` records which scans failed.</span>
+<span id="L408"><span class="lineNum">     408</span>                 :<span class="tlaGNC">          34 :   const std::vector&lt;std::size_t&gt; failed =</span></span>
+<span id="L409"><span class="lineNum">     409</span>                 :<span class="tlaGNC">          34 :       ParallelScan(to_scan, directory, options.scanner).Run(WorkerCount(options.jobs));</span></span>
+<span id="L410"><span class="lineNum">     410</span>                 :<span class="tlaGNC">          34 :   absl::flat_hash_set&lt;std::string_view&gt; rescanned;</span></span>
+<span id="L411"><span class="lineNum">     411</span>         [<span class="tlaGBC" title="Branch 0 was taken 13 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          34 :   for (const ActionRecord* record : to_scan) {</span></span>
+<span id="L412"><span class="lineNum">     412</span>                 :<span class="tlaGNC">          13 :     rescanned.insert(record-&gt;action_key());</span></span>
+<span id="L413"><span class="lineNum">     413</span>                 :<span class="tlaGNC">          13 :   }</span></span>
+<span id="L414"><span class="lineNum">     414</span>                 :<span class="tlaGNC">          34 :   absl::flat_hash_set&lt;std::string_view&gt; unresolved;</span></span>
+<span id="L415"><span class="lineNum">     415</span>         [<span class="tlaGBC" title="Branch 0 was taken 2 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          34 :   for (const std::size_t index : failed) {</span></span>
+<span id="L416"><span class="lineNum">     416</span>                 :<span class="tlaGNC">           2 :     unresolved.insert(to_scan.at(index)-&gt;action_key());</span></span>
+<span id="L417"><span class="lineNum">     417</span>                 :<span class="tlaGNC">           2 :   }</span></span>
+<span id="L418"><span class="lineNum">     418</span>                 :             : </span>
+<span id="L419"><span class="lineNum">     419</span>                 :<span class="tlaGNC">          34 :   ActionRecords merged = sidecar::MergeRecords(stored, current, options.project_id, rescanned);</span></span>
+<span id="L420"><span class="lineNum">     420</span>                 :             : </span>
+<span id="L421"><span class="lineNum">     421</span>                 :             :   // Stamp written_at on the rows this refresh owns - added, changed, and reused</span>
+<span id="L422"><span class="lineNum">     422</span>                 :             :   // alike - so prune can GC projects that have stopped refreshing. Other</span>
+<span id="L423"><span class="lineNum">     423</span>                 :             :   // projects' rows keep their own timestamps. An action whose scan did not fully</span>
+<span id="L424"><span class="lineNum">     424</span>                 :             :   // resolve is left UNstamped (written_at stays unset, which reads as 0 = stale)</span>
+<span id="L425"><span class="lineNum">     425</span>                 :             :   // so the next refresh re-scans it rather than caching an incomplete header set</span>
+<span id="L426"><span class="lineNum">     426</span>                 :             :   // (CARVE_DESIGN.md sections 4.2, 4.4).</span>
+<span id="L427"><span class="lineNum">     427</span>         [<span class="tlaGBC" title="Branch 0 was taken 7 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 10 times"> + </span>]:<span class="tlaGNC">          34 :   if (options.now) {</span></span>
+<span id="L428"><span class="lineNum">     428</span>                 :<span class="tlaGNC">           7 :     const std::int64_t stamp = options.now();</span></span>
+<span id="L429"><span class="lineNum">     429</span>         [<span class="tlaGBC" title="Branch 0 was taken 7 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 7 times"> + </span>]:<span class="tlaGNC">           7 :     for (ActionRecord&amp; record : *merged.mutable_records()) {</span></span>
+<span id="L430"><span class="lineNum">     430</span> [<span class="tlaGBC" title="Branch 0 was taken 12 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 2 times"> + </span>][<span class="tlaGBC" title="Branch 0 was taken 5 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 2 times"> + </span>]:<span class="tlaGNC">           7 :       if (record.project_id() == options.project_id &amp;&amp; !unresolved.contains(record.action_key())) {</span></span>
+<span id="L431"><span class="lineNum">     431</span>                 :<span class="tlaGNC">           5 :         record.set_written_at(stamp);</span></span>
+<span id="L432"><span class="lineNum">     432</span>                 :<span class="tlaGNC">           5 :       }</span></span>
+<span id="L433"><span class="lineNum">     433</span>                 :<span class="tlaGNC">           7 :     }</span></span>
+<span id="L434"><span class="lineNum">     434</span>                 :<span class="tlaGNC">           7 :   }</span></span>
+<span id="L435"><span class="lineNum">     435</span>                 :             : </span>
+<span id="L436"><span class="lineNum">     436</span>         [<span class="tlaGBC" title="Branch 0 was taken 34 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          34 :   MBO_RETURN_IF_ERROR(sidecar::Save(options.sidecar_path, merged));</span></span>
+<span id="L437"><span class="lineNum">     437</span>                 :             : </span>
+<span id="L438"><span class="lineNum">     438</span>                 :             :   // Persist the header -&gt; owning-action index alongside the entries sidecar</span>
+<span id="L439"><span class="lineNum">     439</span>                 :             :   // (the design's second cache file). It is a deterministic projection of the</span>
+<span id="L440"><span class="lineNum">     440</span>                 :             :   // merged records, so it is rebuilt from scratch each refresh - the reverse</span>
+<span id="L441"><span class="lineNum">     441</span>                 :             :   // lookup that maps an edited header to the action(s) to re-scan. See</span>
+<span id="L442"><span class="lineNum">     442</span>                 :             :   // CARVE_DESIGN.md sections 4.4-4.5.</span>
+<span id="L443"><span class="lineNum">     443</span>                 :<span class="tlaGNC">          17 :   const std::filesystem::path index_path =</span></span>
+<span id="L444"><span class="lineNum">     444</span>                 :<span class="tlaGNC">          17 :       std::filesystem::path(options.sidecar_path).parent_path() / &quot;headers-index.binpb&quot;;</span></span>
+<span id="L445"><span class="lineNum">     445</span>         [<span class="tlaGBC" title="Branch 0 was taken 34 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          17 :   MBO_RETURN_IF_ERROR(sidecar::SaveHeaderIndex(index_path, sidecar::BuildHeaderIndex(merged)));</span></span>
+<span id="L446"><span class="lineNum">     446</span>                 :             : </span>
+<span id="L447"><span class="lineNum">     447</span>                 :<span class="tlaGNC">          17 :   const std::vector&lt;cdb::CompileCommand&gt; entries = EntriesFromRecords(merged, directory);</span></span>
+<span id="L448"><span class="lineNum">     448</span>                 :<span class="tlaGNC">          17 :   RefreshStats stats;</span></span>
+<span id="L449"><span class="lineNum">     449</span>                 :<span class="tlaGNC">          17 :   stats.entries = static_cast&lt;int&gt;(entries.size());</span></span>
+<span id="L450"><span class="lineNum">     450</span>                 :<span class="tlaGNC">          17 :   stats.scanned = static_cast&lt;int&gt;(rescanned.size());</span></span>
+<span id="L451"><span class="lineNum">     451</span>                 :<span class="tlaGNC">          17 :   stats.unresolved = static_cast&lt;int&gt;(unresolved.size());</span></span>
+<span id="L452"><span class="lineNum">     452</span>                 :<span class="tlaGNC">          17 :   stats.reused = current.records_size() - stats.scanned;  // Own-project actions not rescanned.</span></span>
+<span id="L453"><span class="lineNum">     453</span>         [<span class="tlaGBC" title="Branch 0 was taken 34 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 17 times"> + </span>]:<span class="tlaGNC">          17 :   MBO_RETURN_IF_ERROR(cdb::Write(options.output_path, entries));</span></span>
+<span id="L454"><span class="lineNum">     454</span>                 :<span class="tlaGNC">          17 :   return stats;</span></span>
+<span id="L455"><span class="lineNum">     455</span>                 :<span class="tlaGNC">          17 : }</span></span>
+<span id="L456"><span class="lineNum">     456</span>                 :             : </span>
+<span id="L457"><span class="lineNum">     457</span>                 :             : }  // namespace carve::refresh</span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.0-1</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>
