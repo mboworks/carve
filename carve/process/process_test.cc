@@ -15,6 +15,7 @@
 
 #include "carve/process/process.h"
 
+#include <csignal>
 #include <string>
 #include <vector>
 
@@ -51,6 +52,12 @@ TEST(RunTest, MissingProgramReportsExit127) {
   EXPECT_THAT(
       ::carve::process::Run(std::vector<std::string>{"/no/such/program/carve"}),
       IsOkAndHolds(Field(&CommandResult::exit_code, Eq(127))));
+}
+
+TEST(RunTest, SignalTerminationReportsShellConventionExitCode) {
+  EXPECT_THAT(
+      ::carve::process::Run(std::vector<std::string>{"/bin/sh", "-c", "kill -TERM $$"}),
+      IsOkAndHolds(Field(&CommandResult::exit_code, Eq(128 + SIGTERM))));
 }
 
 TEST(RunTest, LargeOutputDoesNotDeadlock) {
