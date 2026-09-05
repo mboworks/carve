@@ -19,6 +19,7 @@
 
 #include <csignal>
 #include <filesystem>
+#include <utility>
 #include <vector>
 
 #include "absl/status/status.h"
@@ -37,9 +38,18 @@ using ::testing::Eq;
 using ::testing::HasSubstr;
 using ::testing::IsEmpty;
 using ::testing::Not;
+using ::testing::Pair;
 using ::testing::SizeIs;
 
 struct IoFailureTest : ::testing::Test {};
+
+std::vector<std::filesystem::path> DirectoryEntries(const std::filesystem::path& dir) {
+  std::vector<std::filesystem::path> entries;
+  for (const auto& entry : std::filesystem::directory_iterator(dir)) {
+    entries.push_back(entry.path());
+  }
+  return entries;
+}
 
 TEST(WriteAtomicallyTest, CreatesParentsAndWritesContent) {
   const std::filesystem::path path =
@@ -59,11 +69,7 @@ TEST(WriteAtomicallyTest, OverwritesInPlaceWithoutLeavingTempFiles) {
   ASSERT_THAT(WriteAtomically(path, "second"), IsOk());
   EXPECT_THAT(ReadFile(path), IsOkAndHolds(Eq("second")));
 
-  std::vector<std::filesystem::path> entries;
-  for (const auto& entry : std::filesystem::directory_iterator(dir)) {
-    entries.push_back(entry.path());
-  }
-  EXPECT_THAT(entries, SizeIs(1)) << "temp files were left behind";
+  EXPECT_THAT(DirectoryEntries(dir), SizeIs(1)) << "temp files were left behind";
 }
 
 TEST(WriteAtomicallyTest, ReportsParentCreationFailure) {
@@ -82,11 +88,7 @@ TEST(WriteAtomicallyTest, RenameFailureRemovesTemporaryFile) {
   ASSERT_THAT(WriteAtomically(destination / "occupied", "blocker"), IsOk());
 
   EXPECT_THAT(WriteAtomically(destination, "content"), StatusIs(absl::StatusCode::kUnknown));
-  std::vector<std::filesystem::path> entries;
-  for (const auto& entry : std::filesystem::directory_iterator(dir)) {
-    entries.push_back(entry.path());
-  }
-  EXPECT_THAT(entries, SizeIs(1)) << "temp files were left behind";
+  EXPECT_THAT(DirectoryEntries(dir), SizeIs(1)) << "temp files were left behind";
 }
 
 TEST_F(IoFailureTest, ReportsTemporaryFileOpenFailure) {
@@ -127,14 +129,9 @@ TEST_F(IoFailureTest, ReportsWriteFailureAndRemovesTemporaryFile) {
 
   const int restore_limit_result = setrlimit(RLIMIT_FSIZE, &original_limit);
   const auto restore_handler_result = std::signal(SIGXFSZ, previous_handler);
-  ASSERT_THAT(restore_limit_result, Eq(0));
-  ASSERT_THAT(restore_handler_result, Not(Eq(SIG_ERR)));
+  ASSERT_THAT((std::pair{restore_limit_result, restore_handler_result}), Pair(Eq(0), Not(Eq(SIG_ERR))));
   EXPECT_THAT(status, StatusIs(absl::StatusCode::kUnknown, HasSubstr("failed to write temp file")));
-  std::vector<std::filesystem::path> entries;
-  for (const auto& entry : std::filesystem::directory_iterator(dir)) {
-    entries.push_back(entry.path());
-  }
-  EXPECT_THAT(entries, IsEmpty());
+  EXPECT_THAT(DirectoryEntries(dir), IsEmpty());
 }
 
 TEST(ReadFileTest, MissingFileIsNotFound) {
