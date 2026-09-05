@@ -404,7 +404,7 @@ Concentric rings:
 Assert on the structured data, never on a serialized blob:
 
 - **Proto data (sidecar records; any future proto model).** Use mboworks/proto
-  matchers (`@com_helly25_proto//mbo/proto:matchers_cc`, namespace `mbo::proto`) -
+  matchers (`@mboworks_proto//mbo/proto:matchers_cc`, namespace `mbo::proto`) -
   `EqualsProto`, `Partially(EqualsProto(...))`, `WhenDeserialized`,
   `IgnoringRepeatedFieldOrdering` - never `Eq(msg.SerializeAsString())`. They give
   field-level diffs on failure and accept text-proto literals for expectations.

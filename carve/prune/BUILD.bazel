@@ -42,8 +42,8 @@ cc_test(
         "//carve/sidecar:sidecar_cc",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
-        "@helly25_proto//mbo/proto:matchers_cc",
-        "@helly25_proto//mbo/proto:parse_text_proto_cc",
         "@mboworks_mbo//mbo/testing:status_cc",
+        "@mboworks_proto//mbo/proto:matchers_cc",
+        "@mboworks_proto//mbo/proto:parse_text_proto_cc",
     ],
 )
