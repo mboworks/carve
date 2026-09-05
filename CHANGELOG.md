@@ -7,7 +7,8 @@ follows [SemVer](https://semver.org/).
 ## [Unreleased]
 
 - Consolidate Bazel CI flags, isolate action-cache namespaces, rate-limit progress output, and
-  preserve sanitizer debug information.
+  preserve sanitizer debug information; emit a heartbeat every ten seconds around long-running
+  Bazel commands.
 - Cover subprocess signal termination and its documented shell-convention exit code.
 - Cover atomic-write directory-creation and rename failures, including temporary-file cleanup.
 - Materialize protobuf's generated headers before clang-tidy and document the mutable test stream.
