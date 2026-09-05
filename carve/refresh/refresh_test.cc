@@ -81,6 +81,16 @@ std::filesystem::path WriteText(const std::filesystem::path& path, std::string_v
   return path;
 }
 
+// Writes an executable test program to `path`, returning `path`.
+std::filesystem::path WriteExecutable(const std::filesystem::path& path, std::string_view text) {
+  WriteText(path, text);
+  std::filesystem::permissions(
+      path,
+      std::filesystem::perms::owner_read | std::filesystem::perms::owner_write | std::filesystem::perms::owner_exec,
+      std::filesystem::perm_options::replace);
+  return path;
+}
+
 // Reads the raw bytes of `path`. Used to compare a written sidecar byte-for-byte.
 std::string ReadBytes(const std::filesystem::path& path) {
   std::ifstream file(path, std::ios::binary);
@@ -190,6 +200,94 @@ TEST(RunRefreshTest, MissingProtoFileIsNotFound) {
               .sidecar_path = "",
           }),
       StatusIs(absl::StatusCode::kNotFound));
+}
+
+struct BazelInvocationTest : ::testing::Test {};
+
+TEST_F(BazelInvocationTest, TargetsInvokeAqueryAndDiscoverExecutionRoot) {
+  const std::filesystem::path dir = std::filesystem::path(::testing::TempDir()) / "carve_fake_bazel_success";
+  std::filesystem::remove_all(dir);
+  std::filesystem::create_directories(dir);
+
+  analysis::ActionGraphContainer container;
+  analysis::Action* compile = AddCompile(container, "k1");
+  for (const std::string_view arg : kCompileArgs) {
+    compile->add_arguments(std::string(arg));
+  }
+  const std::filesystem::path proto = WriteProto(dir / "aquery.pb", container);
+  const std::filesystem::path log = dir / "argv.log";
+  const std::filesystem::path bazel = WriteExecutable(
+      dir / "bazel", absl::StrCat(
+                         R"sh(#!/bin/sh
+printf '%s\n' "$*" >> ")sh",
+                         log.string(),
+                         R"sh("
+case "$1" in
+  aquery) cat ")sh",
+                         proto.string(),
+                         R"sh(" ;;
+  info) printf '/fake/execroot \r\n' ;;
+  *) exit 64 ;;
+esac
+)sh"));
+  const std::filesystem::path output = dir / "compile_commands.json";
+
+  EXPECT_THAT(
+      RunRefresh(
+          FileOptions{
+              .targets = {"//carve/...", "@dep//pkg:target"},
+              .bazel_path = bazel.string(),
+              .output_path = output.string(),
+          }),
+      IsOkAndHolds(Field(&RefreshStats::entries, Eq(1))));
+  EXPECT_THAT(ReadBytes(output), HasSubstr("\"directory\": \"/fake/execroot\""));
+  EXPECT_THAT(
+      ReadBytes(log), Eq("aquery --output=proto --include_param_files "
+                         "mnemonic(\"CppCompile|ObjcCompile|CppModuleCompile\", //carve/... + @dep//pkg:target)\n"
+                         "info execution_root\n"));
+}
+
+TEST_F(BazelInvocationTest, AqueryFailureIncludesExitCodeAndStderr) {
+  const std::filesystem::path dir = std::filesystem::path(::testing::TempDir()) / "carve_fake_aquery_failure";
+  std::filesystem::remove_all(dir);
+  std::filesystem::create_directories(dir);
+  const std::filesystem::path bazel =
+      WriteExecutable(dir / "bazel", "#!/bin/sh\nprintf 'aquery failed' >&2\nexit 23\n");
+
+  EXPECT_THAT(
+      RunRefresh(
+          FileOptions{
+              .targets = {"//carve/..."},
+              .bazel_path = bazel.string(),
+              .output_path = (dir / "compile_commands.json").string(),
+              .directory = "/execroot",
+          }),
+      StatusIs(absl::StatusCode::kUnknown, HasSubstr("bazel aquery failed (exit 23): aquery failed")));
+}
+
+TEST_F(BazelInvocationTest, ExecutionRootFailureIncludesExitCodeAndStderr) {
+  const std::filesystem::path dir = std::filesystem::path(::testing::TempDir()) / "carve_fake_info_failure";
+  std::filesystem::remove_all(dir);
+  std::filesystem::create_directories(dir);
+  const std::filesystem::path proto = WriteProto(dir / "aquery.pb", analysis::ActionGraphContainer{});
+  const std::filesystem::path bazel = WriteExecutable(
+      dir / "bazel", absl::StrCat(
+                         R"sh(#!/bin/sh
+if [ "$1" = aquery ]; then cat ")sh",
+                         proto.string(),
+                         R"sh("; exit 0; fi
+printf 'info failed' >&2
+exit 24
+)sh"));
+
+  EXPECT_THAT(
+      RunRefresh(
+          FileOptions{
+              .targets = {"//carve/..."},
+              .bazel_path = bazel.string(),
+              .output_path = (dir / "compile_commands.json").string(),
+          }),
+      StatusIs(absl::StatusCode::kUnknown, HasSubstr("bazel info execution_root failed (exit 24): info failed")));
 }
 
 // Returns FileOptions rooted at a fresh temporary directory `name`.

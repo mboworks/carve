@@ -6,6 +6,8 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Cover targets-based refresh through Bazel aquery, automatic execution-root discovery, and both
+  subprocess failure paths with deterministic fake-Bazel tests.
 - Apply the same warning policy when Carve is built from its release archive, keeping Carve strict
   while silencing source diagnostics from its external dependencies.
 - Enforce `-Wall`, `-Wextra`, `-Wpedantic`, and `-Werror` for first-party C and C++ in target and
