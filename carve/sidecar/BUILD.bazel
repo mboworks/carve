@@ -57,6 +57,7 @@ cc_test(
     deps = [
         ":carve_cc_proto",
         ":sidecar_cc",
+        "@abseil-cpp//absl/status",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
         "@mboworks_mbo//mbo/testing:status_cc",
