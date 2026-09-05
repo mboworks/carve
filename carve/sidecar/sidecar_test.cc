@@ -16,9 +16,12 @@
 #include "carve/sidecar/sidecar.h"
 
 #include <filesystem>
+#include <fstream>
+#include <ios>
 #include <string>
 #include <vector>
 
+#include "absl/status/status.h"
 #include "carve/sidecar/carve.pb.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -33,15 +36,35 @@ using ::mbo::proto::EqualsProto;
 using ::mbo::proto::ParseTextProtoOrDie;
 using ::mbo::testing::IsOk;
 using ::mbo::testing::IsOkAndHolds;
+using ::mbo::testing::StatusIs;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
+using ::testing::HasSubstr;
 using ::testing::IsEmpty;
 using ::testing::IsNull;
+using ::testing::IsTrue;
 using ::testing::Pointee;
+
+struct SidecarTest : ::testing::Test {};
+
+void WriteInvalidProto(const std::filesystem::path& path) {
+  std::ofstream stream(path, std::ios::binary | std::ios::trunc);
+  ASSERT_THAT(stream.is_open(), IsTrue());
+  stream.put(static_cast<char>(0x80));  // Truncated varint.
+  stream.close();
+  ASSERT_THAT(stream.good(), IsTrue());
+}
 
 TEST(LoadTest, MissingFileYieldsEmptyRecords) {
   EXPECT_THAT(Load("/no/such/carve/sidecar.binpb"), IsOkAndHolds(EqualsProto("")));
+}
+
+TEST_F(SidecarTest, InvalidActionRecordsProtoIsRejected) {
+  const std::filesystem::path path = std::filesystem::path(::testing::TempDir()) / "invalid-actions.binpb";
+  WriteInvalidProto(path);
+
+  EXPECT_THAT(Load(path), StatusIs(absl::StatusCode::kInvalidArgument, HasSubstr("not a valid ActionRecords proto")));
 }
 
 TEST(SaveLoadTest, RoundTripsContent) {
@@ -211,6 +234,14 @@ TEST(BuildHeaderIndexTest, MapsHeadersToSortedOwners) {
 
 TEST(LoadHeaderIndexTest, MissingFileYieldsEmptyIndex) {
   EXPECT_THAT(LoadHeaderIndex("/no/such/carve/headers-index.binpb"), IsOkAndHolds(EqualsProto("")));
+}
+
+TEST_F(SidecarTest, InvalidHeaderIndexProtoIsRejected) {
+  const std::filesystem::path path = std::filesystem::path(::testing::TempDir()) / "invalid-headers.binpb";
+  WriteInvalidProto(path);
+
+  EXPECT_THAT(
+      LoadHeaderIndex(path), StatusIs(absl::StatusCode::kInvalidArgument, HasSubstr("not a valid HeaderIndex proto")));
 }
 
 TEST(SaveHeaderIndexTest, RoundTripsContent) {
