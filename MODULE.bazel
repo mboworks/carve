@@ -46,7 +46,7 @@ bazel_dep(name = "googletest", version = "1.18.0.bcr.1", dev_dependency = True)
 # Proto test matchers (EqualsProto/Partially/WhenDeserialized) that upstream
 # protobuf does not ship. Used to assert on proto data structurally instead of
 # comparing serialized strings. See CARVE_DESIGN.md section 9.1.
-bazel_dep(name = "helly25_proto", version = "1.2.1", dev_dependency = True)
+bazel_dep(name = "mboworks_proto", version = "1.2.2", dev_dependency = True)
 
 # Root-development C++ toolchain from bazel-contrib/toolchains_llvm. This is a
 # dev dependency because downstream modules compile Carve with their own
