@@ -6,6 +6,7 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Cover atomic-write open/write failures and existing-file read failures using real OS constraints.
 - Cover primary-output propagation from aquery actions into compilation-database entries.
 - Cover malformed aquery protobufs and unresolved output path fragments.
 - Cover corrupt action-record and header-index sidecar diagnostics.
