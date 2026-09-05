@@ -73,8 +73,8 @@ register_toolchains("@llvm_toolchain//:all")
 
 Carve links LLVM's prebuilt dependency-scanning libraries. Copy
 [`carve.bazelrc`](carve.bazelrc) into the consumer workspace and import it from
-the workspace `.bazelrc` so LLVM is compiled as C++17 while carve is compiled
-as C++23:
+the workspace `.bazelrc` so Carve is compiled as C++23 with its required LLVM
+link settings and warning policy:
 
 ```text
 try-import %workspace%/carve.bazelrc
