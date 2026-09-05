@@ -3,9 +3,9 @@
   "measurements": {
     "overall": {
       "lines": {
-        "covered": 858,
+        "covered": 865,
         "total": 971,
-        "percent": 88.36
+        "percent": 89.08
       },
       "functions": {
         "covered": 65,
@@ -13,9 +13,9 @@
         "percent": 92.86
       },
       "branches": {
-        "covered": 378,
+        "covered": 382,
         "total": 468,
-        "percent": 80.77
+        "percent": 81.62
       }
     },
     "aggregate": {
@@ -122,9 +122,9 @@
     },
     "io": {
       "lines": {
-        "covered": 36,
+        "covered": 42,
         "total": 49,
-        "percent": 73.47
+        "percent": 85.71
       },
       "functions": {
         "covered": 3,
@@ -132,16 +132,16 @@
         "percent": 100.0
       },
       "branches": {
-        "covered": 9,
+        "covered": 11,
         "total": 16,
-        "percent": 56.25
+        "percent": 68.75
       }
     },
     "process": {
       "lines": {
-        "covered": 49,
+        "covered": 50,
         "total": 89,
-        "percent": 55.06
+        "percent": 56.18
       },
       "functions": {
         "covered": 2,
@@ -149,9 +149,9 @@
         "percent": 66.67
       },
       "branches": {
-        "covered": 23,
+        "covered": 25,
         "total": 46,
-        "percent": 50.0
+        "percent": 54.35
       }
     },
     "prune": {
