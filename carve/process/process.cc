@@ -155,7 +155,7 @@ absl::StatusOr<CommandResult> process_internal::RunWithSystemCalls(
     return status;
   }
 
-  if (pid == 0) {
+  if (pid == 0) {  // LCOV_EXCL_BR_LINE: the child cannot flush its profile.
     // Child: wire stdout/stderr to the pipes and exec.
     // A successful exec replaces the instrumented image, while _exit after a
     // failed exec intentionally cannot flush LLVM's coverage profile. Real
@@ -168,8 +168,8 @@ absl::StatusOr<CommandResult> process_internal::RunWithSystemCalls(
     }
     ::execvp(c_argv.front(), c_argv.data());
     ::_exit(kExecFailedExitCode);  // Reached only if exec failed (e.g. program not found).
-    // LCOV_EXCL_STOP
   }
+  // LCOV_EXCL_STOP
 
   // Parent: close write ends, drain, and reap.
   system_calls.Close(out_pipe.at(1));
