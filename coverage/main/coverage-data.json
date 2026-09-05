@@ -3,7 +3,7 @@
   "totals": {
     "lines": {
       "found": 971,
-      "hit": 899
+      "hit": 903
     },
     "functions": {
       "found": 70,
@@ -11,7 +11,7 @@
     },
     "branches": {
       "found": 468,
-      "hit": 404
+      "hit": 406
     }
   },
   "files": [
@@ -2914,15 +2914,15 @@
         },
         {
           "line": 82,
-          "execution_count": 74
+          "execution_count": 76
         },
         {
           "line": 83,
-          "execution_count": 74
+          "execution_count": 76
         },
         {
           "line": 84,
-          "execution_count": 74
+          "execution_count": 76
         },
         {
           "line": 85,
@@ -2934,11 +2934,11 @@
         },
         {
           "line": 87,
-          "execution_count": 60
+          "execution_count": 62
         },
         {
           "line": 88,
-          "execution_count": 60
+          "execution_count": 62
         },
         {
           "line": 89,
@@ -2950,11 +2950,11 @@
         },
         {
           "line": 91,
-          "execution_count": 60
+          "execution_count": 62
         },
         {
           "line": 92,
-          "execution_count": 60
+          "execution_count": 62
         }
       ],
       "functions": [
@@ -2966,7 +2966,7 @@
         {
           "name": "_ZN5carve2io8ReadFileERKNSt10filesystem7__cxx114pathE",
           "start_line": 82,
-          "execution_count": 74
+          "execution_count": 76
         },
         {
           "name": "io.cc:_ZN5carve2io12_GLOBAL__N_111TempSiblingERKNSt10filesystem7__cxx114pathE",
@@ -3045,7 +3045,7 @@
           "line": 84,
           "block": "0",
           "branch": "1",
-          "taken": 60
+          "taken": 62
         },
         {
           "line": 84,
@@ -3057,7 +3057,7 @@
           "line": 84,
           "block": "1",
           "branch": "3",
-          "taken": 60
+          "taken": 62
         },
         {
           "line": 88,
@@ -3069,7 +3069,7 @@
           "line": 88,
           "block": "0",
           "branch": "1",
-          "taken": 60
+          "taken": 62
         }
       ]
     },
@@ -6431,15 +6431,15 @@
       "lines": [
         {
           "line": 35,
-          "execution_count": 43
+          "execution_count": 44
         },
         {
           "line": 36,
-          "execution_count": 43
+          "execution_count": 44
         },
         {
           "line": 37,
-          "execution_count": 43
+          "execution_count": 44
         },
         {
           "line": 38,
@@ -6463,19 +6463,19 @@
         },
         {
           "line": 43,
-          "execution_count": 33
+          "execution_count": 34
         },
         {
           "line": 44,
-          "execution_count": 33
+          "execution_count": 34
         },
         {
           "line": 45,
-          "execution_count": 0
+          "execution_count": 1
         },
         {
           "line": 46,
-          "execution_count": 0
+          "execution_count": 1
         },
         {
           "line": 47,
@@ -6483,7 +6483,7 @@
         },
         {
           "line": 48,
-          "execution_count": 33
+          "execution_count": 34
         },
         {
           "line": 50,
@@ -6499,15 +6499,15 @@
         },
         {
           "line": 54,
-          "execution_count": 5
+          "execution_count": 6
         },
         {
           "line": 55,
-          "execution_count": 5
+          "execution_count": 6
         },
         {
           "line": 56,
-          "execution_count": 5
+          "execution_count": 6
         },
         {
           "line": 57,
@@ -6531,19 +6531,19 @@
         },
         {
           "line": 62,
-          "execution_count": 4
+          "execution_count": 5
         },
         {
           "line": 63,
-          "execution_count": 4
+          "execution_count": 5
         },
         {
           "line": 64,
-          "execution_count": 0
+          "execution_count": 1
         },
         {
           "line": 65,
-          "execution_count": 0
+          "execution_count": 1
         },
         {
           "line": 66,
@@ -6551,7 +6551,7 @@
         },
         {
           "line": 67,
-          "execution_count": 4
+          "execution_count": 5
         },
         {
           "line": 69,
@@ -6896,7 +6896,7 @@
         {
           "name": "_ZN5carve7sidecar15LoadHeaderIndexERKNSt10filesystem7__cxx114pathE",
           "start_line": 54,
-          "execution_count": 5
+          "execution_count": 6
         },
         {
           "name": "_ZN5carve7sidecar15SaveHeaderIndexERKNSt10filesystem7__cxx114pathERKNS_11HeaderIndexE",
@@ -6916,7 +6916,7 @@
         {
           "name": "_ZN5carve7sidecar4LoadERKNSt10filesystem7__cxx114pathE",
           "start_line": 35,
-          "execution_count": 43
+          "execution_count": 44
         },
         {
           "name": "_ZN5carve7sidecar4SaveERKNSt10filesystem7__cxx114pathERKNS_13ActionRecordsE",
@@ -6945,7 +6945,7 @@
           "line": 37,
           "block": "0",
           "branch": "1",
-          "taken": 33
+          "taken": 34
         },
         {
           "line": 38,
@@ -6963,7 +6963,7 @@
           "line": 44,
           "block": "0",
           "branch": "0",
-          "taken": 0
+          "taken": 1
         },
         {
           "line": 44,
@@ -6981,7 +6981,7 @@
           "line": 56,
           "block": "0",
           "branch": "1",
-          "taken": 4
+          "taken": 5
         },
         {
           "line": 57,
@@ -6999,7 +6999,7 @@
           "line": 63,
           "block": "0",
           "branch": "0",
-          "taken": 0
+          "taken": 1
         },
         {
           "line": 63,
