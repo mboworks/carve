@@ -15,6 +15,7 @@
 
 #include "carve/cdb/json_matcher.h"
 
+#include <sstream>
 #include <string>
 
 #include "gmock/gmock.h"
@@ -80,6 +81,18 @@ TEST_F(JsonMatcherTest, InvalidExpectedJsonFailsWithClearMessage) {
   EXPECT_THAT(  // NL
       ExplainMismatch(matcher, R"json(["a.cc"])json"),
       HasSubstr("expected JSON is not valid JSON"));
+}
+
+TEST_F(JsonMatcherTest, DescribesPositiveAndNegativeMatches) {
+  const Matcher<std::string> matcher = EqJson("{}");
+  std::ostringstream positive;
+  std::ostringstream negative;
+
+  matcher.DescribeTo(&positive);
+  matcher.DescribeNegationTo(&negative);
+
+  EXPECT_THAT(positive.str(), Eq("matches the expected JSON semantically"));
+  EXPECT_THAT(negative.str(), Eq("does not match the expected JSON semantically"));
 }
 
 TEST_F(JsonMatcherTest, MismatchMessageIncludesBothJsonStrings) {
