@@ -6,6 +6,7 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Cover subprocess pipe-creation failures and descriptor cleanup using real OS limits.
 - Materialize all protobuf headers required by compilation-database entries before clang-tidy
   analysis.
 - Cover atomic-write open/write failures and existing-file read failures using real OS constraints.
