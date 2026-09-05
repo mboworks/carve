@@ -29,9 +29,30 @@ class BazelrcPolicyTest(unittest.TestCase):
             if line.strip() and not line.lstrip().startswith("#")
         }
 
-    def test_first_party_warnings_are_errors_for_target_and_host(self):
-        self.assertIn("common --per_file_copt=//carve/.*@-Werror", self.lines)
-        self.assertIn("common --host_per_file_copt=//carve/.*@-Werror", self.lines)
+    def test_c_and_cpp_warnings_are_errors_for_target_and_host(self):
+        self.assertIn(
+            "common --copt=-Wall --copt=-Werror --cxxopt=-Wall --cxxopt=-Werror",
+            self.lines,
+        )
+        self.assertIn(
+            "common --host_copt=-Wall --host_copt=-Werror --host_cxxopt=-Wall "
+            "--host_cxxopt=-Werror",
+            self.lines,
+        )
+
+    def test_first_party_sources_enable_extra_and_pedantic_warnings(self):
+        warning_flags = (
+            "-Wextra,-Wpedantic,-Wno-c2y-extensions,-Wno-gcc-compat,"
+            "-Wno-nullability-extension,-Wno-missing-field-initializers,"
+            "-Wno-missing-designated-field-initializers"
+        )
+        self.assertIn(
+            f"common --per_file_copt=.*,-external/.*@{warning_flags}", self.lines
+        )
+        self.assertIn(
+            f"common --host_per_file_copt=.*,-external/.*@{warning_flags}",
+            self.lines,
+        )
 
     def test_external_headers_are_system_headers_for_target_and_host(self):
         self.assertIn(
