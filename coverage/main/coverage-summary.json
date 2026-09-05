@@ -3,9 +3,9 @@
   "measurements": {
     "overall": {
       "lines": {
-        "covered": 903,
+        "covered": 909,
         "total": 971,
-        "percent": 93.0
+        "percent": 93.61
       },
       "functions": {
         "covered": 69,
@@ -13,9 +13,9 @@
         "percent": 98.57
       },
       "branches": {
-        "covered": 406,
+        "covered": 409,
         "total": 468,
-        "percent": 86.75
+        "percent": 87.39
       }
     },
     "aggregate": {
@@ -37,9 +37,9 @@
     },
     "aquery": {
       "lines": {
-        "covered": 90,
+        "covered": 94,
         "total": 94,
-        "percent": 95.74
+        "percent": 100.0
       },
       "functions": {
         "covered": 4,
@@ -47,9 +47,9 @@
         "percent": 100.0
       },
       "branches": {
-        "covered": 32,
+        "covered": 34,
         "total": 38,
-        "percent": 84.21
+        "percent": 89.47
       }
     },
     "cdb": {
@@ -173,9 +173,9 @@
     },
     "refresh": {
       "lines": {
-        "covered": 257,
+        "covered": 259,
         "total": 271,
-        "percent": 94.83
+        "percent": 95.57
       },
       "functions": {
         "covered": 24,
@@ -183,9 +183,9 @@
         "percent": 100.0
       },
       "branches": {
-        "covered": 114,
+        "covered": 115,
         "total": 132,
-        "percent": 86.36
+        "percent": 87.12
       }
     },
     "scan_deps": {

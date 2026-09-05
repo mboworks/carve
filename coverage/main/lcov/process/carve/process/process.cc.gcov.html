@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2026-09-05 15:29:17</td>
+            <td class="headerValue">2026-09-05 16:08:11</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryLo">66.7&nbsp;%</td>
@@ -126,19 +126,19 @@
 <span id="L55"><span class="lineNum">      55</span>                 :<span class="tlaGNC">          10 :       pollfd{.fd = out_fd, .events = POLLIN, .revents = 0}, pollfd{.fd = err_fd, .events = POLLIN, .revents = 0}};</span></span>
 <span id="L56"><span class="lineNum">      56</span>                 :<span class="tlaGNC">          10 :   std::array&lt;std::string*, 2&gt; sinks = {&amp;result.stdout_data, &amp;result.stderr_data};</span></span>
 <span id="L57"><span class="lineNum">      57</span>                 :<span class="tlaGNC">          10 :   int open_fds = 2;</span></span>
-<span id="L58"><span class="lineNum">      58</span>         [<span class="tlaGBC" title="Branch 0 was taken 67 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 10 times"> + </span>]:<span class="tlaGNC">          77 :   while (open_fds &gt; 0) {</span></span>
-<span id="L59"><span class="lineNum">      59</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 67 times"> + </span>]:<span class="tlaGNC">          67 :     if (::poll(fds.data(), fds.size(), -1) &lt; 0) {</span></span>
+<span id="L58"><span class="lineNum">      58</span>         [<span class="tlaGBC" title="Branch 0 was taken 65 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 10 times"> + </span>]:<span class="tlaGNC">          75 :   while (open_fds &gt; 0) {</span></span>
+<span id="L59"><span class="lineNum">      59</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 65 times"> + </span>]:<span class="tlaGNC">          65 :     if (::poll(fds.data(), fds.size(), -1) &lt; 0) {</span></span>
 <span id="L60"><span class="lineNum">      60</span>         [<span class="tlaUNC" title="Branch 0 was not executed"> # </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaUNC tlaBgUNC">           0 :       if (errno == EINTR) {</span></span>
 <span id="L61"><span class="lineNum">      61</span>                 :<span class="tlaUNC">           0 :         continue;</span></span>
 <span id="L62"><span class="lineNum">      62</span>                 :<span class="tlaUNC">           0 :       }</span></span>
 <span id="L63"><span class="lineNum">      63</span>                 :<span class="tlaUNC">           0 :       break;</span></span>
 <span id="L64"><span class="lineNum">      64</span>                 :<span class="tlaUNC">           0 :     }</span></span>
-<span id="L65"><span class="lineNum">      65</span>         [<span class="tlaGBC" title="Branch 0 was taken 134 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 67 times"> + </span>]:<span class="tlaGNC tlaBgGNC">         201 :     for (std::size_t i = 0; i &lt; fds.size(); ++i) {</span></span>
+<span id="L65"><span class="lineNum">      65</span>         [<span class="tlaGBC" title="Branch 0 was taken 130 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 65 times"> + </span>]:<span class="tlaGNC tlaBgGNC">         195 :     for (std::size_t i = 0; i &lt; fds.size(); ++i) {</span></span>
 <span id="L66"><span class="lineNum">      66</span>                 :             :       // POSIX poll flags are signed int macros; the bitmask test is the idiomatic form.</span>
 <span id="L67"><span class="lineNum">      67</span>                 :             :       // NOLINTNEXTLINE(hicpp-signed-bitwise)</span>
-<span id="L68"><span class="lineNum">      68</span> [<span class="tlaGBC" title="Branch 0 was taken 3 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 131 times"> + </span>][<span class="tlaGBC" title="Branch 0 was taken 56 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 75 times"> + </span>]:<span class="tlaGNC">         134 :       if (fds.at(i).fd &lt; 0 || (fds.at(i).revents &amp; (POLLIN | POLLHUP | POLLERR)) == 0) {</span></span>
-<span id="L69"><span class="lineNum">      69</span>                 :<span class="tlaGNC">          59 :         continue;</span></span>
-<span id="L70"><span class="lineNum">      70</span>                 :<span class="tlaGNC">          59 :       }</span></span>
+<span id="L68"><span class="lineNum">      68</span> [<span class="tlaGBC" title="Branch 0 was taken 1 time"> + </span><span class="tlaGBC" title="Branch 1 was taken 129 times"> + </span>][<span class="tlaGBC" title="Branch 0 was taken 54 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 75 times"> + </span>]:<span class="tlaGNC">         130 :       if (fds.at(i).fd &lt; 0 || (fds.at(i).revents &amp; (POLLIN | POLLHUP | POLLERR)) == 0) {</span></span>
+<span id="L69"><span class="lineNum">      69</span>                 :<span class="tlaGNC">          55 :         continue;</span></span>
+<span id="L70"><span class="lineNum">      70</span>                 :<span class="tlaGNC">          55 :       }</span></span>
 <span id="L71"><span class="lineNum">      71</span>                 :<span class="tlaGNC">          75 :       std::array&lt;char, kReadChunkBytes&gt; buffer{};</span></span>
 <span id="L72"><span class="lineNum">      72</span>                 :<span class="tlaGNC">          75 :       const ssize_t got = ::read(fds.at(i).fd, buffer.data(), buffer.size());</span></span>
 <span id="L73"><span class="lineNum">      73</span>         [<span class="tlaGBC" title="Branch 0 was taken 55 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 20 times"> + </span>]:<span class="tlaGNC">          75 :       if (got &gt; 0) {</span></span>
@@ -149,7 +149,7 @@
 <span id="L78"><span class="lineNum">      78</span>                 :<span class="tlaGNC">          20 :         --open_fds;</span></span>
 <span id="L79"><span class="lineNum">      79</span>                 :<span class="tlaGNC">          20 :       }</span></span>
 <span id="L80"><span class="lineNum">      80</span>                 :<span class="tlaGNC">          75 :     }</span></span>
-<span id="L81"><span class="lineNum">      81</span>                 :<span class="tlaGNC">          67 :   }</span></span>
+<span id="L81"><span class="lineNum">      81</span>                 :<span class="tlaGNC">          65 :   }</span></span>
 <span id="L82"><span class="lineNum">      82</span>                 :             :   // Close anything still open (e.g. if poll() failed and broke the loop).</span>
 <span id="L83"><span class="lineNum">      83</span>         [<span class="tlaGBC" title="Branch 0 was taken 20 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 10 times"> + </span>]:<span class="tlaGNC">          20 :   for (const pollfd&amp; entry : fds) {</span></span>
 <span id="L84"><span class="lineNum">      84</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 20 times"> + </span>]:<span class="tlaGNC">          20 :     if (entry.fd &gt;= 0) {</span></span>
