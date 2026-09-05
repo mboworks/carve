@@ -61,9 +61,9 @@ jobs:
         # generated transitive headers. clang-tidy reads those headers directly
         # from the execroot, so make protobuf's generated Struct header a
         # top-level output before extracting the compilation database.
-        run: tools/ci_with_heartbeat.sh bazel build --config=ci --config=clang //... @protobuf//:struct_cc_proto
+        run: bazel build --config=ci --config=clang //... @protobuf//:struct_cc_proto
       - name: Generate the Clang compilation database
-        run: tools/ci_with_heartbeat.sh bazel run --config=ci //:refresh_compile_commands
+        run: bazel run --config=ci //:refresh_compile_commands
       - name: Locate the matching hermetic clang-tidy
         id: clang_tidy
         run: |
@@ -116,20 +116,16 @@ jobs:
             bazel-${{ env.BAZEL_CACHE_GENERATION }}-${{ matrix.os }}-test-${{ github.ref }}-
             bazel-${{ env.BAZEL_CACHE_GENERATION }}-${{ matrix.os }}-test-refs/heads/main-
       - name: bazel test
-        run: tools/ci_with_heartbeat.sh bazel test --config=ci --config=clang //...
+        run: bazel test --config=ci --config=clang //...
       - name: Test release archive as a consumer
         env:
           CARVE_RELEASE_VERSION: "0.1.0"
         run: |
           .github/workflows/release_prep.sh >release-notes.md
-          tools/ci_with_heartbeat.sh tools/release_archive_test.sh carve-0.1.0.tar.gz \
+          tools/release_archive_test.sh carve-0.1.0.tar.gz \
             --disk_cache="$HOME/.cache/bazel-disk" \
             --experimental_disk_cache_gc_max_size=1G \
-            --experimental_ui_max_stdouterr_bytes=-1 \
-            --repository_cache="$HOME/.cache/bazel-repo" \
-            --show_progress_rate_limit=30 \
-            --show_result=0 \
-            --ui_actions_shown=1
+            --repository_cache="$HOME/.cache/bazel-repo"
       - name: Save Bazel disk cache
         if: always() && github.ref == 'refs/heads/main'
         uses: actions/cache/save@v6
@@ -153,7 +149,7 @@ jobs:
             bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-asan-${{ github.ref }}-
             bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-asan-refs/heads/main-
       - name: bazel test (asan + ubsan)
-        run: tools/ci_with_heartbeat.sh bazel test --config=ci --config=clang --config=asan --config=ubsan //carve/...
+        run: bazel test --config=ci --config=clang --config=asan --config=ubsan //carve/...
       - name: Save Bazel disk cache
         if: always() && github.ref == 'refs/heads/main'
         uses: actions/cache/save@v6
@@ -175,7 +171,7 @@ jobs:
             bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-tsan-${{ github.ref }}-
             bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-tsan-refs/heads/main-
       - name: bazel test (tsan)
-        run: tools/ci_with_heartbeat.sh bazel test --config=ci --config=clang --config=tsan //carve/...
+        run: bazel test --config=ci --config=clang --config=tsan //carve/...
       - name: Save Bazel disk cache
         if: always() && github.ref == 'refs/heads/main'
         uses: actions/cache/save@v6
@@ -201,7 +197,7 @@ jobs:
             bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-msan-${{ github.ref }}-
             bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-msan-refs/heads/main-
       - name: bazel test (msan)
-        run: tools/ci_with_heartbeat.sh bazel test --config=ci --config=clang --config=msan //carve/...
+        run: bazel test --config=ci --config=clang --config=msan //carve/...
       - name: Save Bazel disk cache
         if: always() && github.ref == 'refs/heads/main'
         uses: actions/cache/save@v6
@@ -225,7 +221,7 @@ jobs:
             bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-coverage-${{ github.ref }}-
             bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-coverage-refs/heads/main-
       - name: Collect coverage
-        run: tools/ci_with_heartbeat.sh bazel coverage --config=ci --config=coverage //carve/...
+        run: bazel coverage --config=ci --config=coverage //carve/...
       - name: Enforce coverage policy
         run: |
           python3 tools/coverage_policy.py \

@@ -83,15 +83,9 @@ common:clang --cxxopt=-Wno-unused-command-line-argument
 
 # CI restores only the content-addressed action cache. External repositories and
 # Bazel's output base remain disposable and are downloaded/recreated per runner.
-# Keep progress visible but rate-limit it; warnings, errors, and test failures are
-# unaffected by these UI flags.
 common:ci --disk_cache=~/.cache/bazel-disk
 common:ci --experimental_disk_cache_gc_max_size=1G
 common:ci --repository_cache=~/.cache/bazel-repo
-common:ci --experimental_ui_max_stdouterr_bytes=-1
-common:ci --show_progress_rate_limit=30
-common:ci --ui_actions_shown=1
-common:ci --show_result=0
 
 # Sanitizer presets.
 common:asan --copt -g

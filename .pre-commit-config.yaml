@@ -75,13 +75,6 @@ repos:
         pass_filenames: false
         files: '^(\.github/workflows/cache_cleanup\.yml|tools/cache_cleanup(_test)?\.py)$'
 
-      - id: ci-heartbeat-tests
-        name: CI heartbeat wrapper behavior
-        entry: tools/ci_with_heartbeat_test.sh
-        language: script
-        pass_filenames: false
-        files: '^(\.github/workflows/main\.yml|tools/ci_with_heartbeat(_test)?\.sh)$'
-
       - id: bazelrc-policy-tests
         name: Bazel warning policy tests
         entry: python3 -m unittest tools/bazelrc_policy_test.py
