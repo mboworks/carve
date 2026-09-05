@@ -228,10 +228,14 @@ jobs:
             bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-coverage-refs/heads/main-
       - name: Collect coverage
         run: bazel coverage --config=ci --config=coverage //carve/...
+      - name: Apply source coverage directives
+        run: |
+          python3 tools/coverage_sources.py \
+            bazel-out/_coverage/_coverage_report.dat coverage.lcov
       - name: Enforce coverage policy
         run: |
           python3 tools/coverage_policy.py \
-            bazel-out/_coverage/_coverage_report.dat coverage_policy.json \
+            coverage.lcov coverage_policy.json \
             --summary "$GITHUB_STEP_SUMMARY" \
             --json-summary coverage-summary.json
       - name: Render HTML report
@@ -248,9 +252,9 @@ jobs:
             echo "Cannot determine coverage destination for ${GITHUB_REF}" >&2
             exit 1
           fi
-          genhtml --branch-coverage --output-directory coverage-html/lcov bazel-out/_coverage/_coverage_report.dat
-          python3 tools/coverage_data.py bazel-out/_coverage/_coverage_report.dat coverage-html/coverage-data.json
-          cp bazel-out/_coverage/_coverage_report.dat coverage-html/coverage.lcov
+          genhtml --branch-coverage --output-directory coverage-html/lcov coverage.lcov
+          python3 tools/coverage_data.py coverage.lcov coverage-html/coverage-data.json
+          mv coverage.lcov coverage-html/
           mv coverage-summary.json coverage-html/
           printf '%s\n' "${coverage_target}" >coverage-target.txt
           python3 tools/coverage_index.py report \
@@ -259,7 +263,6 @@ jobs:
         with:
           name: coverage-report
           path: |
-            bazel-out/_coverage/_coverage_report.dat
             coverage-html
             coverage-target.txt
           retention-days: 30

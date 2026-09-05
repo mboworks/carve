@@ -122,6 +122,17 @@ absl::StatusOr<CommandResult> process_internal::RunWithSystemCalls(
     return absl::InvalidArgumentError("Run requires a non-empty argv");
   }
 
+  // Prepare execvp's mutable argv before fork: allocating in the child of a
+  // potentially multithreaded process is unsafe until exec replaces the image.
+  std::vector<char*> c_argv;
+  c_argv.reserve(argv.size() + 1);
+  for (const std::string& arg : argv) {
+    // execvp wants char* const[]; argv outlives the call and is not modified.
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+    c_argv.push_back(const_cast<char*>(arg.c_str()));
+  }
+  c_argv.push_back(nullptr);
+
   std::array<int, 2> out_pipe{};
   std::array<int, 2> err_pipe{};
   if (system_calls.Pipe(out_pipe.data()) != 0) {
@@ -144,24 +155,21 @@ absl::StatusOr<CommandResult> process_internal::RunWithSystemCalls(
     return status;
   }
 
-  if (pid == 0) {
+  if (pid == 0) {  // LCOV_EXCL_BR_LINE: the child cannot flush its profile.
     // Child: wire stdout/stderr to the pipes and exec.
+    // A successful exec replaces the instrumented image, while _exit after a
+    // failed exec intentionally cannot flush LLVM's coverage profile. Real
+    // subprocess tests exercise both outcomes.
+    // LCOV_EXCL_START
     ::dup2(out_pipe.at(1), STDOUT_FILENO);
     ::dup2(err_pipe.at(1), STDERR_FILENO);
     for (const int descriptor : descriptors) {
       ::close(descriptor);
     }
-    std::vector<char*> c_argv;
-    c_argv.reserve(argv.size() + 1);
-    for (const std::string& arg : argv) {
-      // execvp wants char* const[]; argv outlives the call and is not modified.
-      // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
-      c_argv.push_back(const_cast<char*>(arg.c_str()));
-    }
-    c_argv.push_back(nullptr);
     ::execvp(c_argv.front(), c_argv.data());
     ::_exit(kExecFailedExitCode);  // Reached only if exec failed (e.g. program not found).
   }
+  // LCOV_EXCL_STOP
 
   // Parent: close write ends, drain, and reap.
   system_calls.Close(out_pipe.at(1));
