@@ -217,10 +217,19 @@ TEST_F(BazelInvocationTest, TargetsInvokeAqueryAndDiscoverExecutionRoot) {
   const std::filesystem::path proto = WriteProto(dir / "aquery.pb", container);
   const std::filesystem::path log = dir / "argv.log";
   const std::filesystem::path bazel = WriteExecutable(
-      dir / "bazel",
-      absl::StrCat(
-          "#!/bin/sh\n", "printf '%s\\n' \"$*\" >> \"", log.string(), "\"\n", "case \"$1\" in\n", "  aquery) cat \"",
-          proto.string(), "\" ;;\n", "  info) printf '/fake/execroot \\r\\n' ;;\n", "  *) exit 64 ;;\n", "esac\n"));
+      dir / "bazel", absl::StrCat(
+                         R"sh(#!/bin/sh
+printf '%s\n' "$*" >> ")sh",
+                         log.string(),
+                         R"sh("
+case "$1" in
+  aquery) cat ")sh",
+                         proto.string(),
+                         R"sh(" ;;
+  info) printf '/fake/execroot \r\n' ;;
+  *) exit 64 ;;
+esac
+)sh"));
   const std::filesystem::path output = dir / "compile_commands.json";
 
   EXPECT_THAT(
@@ -263,8 +272,13 @@ TEST_F(BazelInvocationTest, ExecutionRootFailureIncludesExitCodeAndStderr) {
   const std::filesystem::path proto = WriteProto(dir / "aquery.pb", analysis::ActionGraphContainer{});
   const std::filesystem::path bazel = WriteExecutable(
       dir / "bazel", absl::StrCat(
-                         "#!/bin/sh\n", "if [ \"$1\" = aquery ]; then cat \"", proto.string(), "\"; exit 0; fi\n",
-                         "printf 'info failed' >&2\n", "exit 24\n"));
+                         R"sh(#!/bin/sh
+if [ "$1" = aquery ]; then cat ")sh",
+                         proto.string(),
+                         R"sh("; exit 0; fi
+printf 'info failed' >&2
+exit 24
+)sh"));
 
   EXPECT_THAT(
       RunRefresh(
