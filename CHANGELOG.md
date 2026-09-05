@@ -6,6 +6,8 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Apply the same warning policy when Carve is built from its release archive, keeping Carve strict
+  while silencing source diagnostics from its external dependencies.
 - Enforce `-Wall`, `-Wextra`, `-Wpedantic`, and `-Werror` for first-party C and C++ in target and
   host/tool configurations while suppressing diagnostics from external code, including macro
   expansions attributed to first-party invocation sites.

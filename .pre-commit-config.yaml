@@ -80,7 +80,7 @@ repos:
         entry: python3 -m unittest tools/bazelrc_policy_test.py
         language: system
         pass_filenames: false
-        files: '^(\.bazelrc|\.pre-commit-config\.yaml|tools/bazelrc_policy_test\.py)$'
+        files: '^(\.bazelrc|carve\.bazelrc|\.pre-commit-config\.yaml|tools/bazelrc_policy_test\.py)$'
 
       - id: coverage-policy-tests
         name: coverage reporting tests
