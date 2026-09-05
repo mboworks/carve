@@ -15,11 +15,11 @@
 
 #include "carve/process/process.h"
 
-#include <fcntl.h>
 #include <sys/resource.h>
 #include <unistd.h>
 
 #include <algorithm>
+#include <array>
 #include <cerrno>
 #include <csignal>
 #include <string>
@@ -51,10 +51,12 @@ class ProcessFailureTest : public ::testing::Test {
     ASSERT_THAT(setrlimit(RLIMIT_NOFILE, &test_limit), Eq(0));
     limit_changed_ = true;
 
-    int descriptor = open("/dev/null", O_RDONLY);
-    while (descriptor >= 0) {
-      descriptors_.push_back(descriptor);
-      descriptor = open("/dev/null", O_RDONLY);
+    std::array<int, 2> pipe_descriptors{};
+    // macOS has no pipe2(); every descriptor remains inside this test process.
+    // NOLINTNEXTLINE(android-cloexec-pipe)
+    while (pipe(pipe_descriptors.data()) == 0) {
+      descriptors_.push_back(pipe_descriptors.at(0));
+      descriptors_.push_back(pipe_descriptors.at(1));
     }
     ASSERT_THAT(errno, Eq(EMFILE));
     ASSERT_THAT(descriptors_.size(), Ge(2));
@@ -69,14 +71,16 @@ class ProcessFailureTest : public ::testing::Test {
     }
   }
 
-  void ReleaseDescriptors(std::size_t count) {
-    ASSERT_THAT(descriptors_.size(), Ge(count));
+  static void ReleaseDescriptors(std::vector<int>& descriptors, std::size_t count) {
+    ASSERT_THAT(descriptors.size(), Ge(count));
     while (count > 0) {
-      EXPECT_THAT(close(descriptors_.back()), Eq(0));
-      descriptors_.pop_back();
+      EXPECT_THAT(close(descriptors.back()), Eq(0));
+      descriptors.pop_back();
       --count;
     }
   }
+
+  std::vector<int>& Descriptors() { return descriptors_; }
 
  private:
   struct rlimit original_limit_{};
@@ -129,7 +133,7 @@ TEST_F(ProcessFailureTest, ReportsStdoutPipeFailure) {
 }
 
 TEST_F(ProcessFailureTest, ReportsStderrPipeFailure) {
-  ReleaseDescriptors(2);
+  ReleaseDescriptors(Descriptors(), 2);
   EXPECT_THAT(
       ::carve::process::Run(std::vector<std::string>{"/bin/true"}),
       StatusIs(absl::StatusCode::kResourceExhausted, HasSubstr("pipe(stderr)")));
