@@ -6,6 +6,7 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Cover subprocess signal termination and its documented shell-convention exit code.
 - Cover atomic-write directory-creation and rename failures, including temporary-file cleanup.
 - Materialize protobuf's generated headers before clang-tidy and document the mutable test stream.
 - Restore the shared MBO Works coverage-site hierarchy and policy-aware overview tables.
