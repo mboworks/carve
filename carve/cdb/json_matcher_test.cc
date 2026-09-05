@@ -24,6 +24,7 @@
 namespace carve::cdb {
 namespace {
 
+using ::testing::Eq;
 using ::testing::HasSubstr;
 using ::testing::Matcher;
 using ::testing::Not;
