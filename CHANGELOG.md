@@ -6,6 +6,9 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Consolidate Bazel CI cache flags, isolate action-cache namespaces, and preserve sanitizer debug
+  information; mute external-module source warnings in target and host/tool compilations while
+  retaining fatal warnings for first-party code.
 - Cover subprocess signal termination and its documented shell-convention exit code.
 - Cover atomic-write directory-creation and rename failures, including temporary-file cleanup.
 - Materialize protobuf's generated headers before clang-tidy and document the mutable test stream.

@@ -75,6 +75,13 @@ repos:
         pass_filenames: false
         files: '^(\.github/workflows/cache_cleanup\.yml|tools/cache_cleanup(_test)?\.py)$'
 
+      - id: bazelrc-policy-tests
+        name: Bazel warning policy tests
+        entry: python3 -m unittest tools/bazelrc_policy_test.py
+        language: system
+        pass_filenames: false
+        files: '^(\.bazelrc|\.pre-commit-config\.yaml|tools/bazelrc_policy_test\.py)$'
+
       - id: coverage-policy-tests
         name: coverage reporting tests
         entry: python3 -m unittest tools/coverage_policy_test.py tools/coverage_data_test.py tools/coverage_index_test.py

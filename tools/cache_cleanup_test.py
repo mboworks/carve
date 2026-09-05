@@ -41,7 +41,7 @@ class ExpiredCacheIdsTest(unittest.TestCase):
                 "id": 7,
                 "key": "bazel-ubuntu-current",
                 "createdAt": "2026-09-04T12:00:00Z",
-                "sizeInBytes": 7_877_743_205,
+                "sizeInBytes": 1_200_000_000,
             }
         ]
         self.assertEqual(cache_cleanup.expired_cache_ids(caches), [7])

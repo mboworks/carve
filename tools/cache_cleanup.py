@@ -11,7 +11,7 @@ from collections import defaultdict
 from collections.abc import Iterable
 from typing import Any
 
-MAX_CACHE_BYTES = 700_000_000
+MAX_CACHE_BYTES = 1_200_000_000
 
 
 def expired_cache_ids(caches: Iterable[dict[str, Any]]) -> list[int]:
