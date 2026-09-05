@@ -144,5 +144,21 @@ TEST(EndToEndTest, MissingAqueryProtoExitsOne) {
       IsOkAndHolds(Field(&process::CommandResult::exit_code, Eq(1))));
 }
 
+TEST(EndToEndTest, MissingPruneSidecarExitsSuccessfully) {
+  EXPECT_THAT(
+      process::Run({CarveBinary(), "prune", "--sidecar=/no/such/carve-sidecar.binpb"}),
+      IsOkAndHolds(Field(&process::CommandResult::exit_code, Eq(0))));
+}
+
+TEST(EndToEndTest, AggregateWithoutSidecarsExitsOne) {
+  EXPECT_THAT(
+      process::Run({CarveBinary(), "aggregate", "--sidecars="}),
+      IsOkAndHolds(Field(&process::CommandResult::exit_code, Eq(1))));
+}
+
+TEST(EndToEndTest, ShardWithoutRequiredFlagsExitsOne) {
+  EXPECT_THAT(process::Run({CarveBinary(), "shard"}), IsOkAndHolds(Field(&process::CommandResult::exit_code, Eq(1))));
+}
+
 }  // namespace
 }  // namespace carve
