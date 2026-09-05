@@ -1,0 +1,7443 @@
+{
+  "schema": 1,
+  "totals": {
+    "lines": {
+      "found": 996,
+      "hit": 966
+    },
+    "functions": {
+      "found": 78,
+      "hit": 78
+    },
+    "branches": {
+      "found": 474,
+      "hit": 432
+    }
+  },
+  "files": [
+    {
+      "path": "carve/aggregate/aggregate.cc",
+      "lines": [
+        {
+          "line": 35,
+          "execution_count": 10
+        },
+        {
+          "line": 36,
+          "execution_count": 10
+        },
+        {
+          "line": 39,
+          "execution_count": 16
+        },
+        {
+          "line": 40,
+          "execution_count": 16
+        },
+        {
+          "line": 41,
+          "execution_count": 1
+        },
+        {
+          "line": 42,
+          "execution_count": 1
+        },
+        {
+          "line": 43,
+          "execution_count": 1
+        },
+        {
+          "line": 44,
+          "execution_count": 16
+        },
+        {
+          "line": 48,
+          "execution_count": 10
+        },
+        {
+          "line": 49,
+          "execution_count": 16
+        },
+        {
+          "line": 50,
+          "execution_count": 16
+        },
+        {
+          "line": 51,
+          "execution_count": 13
+        },
+        {
+          "line": 52,
+          "execution_count": 13
+        },
+        {
+          "line": 53,
+          "execution_count": 1
+        },
+        {
+          "line": 54,
+          "execution_count": 1
+        },
+        {
+          "line": 55,
+          "execution_count": 13
+        },
+        {
+          "line": 56,
+          "execution_count": 16
+        },
+        {
+          "line": 59,
+          "execution_count": 10
+        },
+        {
+          "line": 60,
+          "execution_count": 10
+        },
+        {
+          "line": 61,
+          "execution_count": 11
+        },
+        {
+          "line": 62,
+          "execution_count": 11
+        },
+        {
+          "line": 63,
+          "execution_count": 11
+        },
+        {
+          "line": 66,
+          "execution_count": 10
+        },
+        {
+          "line": 67,
+          "execution_count": 4
+        },
+        {
+          "line": 68,
+          "execution_count": 1
+        },
+        {
+          "line": 69,
+          "execution_count": 1
+        },
+        {
+          "line": 70,
+          "execution_count": 3
+        },
+        {
+          "line": 71,
+          "execution_count": 4
+        },
+        {
+          "line": 72,
+          "execution_count": 11
+        },
+        {
+          "line": 73,
+          "execution_count": 11
+        },
+        {
+          "line": 74,
+          "execution_count": 11
+        },
+        {
+          "line": 75,
+          "execution_count": 10
+        },
+        {
+          "line": 76,
+          "execution_count": 10
+        },
+        {
+          "line": 81,
+          "execution_count": 4
+        },
+        {
+          "line": 82,
+          "execution_count": 4
+        },
+        {
+          "line": 83,
+          "execution_count": 4
+        },
+        {
+          "line": 84,
+          "execution_count": 6
+        },
+        {
+          "line": 85,
+          "execution_count": 6
+        },
+        {
+          "line": 86,
+          "execution_count": 6
+        },
+        {
+          "line": 87,
+          "execution_count": 6
+        },
+        {
+          "line": 89,
+          "execution_count": 4
+        },
+        {
+          "line": 90,
+          "execution_count": 4
+        },
+        {
+          "line": 91,
+          "execution_count": 4
+        },
+        {
+          "line": 101,
+          "execution_count": 4
+        },
+        {
+          "line": 102,
+          "execution_count": 4
+        },
+        {
+          "line": 103,
+          "execution_count": 4
+        },
+        {
+          "line": 104,
+          "execution_count": 4
+        }
+      ],
+      "functions": [
+        {
+          "name": "_ZN5carve9aggregate12RunAggregateEN4absl12lts_202608174SpanIKNSt10filesystem7__cxx114pathEEERS7_St17basic_string_viewIcSt11char_traitsIcEE",
+          "start_line": 81,
+          "execution_count": 4
+        },
+        {
+          "name": "_ZN5carve9aggregate7CombineEN4absl12lts_202608174SpanIKNS_13ActionRecordsEEE",
+          "start_line": 35,
+          "execution_count": 10
+        },
+        {
+          "name": "aggregate.cc:_ZZN5carve9aggregate7CombineEN4absl12lts_202608174SpanIKNS_13ActionRecordsEEEENK3$_0clEPKNS_12ActionRecordESA_",
+          "start_line": 66,
+          "execution_count": 4
+        }
+      ],
+      "branches": [
+        {
+          "line": 39,
+          "block": "0",
+          "branch": "0",
+          "taken": 16
+        },
+        {
+          "line": 39,
+          "block": "0",
+          "branch": "1",
+          "taken": 9
+        },
+        {
+          "line": 40,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 40,
+          "block": "0",
+          "branch": "1",
+          "taken": 15
+        },
+        {
+          "line": 49,
+          "block": "0",
+          "branch": "0",
+          "taken": 16
+        },
+        {
+          "line": 49,
+          "block": "0",
+          "branch": "1",
+          "taken": 10
+        },
+        {
+          "line": 50,
+          "block": "0",
+          "branch": "0",
+          "taken": 13
+        },
+        {
+          "line": 50,
+          "block": "0",
+          "branch": "1",
+          "taken": 16
+        },
+        {
+          "line": 52,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 52,
+          "block": "0",
+          "branch": "1",
+          "taken": 11
+        },
+        {
+          "line": 52,
+          "block": "1",
+          "branch": "2",
+          "taken": 1
+        },
+        {
+          "line": 52,
+          "block": "1",
+          "branch": "3",
+          "taken": 1
+        },
+        {
+          "line": 61,
+          "block": "0",
+          "branch": "0",
+          "taken": 11
+        },
+        {
+          "line": 61,
+          "block": "0",
+          "branch": "1",
+          "taken": 10
+        },
+        {
+          "line": 67,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 67,
+          "block": "0",
+          "branch": "1",
+          "taken": 3
+        },
+        {
+          "line": 72,
+          "block": "0",
+          "branch": "0",
+          "taken": 11
+        },
+        {
+          "line": 72,
+          "block": "0",
+          "branch": "1",
+          "taken": 10
+        },
+        {
+          "line": 84,
+          "block": "0",
+          "branch": "0",
+          "taken": 6
+        },
+        {
+          "line": 84,
+          "block": "0",
+          "branch": "1",
+          "taken": 4
+        },
+        {
+          "line": 85,
+          "block": "0",
+          "branch": "0",
+          "taken": 0
+        },
+        {
+          "line": 85,
+          "block": "0",
+          "branch": "1",
+          "taken": 6
+        },
+        {
+          "line": 91,
+          "block": "0",
+          "branch": "0",
+          "taken": 8
+        },
+        {
+          "line": 91,
+          "block": "0",
+          "branch": "1",
+          "taken": 4
+        },
+        {
+          "line": 102,
+          "block": "0",
+          "branch": "0",
+          "taken": 8
+        },
+        {
+          "line": 102,
+          "block": "0",
+          "branch": "1",
+          "taken": 4
+        }
+      ]
+    },
+    {
+      "path": "carve/aggregate/aggregate.h",
+      "lines": [],
+      "functions": [],
+      "branches": []
+    },
+    {
+      "path": "carve/aquery/aquery.cc",
+      "lines": [
+        {
+          "line": 36,
+          "execution_count": 32
+        },
+        {
+          "line": 37,
+          "execution_count": 32
+        },
+        {
+          "line": 38,
+          "execution_count": 32
+        },
+        {
+          "line": 39,
+          "execution_count": 32
+        },
+        {
+          "line": 40,
+          "execution_count": 32
+        },
+        {
+          "line": 47,
+          "execution_count": 31
+        },
+        {
+          "line": 48,
+          "execution_count": 31
+        },
+        {
+          "line": 49,
+          "execution_count": 30
+        },
+        {
+          "line": 50,
+          "execution_count": 30
+        },
+        {
+          "line": 51,
+          "execution_count": 1
+        },
+        {
+          "line": 52,
+          "execution_count": 1
+        },
+        {
+          "line": 53,
+          "execution_count": 1
+        },
+        {
+          "line": 54,
+          "execution_count": 1
+        },
+        {
+          "line": 55,
+          "execution_count": 1
+        },
+        {
+          "line": 57,
+          "execution_count": 1
+        },
+        {
+          "line": 58,
+          "execution_count": 1
+        },
+        {
+          "line": 59,
+          "execution_count": 1
+        },
+        {
+          "line": 61,
+          "execution_count": 1
+        },
+        {
+          "line": 62,
+          "execution_count": 1
+        },
+        {
+          "line": 63,
+          "execution_count": 1
+        },
+        {
+          "line": 64,
+          "execution_count": 1
+        },
+        {
+          "line": 65,
+          "execution_count": 9
+        },
+        {
+          "line": 66,
+          "execution_count": 8
+        },
+        {
+          "line": 67,
+          "execution_count": 2
+        },
+        {
+          "line": 68,
+          "execution_count": 2
+        },
+        {
+          "line": 69,
+          "execution_count": 2
+        },
+        {
+          "line": 70,
+          "execution_count": 6
+        },
+        {
+          "line": 71,
+          "execution_count": 6
+        },
+        {
+          "line": 72,
+          "execution_count": 6
+        },
+        {
+          "line": 73,
+          "execution_count": 1
+        },
+        {
+          "line": 74,
+          "execution_count": 1
+        },
+        {
+          "line": 75,
+          "execution_count": 1
+        },
+        {
+          "line": 76,
+          "execution_count": 1
+        },
+        {
+          "line": 77,
+          "execution_count": 1
+        },
+        {
+          "line": 78,
+          "execution_count": 1
+        },
+        {
+          "line": 79,
+          "execution_count": 1
+        },
+        {
+          "line": 80,
+          "execution_count": 1
+        },
+        {
+          "line": 81,
+          "execution_count": 1
+        },
+        {
+          "line": 82,
+          "execution_count": 5
+        },
+        {
+          "line": 83,
+          "execution_count": 5
+        },
+        {
+          "line": 84,
+          "execution_count": 1
+        },
+        {
+          "line": 85,
+          "execution_count": 31
+        },
+        {
+          "line": 92,
+          "execution_count": 3
+        },
+        {
+          "line": 93,
+          "execution_count": 3
+        },
+        {
+          "line": 94,
+          "execution_count": 3
+        },
+        {
+          "line": 95,
+          "execution_count": 7
+        },
+        {
+          "line": 96,
+          "execution_count": 5
+        },
+        {
+          "line": 97,
+          "execution_count": 5
+        },
+        {
+          "line": 98,
+          "execution_count": 1
+        },
+        {
+          "line": 99,
+          "execution_count": 1
+        },
+        {
+          "line": 100,
+          "execution_count": 4
+        },
+        {
+          "line": 101,
+          "execution_count": 4
+        },
+        {
+          "line": 102,
+          "execution_count": 4
+        },
+        {
+          "line": 103,
+          "execution_count": 3
+        },
+        {
+          "line": 104,
+          "execution_count": 4
+        },
+        {
+          "line": 105,
+          "execution_count": 4
+        },
+        {
+          "line": 106,
+          "execution_count": 2
+        },
+        {
+          "line": 107,
+          "execution_count": 2
+        },
+        {
+          "line": 108,
+          "execution_count": 4
+        },
+        {
+          "line": 109,
+          "execution_count": 4
+        },
+        {
+          "line": 110,
+          "execution_count": 3
+        },
+        {
+          "line": 111,
+          "execution_count": 3
+        },
+        {
+          "line": 115,
+          "execution_count": 31
+        },
+        {
+          "line": 116,
+          "execution_count": 31
+        },
+        {
+          "line": 117,
+          "execution_count": 31
+        },
+        {
+          "line": 118,
+          "execution_count": 1
+        },
+        {
+          "line": 119,
+          "execution_count": 1
+        },
+        {
+          "line": 121,
+          "execution_count": 30
+        },
+        {
+          "line": 122,
+          "execution_count": 30
+        },
+        {
+          "line": 123,
+          "execution_count": 30
+        },
+        {
+          "line": 124,
+          "execution_count": 4
+        },
+        {
+          "line": 125,
+          "execution_count": 4
+        },
+        {
+          "line": 127,
+          "execution_count": 30
+        },
+        {
+          "line": 128,
+          "execution_count": 30
+        },
+        {
+          "line": 129,
+          "execution_count": 30
+        },
+        {
+          "line": 130,
+          "execution_count": 3
+        },
+        {
+          "line": 131,
+          "execution_count": 3
+        },
+        {
+          "line": 133,
+          "execution_count": 30
+        },
+        {
+          "line": 134,
+          "execution_count": 32
+        },
+        {
+          "line": 135,
+          "execution_count": 32
+        },
+        {
+          "line": 136,
+          "execution_count": 1
+        },
+        {
+          "line": 137,
+          "execution_count": 1
+        },
+        {
+          "line": 138,
+          "execution_count": 31
+        },
+        {
+          "line": 139,
+          "execution_count": 31
+        },
+        {
+          "line": 140,
+          "execution_count": 31
+        },
+        {
+          "line": 141,
+          "execution_count": 31
+        },
+        {
+          "line": 142,
+          "execution_count": 31
+        },
+        {
+          "line": 143,
+          "execution_count": 31
+        },
+        {
+          "line": 144,
+          "execution_count": 3
+        },
+        {
+          "line": 145,
+          "execution_count": 3
+        },
+        {
+          "line": 146,
+          "execution_count": 31
+        },
+        {
+          "line": 147,
+          "execution_count": 31
+        },
+        {
+          "line": 148,
+          "execution_count": 30
+        },
+        {
+          "line": 149,
+          "execution_count": 31
+        }
+      ],
+      "functions": [
+        {
+          "name": "_ZN5carve6aquery19ParseCompileActionsESt17basic_string_viewIcSt11char_traitsIcEE",
+          "start_line": 115,
+          "execution_count": 31
+        },
+        {
+          "name": "aquery.cc:_ZN5carve6aquery12_GLOBAL__N_111ResolvePathB5cxx11EjRKN4absl12lts_2026081713flat_hash_mapIjPKN8analysis12PathFragmentENS3_13hash_internal4HashIjEESt8equal_toIjESaISt4pairIKjS8_EEEE",
+          "start_line": 92,
+          "execution_count": 3
+        },
+        {
+          "name": "aquery.cc:_ZN5carve6aquery12_GLOBAL__N_116ExpandParamFilesB5cxx11ERKN8analysis6ActionE",
+          "start_line": 47,
+          "execution_count": 31
+        },
+        {
+          "name": "aquery.cc:_ZN5carve6aquery12_GLOBAL__N_117IsCompileMnemonicESt17basic_string_viewIcSt11char_traitsIcEE",
+          "start_line": 36,
+          "execution_count": 32
+        }
+      ],
+      "branches": [
+        {
+          "line": 48,
+          "block": "0",
+          "branch": "0",
+          "taken": 30
+        },
+        {
+          "line": 48,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 53,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 53,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 65,
+          "block": "0",
+          "branch": "0",
+          "taken": 8
+        },
+        {
+          "line": 65,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 66,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 66,
+          "block": "0",
+          "branch": "1",
+          "taken": 6
+        },
+        {
+          "line": 72,
+          "block": "0",
+          "branch": "0",
+          "taken": 6
+        },
+        {
+          "line": 72,
+          "block": "0",
+          "branch": "1",
+          "taken": 0
+        },
+        {
+          "line": 72,
+          "block": "1",
+          "branch": "2",
+          "taken": 1
+        },
+        {
+          "line": 72,
+          "block": "1",
+          "branch": "3",
+          "taken": 5
+        },
+        {
+          "line": 72,
+          "block": "2",
+          "branch": "4",
+          "taken": 1
+        },
+        {
+          "line": 72,
+          "block": "2",
+          "branch": "5",
+          "taken": 0
+        },
+        {
+          "line": 74,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 74,
+          "block": "0",
+          "branch": "1",
+          "taken": 0
+        },
+        {
+          "line": 95,
+          "block": "0",
+          "branch": "0",
+          "taken": 7
+        },
+        {
+          "line": 95,
+          "block": "0",
+          "branch": "1",
+          "taken": 0
+        },
+        {
+          "line": 95,
+          "block": "1",
+          "branch": "2",
+          "taken": 5
+        },
+        {
+          "line": 95,
+          "block": "1",
+          "branch": "3",
+          "taken": 2
+        },
+        {
+          "line": 97,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 97,
+          "block": "0",
+          "branch": "1",
+          "taken": 4
+        },
+        {
+          "line": 104,
+          "block": "0",
+          "branch": "0",
+          "taken": 4
+        },
+        {
+          "line": 104,
+          "block": "0",
+          "branch": "1",
+          "taken": 3
+        },
+        {
+          "line": 105,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 105,
+          "block": "0",
+          "branch": "1",
+          "taken": 2
+        },
+        {
+          "line": 117,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 117,
+          "block": "0",
+          "branch": "1",
+          "taken": 30
+        },
+        {
+          "line": 123,
+          "block": "0",
+          "branch": "0",
+          "taken": 4
+        },
+        {
+          "line": 123,
+          "block": "0",
+          "branch": "1",
+          "taken": 30
+        },
+        {
+          "line": 129,
+          "block": "0",
+          "branch": "0",
+          "taken": 3
+        },
+        {
+          "line": 129,
+          "block": "0",
+          "branch": "1",
+          "taken": 30
+        },
+        {
+          "line": 134,
+          "block": "0",
+          "branch": "0",
+          "taken": 32
+        },
+        {
+          "line": 134,
+          "block": "0",
+          "branch": "1",
+          "taken": 30
+        },
+        {
+          "line": 135,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 135,
+          "block": "0",
+          "branch": "1",
+          "taken": 31
+        },
+        {
+          "line": 143,
+          "block": "0",
+          "branch": "0",
+          "taken": 3
+        },
+        {
+          "line": 143,
+          "block": "0",
+          "branch": "1",
+          "taken": 28
+        }
+      ]
+    },
+    {
+      "path": "carve/aquery/aquery.h",
+      "lines": [],
+      "functions": [],
+      "branches": []
+    },
+    {
+      "path": "carve/carve_aggregate.cc",
+      "lines": [],
+      "functions": [],
+      "branches": []
+    },
+    {
+      "path": "carve/carve_shard.cc",
+      "lines": [],
+      "functions": [],
+      "branches": []
+    },
+    {
+      "path": "carve/cdb/cdb.cc",
+      "lines": [
+        {
+          "line": 33,
+          "execution_count": 273
+        },
+        {
+          "line": 36,
+          "execution_count": 273
+        },
+        {
+          "line": 37,
+          "execution_count": 273
+        },
+        {
+          "line": 38,
+          "execution_count": 273
+        },
+        {
+          "line": 39,
+          "execution_count": 273
+        },
+        {
+          "line": 40,
+          "execution_count": 273
+        },
+        {
+          "line": 41,
+          "execution_count": 273
+        },
+        {
+          "line": 42,
+          "execution_count": 2634
+        },
+        {
+          "line": 43,
+          "execution_count": 2634
+        },
+        {
+          "line": 44,
+          "execution_count": 2634
+        },
+        {
+          "line": 45,
+          "execution_count": 1
+        },
+        {
+          "line": 46,
+          "execution_count": 1
+        },
+        {
+          "line": 47,
+          "execution_count": 1
+        },
+        {
+          "line": 48,
+          "execution_count": 1
+        },
+        {
+          "line": 49,
+          "execution_count": 1
+        },
+        {
+          "line": 50,
+          "execution_count": 1
+        },
+        {
+          "line": 51,
+          "execution_count": 1
+        },
+        {
+          "line": 52,
+          "execution_count": 2627
+        },
+        {
+          "line": 53,
+          "execution_count": 2627
+        },
+        {
+          "line": 55,
+          "execution_count": 1
+        },
+        {
+          "line": 56,
+          "execution_count": 1
+        },
+        {
+          "line": 57,
+          "execution_count": 1
+        },
+        {
+          "line": 58,
+          "execution_count": 2626
+        },
+        {
+          "line": 59,
+          "execution_count": 2626
+        },
+        {
+          "line": 60,
+          "execution_count": 2626
+        },
+        {
+          "line": 61,
+          "execution_count": 2627
+        },
+        {
+          "line": 62,
+          "execution_count": 2634
+        },
+        {
+          "line": 63,
+          "execution_count": 2634
+        },
+        {
+          "line": 64,
+          "execution_count": 273
+        },
+        {
+          "line": 65,
+          "execution_count": 273
+        },
+        {
+          "line": 69,
+          "execution_count": 106
+        },
+        {
+          "line": 70,
+          "execution_count": 106
+        },
+        {
+          "line": 71,
+          "execution_count": 106
+        },
+        {
+          "line": 72,
+          "execution_count": 106
+        },
+        {
+          "line": 73,
+          "execution_count": 106
+        },
+        {
+          "line": 77,
+          "execution_count": 32
+        },
+        {
+          "line": 78,
+          "execution_count": 32
+        },
+        {
+          "line": 79,
+          "execution_count": 2
+        },
+        {
+          "line": 80,
+          "execution_count": 2
+        },
+        {
+          "line": 81,
+          "execution_count": 30
+        },
+        {
+          "line": 82,
+          "execution_count": 66
+        },
+        {
+          "line": 85,
+          "execution_count": 36
+        },
+        {
+          "line": 86,
+          "execution_count": 36
+        },
+        {
+          "line": 88,
+          "execution_count": 36
+        },
+        {
+          "line": 89,
+          "execution_count": 36
+        },
+        {
+          "line": 90,
+          "execution_count": 36
+        },
+        {
+          "line": 92,
+          "execution_count": 36
+        },
+        {
+          "line": 93,
+          "execution_count": 36
+        },
+        {
+          "line": 95,
+          "execution_count": 36
+        },
+        {
+          "line": 96,
+          "execution_count": 31
+        },
+        {
+          "line": 97,
+          "execution_count": 31
+        },
+        {
+          "line": 98,
+          "execution_count": 31
+        },
+        {
+          "line": 99,
+          "execution_count": 123
+        },
+        {
+          "line": 100,
+          "execution_count": 92
+        },
+        {
+          "line": 101,
+          "execution_count": 92
+        },
+        {
+          "line": 102,
+          "execution_count": 92
+        },
+        {
+          "line": 103,
+          "execution_count": 92
+        },
+        {
+          "line": 104,
+          "execution_count": 31
+        },
+        {
+          "line": 105,
+          "execution_count": 31
+        },
+        {
+          "line": 107,
+          "execution_count": 36
+        },
+        {
+          "line": 108,
+          "execution_count": 3
+        },
+        {
+          "line": 109,
+          "execution_count": 3
+        },
+        {
+          "line": 110,
+          "execution_count": 3
+        },
+        {
+          "line": 111,
+          "execution_count": 3
+        },
+        {
+          "line": 113,
+          "execution_count": 36
+        },
+        {
+          "line": 114,
+          "execution_count": 36
+        },
+        {
+          "line": 115,
+          "execution_count": 36
+        },
+        {
+          "line": 116,
+          "execution_count": 30
+        },
+        {
+          "line": 117,
+          "execution_count": 30
+        },
+        {
+          "line": 118,
+          "execution_count": 32
+        },
+        {
+          "line": 120,
+          "execution_count": 24
+        },
+        {
+          "line": 121,
+          "execution_count": 24
+        },
+        {
+          "line": 122,
+          "execution_count": 24
+        }
+      ],
+      "functions": [
+        {
+          "name": "_ZN5carve3cdb5WriteERKNSt10filesystem7__cxx114pathEN4absl12lts_202608174SpanIKNS0_14CompileCommandEEE",
+          "start_line": 120,
+          "execution_count": 24
+        },
+        {
+          "name": "_ZN5carve3cdb6ToJsonB5cxx11EN4absl12lts_202608174SpanIKNS0_14CompileCommandEEE",
+          "start_line": 77,
+          "execution_count": 32
+        },
+        {
+          "name": "cdb.cc:_ZN5carve3cdb12_GLOBAL__N_116AppendJsonStringERNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt17basic_string_viewIcS5_E",
+          "start_line": 33,
+          "execution_count": 273
+        },
+        {
+          "name": "cdb.cc:_ZN5carve3cdb12_GLOBAL__N_19AppendKeyERNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt17basic_string_viewIcS5_ESA_",
+          "start_line": 69,
+          "execution_count": 106
+        }
+      ],
+      "branches": [
+        {
+          "line": 42,
+          "block": "0",
+          "branch": "0",
+          "taken": 2634
+        },
+        {
+          "line": 42,
+          "block": "0",
+          "branch": "1",
+          "taken": 273
+        },
+        {
+          "line": 45,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 45,
+          "block": "0",
+          "branch": "1",
+          "taken": 2633
+        },
+        {
+          "line": 46,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 46,
+          "block": "0",
+          "branch": "1",
+          "taken": 2633
+        },
+        {
+          "line": 47,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 47,
+          "block": "0",
+          "branch": "1",
+          "taken": 2633
+        },
+        {
+          "line": 48,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 48,
+          "block": "0",
+          "branch": "1",
+          "taken": 2633
+        },
+        {
+          "line": 49,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 49,
+          "block": "0",
+          "branch": "1",
+          "taken": 2633
+        },
+        {
+          "line": 50,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 50,
+          "block": "0",
+          "branch": "1",
+          "taken": 2633
+        },
+        {
+          "line": 51,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 51,
+          "block": "0",
+          "branch": "1",
+          "taken": 2633
+        },
+        {
+          "line": 52,
+          "block": "0",
+          "branch": "0",
+          "taken": 2627
+        },
+        {
+          "line": 52,
+          "block": "0",
+          "branch": "1",
+          "taken": 7
+        },
+        {
+          "line": 53,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 53,
+          "block": "0",
+          "branch": "1",
+          "taken": 2626
+        },
+        {
+          "line": 78,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 78,
+          "block": "0",
+          "branch": "1",
+          "taken": 30
+        },
+        {
+          "line": 82,
+          "block": "0",
+          "branch": "0",
+          "taken": 36
+        },
+        {
+          "line": 82,
+          "block": "0",
+          "branch": "1",
+          "taken": 30
+        },
+        {
+          "line": 95,
+          "block": "0",
+          "branch": "0",
+          "taken": 31
+        },
+        {
+          "line": 95,
+          "block": "0",
+          "branch": "1",
+          "taken": 5
+        },
+        {
+          "line": 99,
+          "block": "0",
+          "branch": "0",
+          "taken": 92
+        },
+        {
+          "line": 99,
+          "block": "0",
+          "branch": "1",
+          "taken": 31
+        },
+        {
+          "line": 102,
+          "block": "0",
+          "branch": "0",
+          "taken": 61
+        },
+        {
+          "line": 102,
+          "block": "0",
+          "branch": "1",
+          "taken": 31
+        },
+        {
+          "line": 107,
+          "block": "0",
+          "branch": "0",
+          "taken": 3
+        },
+        {
+          "line": 107,
+          "block": "0",
+          "branch": "1",
+          "taken": 33
+        },
+        {
+          "line": 114,
+          "block": "0",
+          "branch": "0",
+          "taken": 6
+        },
+        {
+          "line": 114,
+          "block": "0",
+          "branch": "1",
+          "taken": 30
+        }
+      ]
+    },
+    {
+      "path": "carve/cdb/cdb.h",
+      "lines": [],
+      "functions": [],
+      "branches": []
+    },
+    {
+      "path": "carve/cdb/json_matcher.h",
+      "lines": [
+        {
+          "line": 37,
+          "execution_count": 60
+        },
+        {
+          "line": 38,
+          "execution_count": 60
+        },
+        {
+          "line": 39,
+          "execution_count": 60
+        },
+        {
+          "line": 48,
+          "execution_count": 30
+        },
+        {
+          "line": 50,
+          "execution_count": 1
+        },
+        {
+          "line": 52,
+          "execution_count": 1
+        },
+        {
+          "line": 54,
+          "execution_count": 32
+        },
+        {
+          "line": 55,
+          "execution_count": 32
+        },
+        {
+          "line": 56,
+          "execution_count": 32
+        },
+        {
+          "line": 57,
+          "execution_count": 32
+        },
+        {
+          "line": 58,
+          "execution_count": 4
+        },
+        {
+          "line": 59,
+          "execution_count": 4
+        },
+        {
+          "line": 60,
+          "execution_count": 4
+        },
+        {
+          "line": 61,
+          "execution_count": 4
+        },
+        {
+          "line": 63,
+          "execution_count": 28
+        },
+        {
+          "line": 64,
+          "execution_count": 28
+        },
+        {
+          "line": 65,
+          "execution_count": 28
+        },
+        {
+          "line": 66,
+          "execution_count": 2
+        },
+        {
+          "line": 67,
+          "execution_count": 2
+        },
+        {
+          "line": 68,
+          "execution_count": 2
+        },
+        {
+          "line": 69,
+          "execution_count": 2
+        },
+        {
+          "line": 71,
+          "execution_count": 26
+        },
+        {
+          "line": 72,
+          "execution_count": 26
+        },
+        {
+          "line": 73,
+          "execution_count": 26
+        },
+        {
+          "line": 74,
+          "execution_count": 26
+        },
+        {
+          "line": 75,
+          "execution_count": 12
+        },
+        {
+          "line": 76,
+          "execution_count": 12
+        },
+        {
+          "line": 77,
+          "execution_count": 12
+        },
+        {
+          "line": 78,
+          "execution_count": 12
+        },
+        {
+          "line": 79,
+          "execution_count": 12
+        },
+        {
+          "line": 80,
+          "execution_count": 12
+        },
+        {
+          "line": 81,
+          "execution_count": 14
+        },
+        {
+          "line": 82,
+          "execution_count": 26
+        },
+        {
+          "line": 109,
+          "execution_count": 30
+        },
+        {
+          "line": 110,
+          "execution_count": 30
+        },
+        {
+          "line": 111,
+          "execution_count": 30
+        }
+      ],
+      "functions": [
+        {
+          "name": "_ZN5carve3cdb21json_matcher_internal13EqJsonMatcherC2ESt17basic_string_viewIcSt11char_traitsIcEE",
+          "start_line": 48,
+          "execution_count": 30
+        },
+        {
+          "name": "_ZN5carve3cdb21json_matcher_internal14ParseJsonValueESt17basic_string_viewIcSt11char_traitsIcEERN6google8protobuf5ValueE",
+          "start_line": 37,
+          "execution_count": 60
+        },
+        {
+          "name": "_ZN5carve3cdb6EqJsonB5cxx11ESt17basic_string_viewIcSt11char_traitsIcEE",
+          "start_line": 109,
+          "execution_count": 30
+        },
+        {
+          "name": "_ZNK5carve3cdb21json_matcher_internal13EqJsonMatcher10DescribeToEPSo",
+          "start_line": 50,
+          "execution_count": 1
+        },
+        {
+          "name": "_ZNK5carve3cdb21json_matcher_internal13EqJsonMatcher15MatchAndExplainENSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPN7testing19MatchResultListenerE",
+          "start_line": 54,
+          "execution_count": 32
+        },
+        {
+          "name": "_ZNK5carve3cdb21json_matcher_internal13EqJsonMatcher18DescribeNegationToEPSo",
+          "start_line": 52,
+          "execution_count": 1
+        }
+      ],
+      "branches": [
+        {
+          "line": 57,
+          "block": "0",
+          "branch": "0",
+          "taken": 4
+        },
+        {
+          "line": 57,
+          "block": "0",
+          "branch": "1",
+          "taken": 28
+        },
+        {
+          "line": 65,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 65,
+          "block": "0",
+          "branch": "1",
+          "taken": 26
+        },
+        {
+          "line": 74,
+          "block": "0",
+          "branch": "0",
+          "taken": 12
+        },
+        {
+          "line": 74,
+          "block": "0",
+          "branch": "1",
+          "taken": 14
+        }
+      ]
+    },
+    {
+      "path": "carve/cli/cli.cc",
+      "lines": [
+        {
+          "line": 27,
+          "execution_count": 5
+        },
+        {
+          "line": 28,
+          "execution_count": 5
+        },
+        {
+          "line": 29,
+          "execution_count": 2
+        },
+        {
+          "line": 30,
+          "execution_count": 1
+        },
+        {
+          "line": 31,
+          "execution_count": 1
+        },
+        {
+          "line": 32,
+          "execution_count": 1
+        },
+        {
+          "line": 33,
+          "execution_count": 5
+        },
+        {
+          "line": 34,
+          "execution_count": 0
+        },
+        {
+          "line": 35,
+          "execution_count": 5
+        },
+        {
+          "line": 37,
+          "execution_count": 10
+        },
+        {
+          "line": 38,
+          "execution_count": 10
+        },
+        {
+          "line": 39,
+          "execution_count": 2
+        },
+        {
+          "line": 40,
+          "execution_count": 2
+        },
+        {
+          "line": 41,
+          "execution_count": 8
+        },
+        {
+          "line": 42,
+          "execution_count": 2
+        },
+        {
+          "line": 43,
+          "execution_count": 2
+        },
+        {
+          "line": 44,
+          "execution_count": 6
+        },
+        {
+          "line": 45,
+          "execution_count": 2
+        },
+        {
+          "line": 46,
+          "execution_count": 2
+        },
+        {
+          "line": 47,
+          "execution_count": 4
+        },
+        {
+          "line": 48,
+          "execution_count": 2
+        },
+        {
+          "line": 49,
+          "execution_count": 2
+        },
+        {
+          "line": 50,
+          "execution_count": 2
+        },
+        {
+          "line": 51,
+          "execution_count": 4
+        },
+        {
+          "line": 53,
+          "execution_count": 1
+        },
+        {
+          "line": 54,
+          "execution_count": 1
+        },
+        {
+          "line": 55,
+          "execution_count": 1
+        },
+        {
+          "line": 56,
+          "execution_count": 1
+        }
+      ],
+      "functions": [
+        {
+          "name": "_ZN5carve3cli14SubcommandNameENS0_10SubcommandE",
+          "start_line": 27,
+          "execution_count": 5
+        },
+        {
+          "name": "_ZN5carve3cli15ParseSubcommandESt17basic_string_viewIcSt11char_traitsIcEE",
+          "start_line": 37,
+          "execution_count": 10
+        },
+        {
+          "name": "_ZN5carve3cli8DispatchENS0_10SubcommandEN4absl12lts_202608174SpanIKSt17basic_string_viewIcSt11char_traitsIcEEEE",
+          "start_line": 53,
+          "execution_count": 1
+        }
+      ],
+      "branches": [
+        {
+          "line": 28,
+          "block": "0",
+          "branch": "0",
+          "taken": 5
+        },
+        {
+          "line": 28,
+          "block": "0",
+          "branch": "1",
+          "taken": 0
+        },
+        {
+          "line": 29,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 29,
+          "block": "0",
+          "branch": "1",
+          "taken": 3
+        },
+        {
+          "line": 30,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 30,
+          "block": "0",
+          "branch": "1",
+          "taken": 4
+        },
+        {
+          "line": 31,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 31,
+          "block": "0",
+          "branch": "1",
+          "taken": 4
+        },
+        {
+          "line": 32,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 32,
+          "block": "0",
+          "branch": "1",
+          "taken": 4
+        },
+        {
+          "line": 38,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 38,
+          "block": "0",
+          "branch": "1",
+          "taken": 8
+        },
+        {
+          "line": 41,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 41,
+          "block": "0",
+          "branch": "1",
+          "taken": 6
+        },
+        {
+          "line": 44,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 44,
+          "block": "0",
+          "branch": "1",
+          "taken": 4
+        },
+        {
+          "line": 47,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 47,
+          "block": "0",
+          "branch": "1",
+          "taken": 2
+        }
+      ]
+    },
+    {
+      "path": "carve/cli/cli.h",
+      "lines": [],
+      "functions": [],
+      "branches": []
+    },
+    {
+      "path": "carve/command/command.cc",
+      "lines": [
+        {
+          "line": 54,
+          "execution_count": 46
+        },
+        {
+          "line": 55,
+          "execution_count": 46
+        },
+        {
+          "line": 56,
+          "execution_count": 46
+        },
+        {
+          "line": 60,
+          "execution_count": 47
+        },
+        {
+          "line": 61,
+          "execution_count": 47
+        },
+        {
+          "line": 62,
+          "execution_count": 47
+        },
+        {
+          "line": 63,
+          "execution_count": 208
+        },
+        {
+          "line": 66,
+          "execution_count": 161
+        },
+        {
+          "line": 69,
+          "execution_count": 161
+        },
+        {
+          "line": 70,
+          "execution_count": 2
+        },
+        {
+          "line": 71,
+          "execution_count": 2
+        },
+        {
+          "line": 72,
+          "execution_count": 159
+        },
+        {
+          "line": 73,
+          "execution_count": 304
+        },
+        {
+          "line": 74,
+          "execution_count": 9
+        },
+        {
+          "line": 75,
+          "execution_count": 9
+        },
+        {
+          "line": 76,
+          "execution_count": 150
+        },
+        {
+          "line": 77,
+          "execution_count": 4
+        },
+        {
+          "line": 78,
+          "execution_count": 3
+        },
+        {
+          "line": 79,
+          "execution_count": 3
+        },
+        {
+          "line": 80,
+          "execution_count": 4
+        },
+        {
+          "line": 81,
+          "execution_count": 4
+        },
+        {
+          "line": 82,
+          "execution_count": 146
+        },
+        {
+          "line": 83,
+          "execution_count": 146
+        },
+        {
+          "line": 84,
+          "execution_count": 47
+        },
+        {
+          "line": 85,
+          "execution_count": 47
+        },
+        {
+          "line": 90,
+          "execution_count": 4
+        },
+        {
+          "line": 91,
+          "execution_count": 4
+        },
+        {
+          "line": 92,
+          "execution_count": 4
+        },
+        {
+          "line": 93,
+          "execution_count": 2
+        },
+        {
+          "line": 94,
+          "execution_count": 2
+        },
+        {
+          "line": 95,
+          "execution_count": 4
+        },
+        {
+          "line": 96,
+          "execution_count": 3
+        },
+        {
+          "line": 97,
+          "execution_count": 3
+        },
+        {
+          "line": 98,
+          "execution_count": 4
+        },
+        {
+          "line": 99,
+          "execution_count": 4
+        },
+        {
+          "line": 100,
+          "execution_count": 15
+        },
+        {
+          "line": 101,
+          "execution_count": 15
+        },
+        {
+          "line": 102,
+          "execution_count": 15
+        },
+        {
+          "line": 103,
+          "execution_count": 4
+        },
+        {
+          "line": 104,
+          "execution_count": 4
+        },
+        {
+          "line": 106,
+          "execution_count": 26
+        },
+        {
+          "line": 107,
+          "execution_count": 26
+        },
+        {
+          "line": 108,
+          "execution_count": 26
+        },
+        {
+          "line": 109,
+          "execution_count": 16
+        },
+        {
+          "line": 110,
+          "execution_count": 16
+        },
+        {
+          "line": 113,
+          "execution_count": 10
+        },
+        {
+          "line": 114,
+          "execution_count": 10
+        },
+        {
+          "line": 115,
+          "execution_count": 2
+        },
+        {
+          "line": 116,
+          "execution_count": 2
+        },
+        {
+          "line": 117,
+          "execution_count": 8
+        },
+        {
+          "line": 118,
+          "execution_count": 10
+        },
+        {
+          "line": 120,
+          "execution_count": 6
+        },
+        {
+          "line": 121,
+          "execution_count": 6
+        },
+        {
+          "line": 122,
+          "execution_count": 6
+        },
+        {
+          "line": 123,
+          "execution_count": 6
+        },
+        {
+          "line": 124,
+          "execution_count": 6
+        },
+        {
+          "line": 125,
+          "execution_count": 107
+        },
+        {
+          "line": 126,
+          "execution_count": 101
+        },
+        {
+          "line": 127,
+          "execution_count": 101
+        },
+        {
+          "line": 128,
+          "execution_count": 4
+        },
+        {
+          "line": 129,
+          "execution_count": 4
+        },
+        {
+          "line": 130,
+          "execution_count": 2
+        },
+        {
+          "line": 131,
+          "execution_count": 2
+        },
+        {
+          "line": 132,
+          "execution_count": 2
+        },
+        {
+          "line": 133,
+          "execution_count": 2
+        },
+        {
+          "line": 134,
+          "execution_count": 2
+        },
+        {
+          "line": 135,
+          "execution_count": 2
+        },
+        {
+          "line": 136,
+          "execution_count": 2
+        },
+        {
+          "line": 137,
+          "execution_count": 2
+        },
+        {
+          "line": 138,
+          "execution_count": 0
+        },
+        {
+          "line": 139,
+          "execution_count": 97
+        },
+        {
+          "line": 140,
+          "execution_count": 16
+        },
+        {
+          "line": 141,
+          "execution_count": 8
+        },
+        {
+          "line": 142,
+          "execution_count": 8
+        },
+        {
+          "line": 143,
+          "execution_count": 8
+        },
+        {
+          "line": 144,
+          "execution_count": 81
+        },
+        {
+          "line": 145,
+          "execution_count": 81
+        },
+        {
+          "line": 146,
+          "execution_count": 81
+        },
+        {
+          "line": 147,
+          "execution_count": 101
+        },
+        {
+          "line": 148,
+          "execution_count": 6
+        },
+        {
+          "line": 149,
+          "execution_count": 3
+        },
+        {
+          "line": 150,
+          "execution_count": 3
+        },
+        {
+          "line": 151,
+          "execution_count": 6
+        },
+        {
+          "line": 152,
+          "execution_count": 6
+        }
+      ],
+      "functions": [
+        {
+          "name": "_ZN5carve7command20RelativizeToExecrootB5cxx11ESt17basic_string_viewIcSt11char_traitsIcEES4_",
+          "start_line": 106,
+          "execution_count": 26
+        },
+        {
+          "name": "_ZN5carve7command21ParseMakeDependenciesB5cxx11ESt17basic_string_viewIcSt11char_traitsIcEE",
+          "start_line": 120,
+          "execution_count": 6
+        },
+        {
+          "name": "_ZN5carve7command24ResolveXcodePlaceholdersEN4absl12lts_202608174SpanIKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEESt17basic_string_viewIcS7_ESD_",
+          "start_line": 90,
+          "execution_count": 4
+        },
+        {
+          "name": "_ZN5carve7command7DeBazelEN4absl12lts_202608174SpanIKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEE",
+          "start_line": 60,
+          "execution_count": 47
+        },
+        {
+          "name": "command.cc:_ZN5carve7command12_GLOBAL__N_18IsCcacheESt17basic_string_viewIcSt11char_traitsIcEE",
+          "start_line": 54,
+          "execution_count": 46
+        },
+        {
+          "name": "command.cc:_ZZN5carve7command7DeBazelEN4absl12lts_202608174SpanIKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEEENK3$_0clESt17basic_string_viewIcS7_E",
+          "start_line": 73,
+          "execution_count": 304
+        }
+      ],
+      "branches": [
+        {
+          "line": 63,
+          "block": "0",
+          "branch": "0",
+          "taken": 161
+        },
+        {
+          "line": 63,
+          "block": "0",
+          "branch": "1",
+          "taken": 47
+        },
+        {
+          "line": 69,
+          "block": "0",
+          "branch": "0",
+          "taken": 46
+        },
+        {
+          "line": 69,
+          "block": "0",
+          "branch": "1",
+          "taken": 115
+        },
+        {
+          "line": 69,
+          "block": "1",
+          "branch": "2",
+          "taken": 2
+        },
+        {
+          "line": 69,
+          "block": "1",
+          "branch": "3",
+          "taken": 44
+        },
+        {
+          "line": 72,
+          "block": "0",
+          "branch": "0",
+          "taken": 15
+        },
+        {
+          "line": 72,
+          "block": "0",
+          "branch": "1",
+          "taken": 303
+        },
+        {
+          "line": 73,
+          "block": "0",
+          "branch": "0",
+          "taken": 3
+        },
+        {
+          "line": 73,
+          "block": "0",
+          "branch": "1",
+          "taken": 150
+        },
+        {
+          "line": 76,
+          "block": "0",
+          "branch": "0",
+          "taken": 4
+        },
+        {
+          "line": 76,
+          "block": "0",
+          "branch": "1",
+          "taken": 146
+        },
+        {
+          "line": 77,
+          "block": "0",
+          "branch": "0",
+          "taken": 3
+        },
+        {
+          "line": 77,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 92,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 92,
+          "block": "0",
+          "branch": "1",
+          "taken": 2
+        },
+        {
+          "line": 95,
+          "block": "0",
+          "branch": "0",
+          "taken": 3
+        },
+        {
+          "line": 95,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 100,
+          "block": "0",
+          "branch": "0",
+          "taken": 15
+        },
+        {
+          "line": 100,
+          "block": "0",
+          "branch": "1",
+          "taken": 4
+        },
+        {
+          "line": 101,
+          "block": "0",
+          "branch": "0",
+          "taken": 3
+        },
+        {
+          "line": 101,
+          "block": "0",
+          "branch": "1",
+          "taken": 12
+        },
+        {
+          "line": 108,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 108,
+          "block": "0",
+          "branch": "1",
+          "taken": 24
+        },
+        {
+          "line": 108,
+          "block": "1",
+          "branch": "2",
+          "taken": 14
+        },
+        {
+          "line": 108,
+          "block": "1",
+          "branch": "3",
+          "taken": 10
+        },
+        {
+          "line": 114,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 114,
+          "block": "0",
+          "branch": "1",
+          "taken": 18
+        },
+        {
+          "line": 114,
+          "block": "1",
+          "branch": "2",
+          "taken": 2
+        },
+        {
+          "line": 114,
+          "block": "1",
+          "branch": "3",
+          "taken": 8
+        },
+        {
+          "line": 122,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 122,
+          "block": "0",
+          "branch": "1",
+          "taken": 4
+        },
+        {
+          "line": 125,
+          "block": "0",
+          "branch": "0",
+          "taken": 101
+        },
+        {
+          "line": 125,
+          "block": "0",
+          "branch": "1",
+          "taken": 6
+        },
+        {
+          "line": 127,
+          "block": "0",
+          "branch": "0",
+          "taken": 4
+        },
+        {
+          "line": 127,
+          "block": "0",
+          "branch": "1",
+          "taken": 97
+        },
+        {
+          "line": 127,
+          "block": "1",
+          "branch": "2",
+          "taken": 4
+        },
+        {
+          "line": 127,
+          "block": "1",
+          "branch": "3",
+          "taken": 0
+        },
+        {
+          "line": 129,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 129,
+          "block": "0",
+          "branch": "1",
+          "taken": 2
+        },
+        {
+          "line": 129,
+          "block": "1",
+          "branch": "2",
+          "taken": 0
+        },
+        {
+          "line": 129,
+          "block": "1",
+          "branch": "3",
+          "taken": 2
+        },
+        {
+          "line": 133,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 133,
+          "block": "0",
+          "branch": "1",
+          "taken": 0
+        },
+        {
+          "line": 139,
+          "block": "0",
+          "branch": "0",
+          "taken": 14
+        },
+        {
+          "line": 139,
+          "block": "0",
+          "branch": "1",
+          "taken": 83
+        },
+        {
+          "line": 139,
+          "block": "1",
+          "branch": "2",
+          "taken": 0
+        },
+        {
+          "line": 139,
+          "block": "1",
+          "branch": "3",
+          "taken": 83
+        },
+        {
+          "line": 139,
+          "block": "2",
+          "branch": "4",
+          "taken": 2
+        },
+        {
+          "line": 139,
+          "block": "2",
+          "branch": "5",
+          "taken": 81
+        },
+        {
+          "line": 139,
+          "block": "3",
+          "branch": "6",
+          "taken": 0
+        },
+        {
+          "line": 139,
+          "block": "3",
+          "branch": "7",
+          "taken": 81
+        },
+        {
+          "line": 140,
+          "block": "0",
+          "branch": "0",
+          "taken": 8
+        },
+        {
+          "line": 140,
+          "block": "0",
+          "branch": "1",
+          "taken": 8
+        },
+        {
+          "line": 148,
+          "block": "0",
+          "branch": "0",
+          "taken": 3
+        },
+        {
+          "line": 148,
+          "block": "0",
+          "branch": "1",
+          "taken": 3
+        }
+      ]
+    },
+    {
+      "path": "carve/command/command.h",
+      "lines": [],
+      "functions": [],
+      "branches": []
+    },
+    {
+      "path": "carve/io/io.cc",
+      "lines": [
+        {
+          "line": 38,
+          "execution_count": 93
+        },
+        {
+          "line": 39,
+          "execution_count": 93
+        },
+        {
+          "line": 40,
+          "execution_count": 93
+        },
+        {
+          "line": 41,
+          "execution_count": 93
+        },
+        {
+          "line": 42,
+          "execution_count": 93
+        },
+        {
+          "line": 43,
+          "execution_count": 93
+        },
+        {
+          "line": 44,
+          "execution_count": 93
+        },
+        {
+          "line": 45,
+          "execution_count": 93
+        },
+        {
+          "line": 49,
+          "execution_count": 94
+        },
+        {
+          "line": 50,
+          "execution_count": 94
+        },
+        {
+          "line": 51,
+          "execution_count": 94
+        },
+        {
+          "line": 52,
+          "execution_count": 94
+        },
+        {
+          "line": 53,
+          "execution_count": 94
+        },
+        {
+          "line": 54,
+          "execution_count": 94
+        },
+        {
+          "line": 55,
+          "execution_count": 1
+        },
+        {
+          "line": 56,
+          "execution_count": 1
+        },
+        {
+          "line": 57,
+          "execution_count": 1
+        },
+        {
+          "line": 58,
+          "execution_count": 94
+        },
+        {
+          "line": 60,
+          "execution_count": 93
+        },
+        {
+          "line": 61,
+          "execution_count": 93
+        },
+        {
+          "line": 62,
+          "execution_count": 93
+        },
+        {
+          "line": 63,
+          "execution_count": 93
+        },
+        {
+          "line": 64,
+          "execution_count": 1
+        },
+        {
+          "line": 65,
+          "execution_count": 1
+        },
+        {
+          "line": 66,
+          "execution_count": 92
+        },
+        {
+          "line": 67,
+          "execution_count": 92
+        },
+        {
+          "line": 68,
+          "execution_count": 92
+        },
+        {
+          "line": 69,
+          "execution_count": 1
+        },
+        {
+          "line": 70,
+          "execution_count": 1
+        },
+        {
+          "line": 71,
+          "execution_count": 1
+        },
+        {
+          "line": 72,
+          "execution_count": 92
+        },
+        {
+          "line": 74,
+          "execution_count": 91
+        },
+        {
+          "line": 75,
+          "execution_count": 91
+        },
+        {
+          "line": 76,
+          "execution_count": 1
+        },
+        {
+          "line": 77,
+          "execution_count": 1
+        },
+        {
+          "line": 78,
+          "execution_count": 1
+        },
+        {
+          "line": 79,
+          "execution_count": 90
+        },
+        {
+          "line": 80,
+          "execution_count": 91
+        },
+        {
+          "line": 82,
+          "execution_count": 77
+        },
+        {
+          "line": 83,
+          "execution_count": 77
+        },
+        {
+          "line": 84,
+          "execution_count": 77
+        },
+        {
+          "line": 85,
+          "execution_count": 14
+        },
+        {
+          "line": 86,
+          "execution_count": 14
+        },
+        {
+          "line": 87,
+          "execution_count": 63
+        },
+        {
+          "line": 88,
+          "execution_count": 63
+        },
+        {
+          "line": 89,
+          "execution_count": 1
+        },
+        {
+          "line": 90,
+          "execution_count": 1
+        },
+        {
+          "line": 91,
+          "execution_count": 62
+        },
+        {
+          "line": 92,
+          "execution_count": 63
+        }
+      ],
+      "functions": [
+        {
+          "name": "_ZN5carve2io15WriteAtomicallyERKNSt10filesystem7__cxx114pathESt17basic_string_viewIcSt11char_traitsIcEE",
+          "start_line": 49,
+          "execution_count": 94
+        },
+        {
+          "name": "_ZN5carve2io8ReadFileERKNSt10filesystem7__cxx114pathE",
+          "start_line": 82,
+          "execution_count": 77
+        },
+        {
+          "name": "io.cc:_ZN5carve2io12_GLOBAL__N_111TempSiblingERKNSt10filesystem7__cxx114pathE",
+          "start_line": 38,
+          "execution_count": 93
+        }
+      ],
+      "branches": [
+        {
+          "line": 52,
+          "block": "0",
+          "branch": "0",
+          "taken": 94
+        },
+        {
+          "line": 52,
+          "block": "0",
+          "branch": "1",
+          "taken": 0
+        },
+        {
+          "line": 54,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 54,
+          "block": "0",
+          "branch": "1",
+          "taken": 93
+        },
+        {
+          "line": 63,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 63,
+          "block": "0",
+          "branch": "1",
+          "taken": 92
+        },
+        {
+          "line": 68,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 68,
+          "block": "0",
+          "branch": "1",
+          "taken": 91
+        },
+        {
+          "line": 75,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 75,
+          "block": "0",
+          "branch": "1",
+          "taken": 90
+        },
+        {
+          "line": 84,
+          "block": "0",
+          "branch": "0",
+          "taken": 14
+        },
+        {
+          "line": 84,
+          "block": "0",
+          "branch": "1",
+          "taken": 63
+        },
+        {
+          "line": 84,
+          "block": "1",
+          "branch": "2",
+          "taken": 0
+        },
+        {
+          "line": 84,
+          "block": "1",
+          "branch": "3",
+          "taken": 63
+        },
+        {
+          "line": 88,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 88,
+          "block": "0",
+          "branch": "1",
+          "taken": 62
+        }
+      ]
+    },
+    {
+      "path": "carve/io/io.h",
+      "lines": [],
+      "functions": [],
+      "branches": []
+    },
+    {
+      "path": "carve/process/process.cc",
+      "lines": [
+        {
+          "line": 48,
+          "execution_count": 6
+        },
+        {
+          "line": 49,
+          "execution_count": 6
+        },
+        {
+          "line": 50,
+          "execution_count": 6
+        },
+        {
+          "line": 54,
+          "execution_count": 23
+        },
+        {
+          "line": 57,
+          "execution_count": 23
+        },
+        {
+          "line": 58,
+          "execution_count": 23
+        },
+        {
+          "line": 60,
+          "execution_count": 10
+        },
+        {
+          "line": 62,
+          "execution_count": 69
+        },
+        {
+          "line": 64,
+          "execution_count": 75
+        },
+        {
+          "line": 66,
+          "execution_count": 10
+        },
+        {
+          "line": 68,
+          "execution_count": 42
+        },
+        {
+          "line": 73,
+          "execution_count": 16
+        },
+        {
+          "line": 74,
+          "execution_count": 16
+        },
+        {
+          "line": 75,
+          "execution_count": 16
+        },
+        {
+          "line": 76,
+          "execution_count": 16
+        },
+        {
+          "line": 77,
+          "execution_count": 16
+        },
+        {
+          "line": 78,
+          "execution_count": 16
+        },
+        {
+          "line": 79,
+          "execution_count": 92
+        },
+        {
+          "line": 80,
+          "execution_count": 77
+        },
+        {
+          "line": 81,
+          "execution_count": 2
+        },
+        {
+          "line": 82,
+          "execution_count": 1
+        },
+        {
+          "line": 83,
+          "execution_count": 1
+        },
+        {
+          "line": 84,
+          "execution_count": 1
+        },
+        {
+          "line": 85,
+          "execution_count": 1
+        },
+        {
+          "line": 86,
+          "execution_count": 2
+        },
+        {
+          "line": 87,
+          "execution_count": 225
+        },
+        {
+          "line": 90,
+          "execution_count": 150
+        },
+        {
+          "line": 91,
+          "execution_count": 64
+        },
+        {
+          "line": 92,
+          "execution_count": 64
+        },
+        {
+          "line": 93,
+          "execution_count": 86
+        },
+        {
+          "line": 94,
+          "execution_count": 86
+        },
+        {
+          "line": 95,
+          "execution_count": 86
+        },
+        {
+          "line": 96,
+          "execution_count": 55
+        },
+        {
+          "line": 97,
+          "execution_count": 61
+        },
+        {
+          "line": 98,
+          "execution_count": 30
+        },
+        {
+          "line": 99,
+          "execution_count": 1
+        },
+        {
+          "line": 100,
+          "execution_count": 1
+        },
+        {
+          "line": 101,
+          "execution_count": 30
+        },
+        {
+          "line": 102,
+          "execution_count": 30
+        },
+        {
+          "line": 103,
+          "execution_count": 30
+        },
+        {
+          "line": 104,
+          "execution_count": 30
+        },
+        {
+          "line": 105,
+          "execution_count": 86
+        },
+        {
+          "line": 106,
+          "execution_count": 75
+        },
+        {
+          "line": 108,
+          "execution_count": 32
+        },
+        {
+          "line": 109,
+          "execution_count": 32
+        },
+        {
+          "line": 110,
+          "execution_count": 2
+        },
+        {
+          "line": 111,
+          "execution_count": 2
+        },
+        {
+          "line": 112,
+          "execution_count": 32
+        },
+        {
+          "line": 113,
+          "execution_count": 16
+        },
+        {
+          "line": 114,
+          "execution_count": 16
+        },
+        {
+          "line": 120,
+          "execution_count": 20
+        },
+        {
+          "line": 121,
+          "execution_count": 20
+        },
+        {
+          "line": 122,
+          "execution_count": 1
+        },
+        {
+          "line": 123,
+          "execution_count": 1
+        },
+        {
+          "line": 125,
+          "execution_count": 19
+        },
+        {
+          "line": 126,
+          "execution_count": 19
+        },
+        {
+          "line": 127,
+          "execution_count": 19
+        },
+        {
+          "line": 128,
+          "execution_count": 1
+        },
+        {
+          "line": 129,
+          "execution_count": 1
+        },
+        {
+          "line": 130,
+          "execution_count": 18
+        },
+        {
+          "line": 131,
+          "execution_count": 1
+        },
+        {
+          "line": 132,
+          "execution_count": 1
+        },
+        {
+          "line": 133,
+          "execution_count": 1
+        },
+        {
+          "line": 134,
+          "execution_count": 1
+        },
+        {
+          "line": 135,
+          "execution_count": 1
+        },
+        {
+          "line": 136,
+          "execution_count": 17
+        },
+        {
+          "line": 138,
+          "execution_count": 17
+        },
+        {
+          "line": 139,
+          "execution_count": 17
+        },
+        {
+          "line": 140,
+          "execution_count": 1
+        },
+        {
+          "line": 141,
+          "execution_count": 4
+        },
+        {
+          "line": 142,
+          "execution_count": 4
+        },
+        {
+          "line": 143,
+          "execution_count": 4
+        },
+        {
+          "line": 144,
+          "execution_count": 1
+        },
+        {
+          "line": 145,
+          "execution_count": 1
+        },
+        {
+          "line": 147,
+          "execution_count": 16
+        },
+        {
+          "line": 149,
+          "execution_count": 0
+        },
+        {
+          "line": 150,
+          "execution_count": 0
+        },
+        {
+          "line": 151,
+          "execution_count": 0
+        },
+        {
+          "line": 152,
+          "execution_count": 0
+        },
+        {
+          "line": 153,
+          "execution_count": 0
+        },
+        {
+          "line": 154,
+          "execution_count": 0
+        },
+        {
+          "line": 155,
+          "execution_count": 0
+        },
+        {
+          "line": 156,
+          "execution_count": 0
+        },
+        {
+          "line": 159,
+          "execution_count": 0
+        },
+        {
+          "line": 160,
+          "execution_count": 0
+        },
+        {
+          "line": 161,
+          "execution_count": 0
+        },
+        {
+          "line": 162,
+          "execution_count": 0
+        },
+        {
+          "line": 163,
+          "execution_count": 0
+        },
+        {
+          "line": 164,
+          "execution_count": 0
+        },
+        {
+          "line": 167,
+          "execution_count": 16
+        },
+        {
+          "line": 168,
+          "execution_count": 16
+        },
+        {
+          "line": 169,
+          "execution_count": 16
+        },
+        {
+          "line": 170,
+          "execution_count": 16
+        },
+        {
+          "line": 172,
+          "execution_count": 16
+        },
+        {
+          "line": 173,
+          "execution_count": 17
+        },
+        {
+          "line": 174,
+          "execution_count": 2
+        },
+        {
+          "line": 175,
+          "execution_count": 1
+        },
+        {
+          "line": 176,
+          "execution_count": 1
+        },
+        {
+          "line": 177,
+          "execution_count": 2
+        },
+        {
+          "line": 178,
+          "execution_count": 15
+        },
+        {
+          "line": 179,
+          "execution_count": 2
+        },
+        {
+          "line": 180,
+          "execution_count": 2
+        },
+        {
+          "line": 181,
+          "execution_count": 13
+        },
+        {
+          "line": 182,
+          "execution_count": 12
+        },
+        {
+          "line": 183,
+          "execution_count": 12
+        },
+        {
+          "line": 184,
+          "execution_count": 1
+        },
+        {
+          "line": 185,
+          "execution_count": 1
+        },
+        {
+          "line": 186,
+          "execution_count": 13
+        },
+        {
+          "line": 187,
+          "execution_count": 15
+        },
+        {
+          "line": 189,
+          "execution_count": 13
+        },
+        {
+          "line": 190,
+          "execution_count": 13
+        },
+        {
+          "line": 191,
+          "execution_count": 13
+        },
+        {
+          "line": 192,
+          "execution_count": 13
+        }
+      ],
+      "functions": [
+        {
+          "name": "_ZN5carve7process16process_internal18RunWithSystemCallsEN4absl12lts_202608174SpanIKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEERNS1_11SystemCallsE",
+          "start_line": 120,
+          "execution_count": 20
+        },
+        {
+          "name": "_ZN5carve7process3RunEN4absl12lts_202608174SpanIKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEE",
+          "start_line": 189,
+          "execution_count": 13
+        },
+        {
+          "name": "process.cc:_ZN5carve7process12_GLOBAL__N_110DrainPipesEiiRNS0_13CommandResultERNS0_16process_internal11SystemCallsE",
+          "start_line": 73,
+          "execution_count": 16
+        },
+        {
+          "name": "process.cc:_ZN5carve7process12_GLOBAL__N_110ErrnoErrorESt17basic_string_viewIcSt11char_traitsIcEE",
+          "start_line": 48,
+          "execution_count": 6
+        },
+        {
+          "name": "process.cc:_ZN5carve7process12_GLOBAL__N_116PosixSystemCalls4ForkEv",
+          "start_line": 60,
+          "execution_count": 10
+        },
+        {
+          "name": "process.cc:_ZN5carve7process12_GLOBAL__N_116PosixSystemCalls4PipeEPi",
+          "start_line": 54,
+          "execution_count": 23
+        },
+        {
+          "name": "process.cc:_ZN5carve7process12_GLOBAL__N_116PosixSystemCalls4PollEP6pollfdmi",
+          "start_line": 62,
+          "execution_count": 69
+        },
+        {
+          "name": "process.cc:_ZN5carve7process12_GLOBAL__N_116PosixSystemCalls4ReadEiPvm",
+          "start_line": 64,
+          "execution_count": 75
+        },
+        {
+          "name": "process.cc:_ZN5carve7process12_GLOBAL__N_116PosixSystemCalls5CloseEi",
+          "start_line": 68,
+          "execution_count": 42
+        },
+        {
+          "name": "process.cc:_ZN5carve7process12_GLOBAL__N_116PosixSystemCalls7WaitPidEiPii",
+          "start_line": 66,
+          "execution_count": 10
+        }
+      ],
+      "branches": [
+        {
+          "line": 79,
+          "block": "0",
+          "branch": "0",
+          "taken": 77
+        },
+        {
+          "line": 79,
+          "block": "0",
+          "branch": "1",
+          "taken": 15
+        },
+        {
+          "line": 80,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 80,
+          "block": "0",
+          "branch": "1",
+          "taken": 75
+        },
+        {
+          "line": 81,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 81,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 87,
+          "block": "0",
+          "branch": "0",
+          "taken": 150
+        },
+        {
+          "line": 87,
+          "block": "0",
+          "branch": "1",
+          "taken": 75
+        },
+        {
+          "line": 90,
+          "block": "0",
+          "branch": "0",
+          "taken": 23
+        },
+        {
+          "line": 90,
+          "block": "0",
+          "branch": "1",
+          "taken": 127
+        },
+        {
+          "line": 90,
+          "block": "1",
+          "branch": "2",
+          "taken": 41
+        },
+        {
+          "line": 90,
+          "block": "1",
+          "branch": "3",
+          "taken": 86
+        },
+        {
+          "line": 95,
+          "block": "0",
+          "branch": "0",
+          "taken": 55
+        },
+        {
+          "line": 95,
+          "block": "0",
+          "branch": "1",
+          "taken": 31
+        },
+        {
+          "line": 97,
+          "block": "0",
+          "branch": "0",
+          "taken": 29
+        },
+        {
+          "line": 97,
+          "block": "0",
+          "branch": "1",
+          "taken": 2
+        },
+        {
+          "line": 97,
+          "block": "1",
+          "branch": "2",
+          "taken": 1
+        },
+        {
+          "line": 97,
+          "block": "1",
+          "branch": "3",
+          "taken": 1
+        },
+        {
+          "line": 98,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 98,
+          "block": "0",
+          "branch": "1",
+          "taken": 29
+        },
+        {
+          "line": 98,
+          "block": "1",
+          "branch": "2",
+          "taken": 1
+        },
+        {
+          "line": 98,
+          "block": "1",
+          "branch": "3",
+          "taken": 0
+        },
+        {
+          "line": 108,
+          "block": "0",
+          "branch": "0",
+          "taken": 32
+        },
+        {
+          "line": 108,
+          "block": "0",
+          "branch": "1",
+          "taken": 16
+        },
+        {
+          "line": 109,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 109,
+          "block": "0",
+          "branch": "1",
+          "taken": 30
+        },
+        {
+          "line": 121,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 121,
+          "block": "0",
+          "branch": "1",
+          "taken": 19
+        },
+        {
+          "line": 127,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 127,
+          "block": "0",
+          "branch": "1",
+          "taken": 18
+        },
+        {
+          "line": 130,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 130,
+          "block": "0",
+          "branch": "1",
+          "taken": 17
+        },
+        {
+          "line": 139,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 139,
+          "block": "0",
+          "branch": "1",
+          "taken": 16
+        },
+        {
+          "line": 141,
+          "block": "0",
+          "branch": "0",
+          "taken": 4
+        },
+        {
+          "line": 141,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 147,
+          "block": "0",
+          "branch": "0",
+          "taken": 0
+        },
+        {
+          "line": 147,
+          "block": "0",
+          "branch": "1",
+          "taken": 16
+        },
+        {
+          "line": 151,
+          "block": "0",
+          "branch": "0",
+          "taken": null
+        },
+        {
+          "line": 151,
+          "block": "0",
+          "branch": "1",
+          "taken": null
+        },
+        {
+          "line": 156,
+          "block": "0",
+          "branch": "0",
+          "taken": null
+        },
+        {
+          "line": 156,
+          "block": "0",
+          "branch": "1",
+          "taken": null
+        },
+        {
+          "line": 173,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 173,
+          "block": "0",
+          "branch": "1",
+          "taken": 15
+        },
+        {
+          "line": 174,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 174,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 178,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 178,
+          "block": "0",
+          "branch": "1",
+          "taken": 13
+        },
+        {
+          "line": 181,
+          "block": "0",
+          "branch": "0",
+          "taken": 12
+        },
+        {
+          "line": 181,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 183,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 183,
+          "block": "0",
+          "branch": "1",
+          "taken": 0
+        }
+      ]
+    },
+    {
+      "path": "carve/process/process.h",
+      "lines": [],
+      "functions": [],
+      "branches": []
+    },
+    {
+      "path": "carve/process/process_internal.h",
+      "lines": [
+        {
+          "line": 34,
+          "execution_count": 7
+        }
+      ],
+      "functions": [
+        {
+          "name": "_ZN5carve7process16process_internal11SystemCallsD2Ev",
+          "start_line": 34,
+          "execution_count": 7
+        }
+      ],
+      "branches": []
+    },
+    {
+      "path": "carve/prune/prune.cc",
+      "lines": [
+        {
+          "line": 28,
+          "execution_count": 4
+        },
+        {
+          "line": 29,
+          "execution_count": 4
+        },
+        {
+          "line": 30,
+          "execution_count": 4
+        },
+        {
+          "line": 31,
+          "execution_count": 6
+        },
+        {
+          "line": 32,
+          "execution_count": 6
+        },
+        {
+          "line": 33,
+          "execution_count": 4
+        },
+        {
+          "line": 34,
+          "execution_count": 4
+        },
+        {
+          "line": 35,
+          "execution_count": 6
+        },
+        {
+          "line": 36,
+          "execution_count": 4
+        },
+        {
+          "line": 37,
+          "execution_count": 4
+        },
+        {
+          "line": 39,
+          "execution_count": 2
+        },
+        {
+          "line": 40,
+          "execution_count": 2
+        },
+        {
+          "line": 41,
+          "execution_count": 2
+        },
+        {
+          "line": 42,
+          "execution_count": 2
+        },
+        {
+          "line": 45,
+          "execution_count": 2
+        },
+        {
+          "line": 46,
+          "execution_count": 1
+        },
+        {
+          "line": 47,
+          "execution_count": 1
+        },
+        {
+          "line": 48,
+          "execution_count": 2
+        },
+        {
+          "line": 49,
+          "execution_count": 2
+        }
+      ],
+      "functions": [
+        {
+          "name": "_ZN5carve5prune12PruneRecordsERKNS_13ActionRecordsEl",
+          "start_line": 28,
+          "execution_count": 4
+        },
+        {
+          "name": "_ZN5carve5prune8RunPruneERKNSt10filesystem7__cxx114pathEl",
+          "start_line": 39,
+          "execution_count": 2
+        }
+      ],
+      "branches": [
+        {
+          "line": 31,
+          "block": "0",
+          "branch": "0",
+          "taken": 6
+        },
+        {
+          "line": 31,
+          "block": "0",
+          "branch": "1",
+          "taken": 4
+        },
+        {
+          "line": 32,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 32,
+          "block": "0",
+          "branch": "1",
+          "taken": 5
+        },
+        {
+          "line": 32,
+          "block": "1",
+          "branch": "2",
+          "taken": 3
+        },
+        {
+          "line": 32,
+          "block": "1",
+          "branch": "3",
+          "taken": 2
+        },
+        {
+          "line": 40,
+          "block": "0",
+          "branch": "0",
+          "taken": 0
+        },
+        {
+          "line": 40,
+          "block": "0",
+          "branch": "1",
+          "taken": 2
+        },
+        {
+          "line": 45,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 45,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 46,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 46,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        }
+      ]
+    },
+    {
+      "path": "carve/prune/prune.h",
+      "lines": [],
+      "functions": [],
+      "branches": []
+    },
+    {
+      "path": "carve/refresh/refresh.cc",
+      "lines": [
+        {
+          "line": 53,
+          "execution_count": 80
+        },
+        {
+          "line": 54,
+          "execution_count": 80
+        },
+        {
+          "line": 55,
+          "execution_count": 80
+        },
+        {
+          "line": 56,
+          "execution_count": 54
+        },
+        {
+          "line": 57,
+          "execution_count": 54
+        },
+        {
+          "line": 58,
+          "execution_count": 26
+        },
+        {
+          "line": 59,
+          "execution_count": 26
+        },
+        {
+          "line": 60,
+          "execution_count": 26
+        },
+        {
+          "line": 61,
+          "execution_count": 26
+        },
+        {
+          "line": 62,
+          "execution_count": 80
+        },
+        {
+          "line": 66,
+          "execution_count": 26
+        },
+        {
+          "line": 67,
+          "execution_count": 26
+        },
+        {
+          "line": 68,
+          "execution_count": 80
+        },
+        {
+          "line": 69,
+          "execution_count": 80
+        },
+        {
+          "line": 70,
+          "execution_count": 25
+        },
+        {
+          "line": 71,
+          "execution_count": 25
+        },
+        {
+          "line": 72,
+          "execution_count": 80
+        },
+        {
+          "line": 73,
+          "execution_count": 26
+        },
+        {
+          "line": 74,
+          "execution_count": 26
+        },
+        {
+          "line": 79,
+          "execution_count": 8
+        },
+        {
+          "line": 80,
+          "execution_count": 8
+        },
+        {
+          "line": 81,
+          "execution_count": 8
+        },
+        {
+          "line": 82,
+          "execution_count": 1
+        },
+        {
+          "line": 83,
+          "execution_count": 1
+        },
+        {
+          "line": 84,
+          "execution_count": 7
+        },
+        {
+          "line": 85,
+          "execution_count": 8
+        },
+        {
+          "line": 91,
+          "execution_count": 26
+        },
+        {
+          "line": 92,
+          "execution_count": 26
+        },
+        {
+          "line": 93,
+          "execution_count": 26
+        },
+        {
+          "line": 94,
+          "execution_count": 26
+        },
+        {
+          "line": 95,
+          "execution_count": 1
+        },
+        {
+          "line": 96,
+          "execution_count": 1
+        },
+        {
+          "line": 97,
+          "execution_count": 25
+        },
+        {
+          "line": 98,
+          "execution_count": 25
+        },
+        {
+          "line": 99,
+          "execution_count": 25
+        },
+        {
+          "line": 100,
+          "execution_count": 78
+        },
+        {
+          "line": 101,
+          "execution_count": 78
+        },
+        {
+          "line": 102,
+          "execution_count": 78
+        },
+        {
+          "line": 106,
+          "execution_count": 25
+        },
+        {
+          "line": 107,
+          "execution_count": 1
+        },
+        {
+          "line": 108,
+          "execution_count": 1
+        },
+        {
+          "line": 109,
+          "execution_count": 25
+        },
+        {
+          "line": 110,
+          "execution_count": 0
+        },
+        {
+          "line": 111,
+          "execution_count": 0
+        },
+        {
+          "line": 112,
+          "execution_count": 25
+        },
+        {
+          "line": 113,
+          "execution_count": 26
+        },
+        {
+          "line": 117,
+          "execution_count": 24
+        },
+        {
+          "line": 118,
+          "execution_count": 24
+        },
+        {
+          "line": 119,
+          "execution_count": 24
+        },
+        {
+          "line": 120,
+          "execution_count": 26
+        },
+        {
+          "line": 121,
+          "execution_count": 26
+        },
+        {
+          "line": 122,
+          "execution_count": 26
+        },
+        {
+          "line": 123,
+          "execution_count": 25
+        },
+        {
+          "line": 124,
+          "execution_count": 25
+        },
+        {
+          "line": 125,
+          "execution_count": 26
+        },
+        {
+          "line": 126,
+          "execution_count": 24
+        },
+        {
+          "line": 127,
+          "execution_count": 24
+        },
+        {
+          "line": 134,
+          "execution_count": 1
+        },
+        {
+          "line": 135,
+          "execution_count": 1
+        },
+        {
+          "line": 136,
+          "execution_count": 1
+        },
+        {
+          "line": 137,
+          "execution_count": 1
+        },
+        {
+          "line": 138,
+          "execution_count": 1
+        },
+        {
+          "line": 139,
+          "execution_count": 1
+        },
+        {
+          "line": 140,
+          "execution_count": 0
+        },
+        {
+          "line": 141,
+          "execution_count": 0
+        },
+        {
+          "line": 142,
+          "execution_count": 1
+        },
+        {
+          "line": 143,
+          "execution_count": 1
+        },
+        {
+          "line": 144,
+          "execution_count": 1
+        },
+        {
+          "line": 145,
+          "execution_count": 1
+        },
+        {
+          "line": 146,
+          "execution_count": 4
+        },
+        {
+          "line": 147,
+          "execution_count": 4
+        },
+        {
+          "line": 148,
+          "execution_count": 4
+        },
+        {
+          "line": 149,
+          "execution_count": 1
+        },
+        {
+          "line": 150,
+          "execution_count": 1
+        },
+        {
+          "line": 157,
+          "execution_count": 13
+        },
+        {
+          "line": 158,
+          "execution_count": 13
+        },
+        {
+          "line": 159,
+          "execution_count": 13
+        },
+        {
+          "line": 160,
+          "execution_count": 13
+        },
+        {
+          "line": 161,
+          "execution_count": 2
+        },
+        {
+          "line": 162,
+          "execution_count": 2
+        },
+        {
+          "line": 163,
+          "execution_count": 14
+        },
+        {
+          "line": 166,
+          "execution_count": 14
+        },
+        {
+          "line": 167,
+          "execution_count": 14
+        },
+        {
+          "line": 168,
+          "execution_count": 11
+        },
+        {
+          "line": 169,
+          "execution_count": 13
+        },
+        {
+          "line": 184,
+          "execution_count": 19
+        },
+        {
+          "line": 188,
+          "execution_count": 19
+        },
+        {
+          "line": 189,
+          "execution_count": 19
+        },
+        {
+          "line": 190,
+          "execution_count": 10
+        },
+        {
+          "line": 191,
+          "execution_count": 10
+        },
+        {
+          "line": 192,
+          "execution_count": 9
+        },
+        {
+          "line": 193,
+          "execution_count": 9
+        },
+        {
+          "line": 194,
+          "execution_count": 1
+        },
+        {
+          "line": 195,
+          "execution_count": 1
+        },
+        {
+          "line": 196,
+          "execution_count": 5
+        },
+        {
+          "line": 197,
+          "execution_count": 4
+        },
+        {
+          "line": 198,
+          "execution_count": 4
+        },
+        {
+          "line": 199,
+          "execution_count": 4
+        },
+        {
+          "line": 200,
+          "execution_count": 4
+        },
+        {
+          "line": 201,
+          "execution_count": 4
+        },
+        {
+          "line": 202,
+          "execution_count": 1
+        },
+        {
+          "line": 203,
+          "execution_count": 10
+        },
+        {
+          "line": 204,
+          "execution_count": 19
+        },
+        {
+          "line": 205,
+          "execution_count": 19
+        },
+        {
+          "line": 206,
+          "execution_count": 19
+        },
+        {
+          "line": 207,
+          "execution_count": 19
+        },
+        {
+          "line": 211,
+          "execution_count": 26
+        },
+        {
+          "line": 212,
+          "execution_count": 26
+        },
+        {
+          "line": 213,
+          "execution_count": 26
+        },
+        {
+          "line": 214,
+          "execution_count": 13
+        },
+        {
+          "line": 215,
+          "execution_count": 13
+        },
+        {
+          "line": 216,
+          "execution_count": 13
+        },
+        {
+          "line": 217,
+          "execution_count": 26
+        },
+        {
+          "line": 220,
+          "execution_count": 13
+        },
+        {
+          "line": 221,
+          "execution_count": 26
+        },
+        {
+          "line": 223,
+          "execution_count": 13
+        },
+        {
+          "line": 224,
+          "execution_count": 2
+        },
+        {
+          "line": 225,
+          "execution_count": 2
+        },
+        {
+          "line": 226,
+          "execution_count": 2
+        },
+        {
+          "line": 227,
+          "execution_count": 13
+        },
+        {
+          "line": 228,
+          "execution_count": 13
+        },
+        {
+          "line": 240,
+          "execution_count": 19
+        },
+        {
+          "line": 241,
+          "execution_count": 19
+        },
+        {
+          "line": 242,
+          "execution_count": 19
+        },
+        {
+          "line": 247,
+          "execution_count": 8
+        },
+        {
+          "line": 248,
+          "execution_count": 8
+        },
+        {
+          "line": 249,
+          "execution_count": 8
+        },
+        {
+          "line": 250,
+          "execution_count": 8
+        },
+        {
+          "line": 251,
+          "execution_count": 2
+        },
+        {
+          "line": 252,
+          "execution_count": 2
+        },
+        {
+          "line": 253,
+          "execution_count": 6
+        },
+        {
+          "line": 254,
+          "execution_count": 6
+        },
+        {
+          "line": 255,
+          "execution_count": 6
+        },
+        {
+          "line": 256,
+          "execution_count": 6
+        },
+        {
+          "line": 257,
+          "execution_count": 8
+        },
+        {
+          "line": 268,
+          "execution_count": 7
+        },
+        {
+          "line": 269,
+          "execution_count": 7
+        },
+        {
+          "line": 270,
+          "execution_count": 1
+        },
+        {
+          "line": 271,
+          "execution_count": 1
+        },
+        {
+          "line": 272,
+          "execution_count": 6
+        },
+        {
+          "line": 275,
+          "execution_count": 6
+        },
+        {
+          "line": 276,
+          "execution_count": 6
+        },
+        {
+          "line": 277,
+          "execution_count": 6
+        },
+        {
+          "line": 278,
+          "execution_count": 2
+        },
+        {
+          "line": 279,
+          "execution_count": 2
+        },
+        {
+          "line": 280,
+          "execution_count": 2
+        },
+        {
+          "line": 281,
+          "execution_count": 7
+        },
+        {
+          "line": 285,
+          "execution_count": 2
+        },
+        {
+          "line": 286,
+          "execution_count": 2
+        },
+        {
+          "line": 287,
+          "execution_count": 2
+        },
+        {
+          "line": 288,
+          "execution_count": 2
+        },
+        {
+          "line": 289,
+          "execution_count": 1
+        },
+        {
+          "line": 290,
+          "execution_count": 1
+        },
+        {
+          "line": 291,
+          "execution_count": 1
+        },
+        {
+          "line": 292,
+          "execution_count": 1
+        },
+        {
+          "line": 293,
+          "execution_count": 4
+        },
+        {
+          "line": 294,
+          "execution_count": 3
+        },
+        {
+          "line": 295,
+          "execution_count": 3
+        },
+        {
+          "line": 296,
+          "execution_count": 1
+        },
+        {
+          "line": 297,
+          "execution_count": 2
+        },
+        {
+          "line": 302,
+          "execution_count": 3
+        },
+        {
+          "line": 303,
+          "execution_count": 3
+        },
+        {
+          "line": 304,
+          "execution_count": 3
+        },
+        {
+          "line": 305,
+          "execution_count": 3
+        },
+        {
+          "line": 306,
+          "execution_count": 3
+        },
+        {
+          "line": 307,
+          "execution_count": 3
+        },
+        {
+          "line": 308,
+          "execution_count": 3
+        },
+        {
+          "line": 309,
+          "execution_count": 1
+        },
+        {
+          "line": 310,
+          "execution_count": 1
+        },
+        {
+          "line": 311,
+          "execution_count": 2
+        },
+        {
+          "line": 312,
+          "execution_count": 3
+        },
+        {
+          "line": 316,
+          "execution_count": 28
+        },
+        {
+          "line": 317,
+          "execution_count": 28
+        },
+        {
+          "line": 318,
+          "execution_count": 28
+        },
+        {
+          "line": 319,
+          "execution_count": 30
+        },
+        {
+          "line": 320,
+          "execution_count": 30
+        },
+        {
+          "line": 321,
+          "execution_count": 0
+        },
+        {
+          "line": 322,
+          "execution_count": 0
+        },
+        {
+          "line": 323,
+          "execution_count": 30
+        },
+        {
+          "line": 324,
+          "execution_count": 30
+        },
+        {
+          "line": 325,
+          "execution_count": 30
+        },
+        {
+          "line": 326,
+          "execution_count": 30
+        },
+        {
+          "line": 331,
+          "execution_count": 30
+        },
+        {
+          "line": 332,
+          "execution_count": 30
+        },
+        {
+          "line": 333,
+          "execution_count": 30
+        },
+        {
+          "line": 334,
+          "execution_count": 30
+        },
+        {
+          "line": 335,
+          "execution_count": 30
+        },
+        {
+          "line": 336,
+          "execution_count": 28
+        },
+        {
+          "line": 337,
+          "execution_count": 28
+        },
+        {
+          "line": 339,
+          "execution_count": 5
+        },
+        {
+          "line": 340,
+          "execution_count": 5
+        },
+        {
+          "line": 341,
+          "execution_count": 5
+        },
+        {
+          "line": 342,
+          "execution_count": 5
+        },
+        {
+          "line": 346,
+          "execution_count": 22
+        },
+        {
+          "line": 347,
+          "execution_count": 22
+        },
+        {
+          "line": 348,
+          "execution_count": 22
+        },
+        {
+          "line": 349,
+          "execution_count": 19
+        },
+        {
+          "line": 350,
+          "execution_count": 19
+        },
+        {
+          "line": 351,
+          "execution_count": 3
+        },
+        {
+          "line": 352,
+          "execution_count": 3
+        },
+        {
+          "line": 353,
+          "execution_count": 0
+        },
+        {
+          "line": 354,
+          "execution_count": 0
+        },
+        {
+          "line": 355,
+          "execution_count": 22
+        },
+        {
+          "line": 358,
+          "execution_count": 20
+        },
+        {
+          "line": 359,
+          "execution_count": 20
+        },
+        {
+          "line": 360,
+          "execution_count": 2
+        },
+        {
+          "line": 361,
+          "execution_count": 1
+        },
+        {
+          "line": 362,
+          "execution_count": 1
+        },
+        {
+          "line": 364,
+          "execution_count": 38
+        },
+        {
+          "line": 365,
+          "execution_count": 38
+        },
+        {
+          "line": 366,
+          "execution_count": 1
+        },
+        {
+          "line": 367,
+          "execution_count": 1
+        },
+        {
+          "line": 369,
+          "execution_count": 38
+        },
+        {
+          "line": 371,
+          "execution_count": 2
+        },
+        {
+          "line": 372,
+          "execution_count": 2
+        },
+        {
+          "line": 373,
+          "execution_count": 0
+        },
+        {
+          "line": 374,
+          "execution_count": 0
+        },
+        {
+          "line": 375,
+          "execution_count": 0
+        },
+        {
+          "line": 376,
+          "execution_count": 0
+        },
+        {
+          "line": 377,
+          "execution_count": 2
+        },
+        {
+          "line": 378,
+          "execution_count": 2
+        },
+        {
+          "line": 380,
+          "execution_count": 2
+        },
+        {
+          "line": 381,
+          "execution_count": 2
+        },
+        {
+          "line": 382,
+          "execution_count": 2
+        },
+        {
+          "line": 383,
+          "execution_count": 2
+        },
+        {
+          "line": 384,
+          "execution_count": 2
+        },
+        {
+          "line": 385,
+          "execution_count": 2
+        },
+        {
+          "line": 386,
+          "execution_count": 2
+        },
+        {
+          "line": 387,
+          "execution_count": 2
+        },
+        {
+          "line": 389,
+          "execution_count": 38
+        },
+        {
+          "line": 395,
+          "execution_count": 34
+        },
+        {
+          "line": 396,
+          "execution_count": 34
+        },
+        {
+          "line": 397,
+          "execution_count": 15
+        },
+        {
+          "line": 398,
+          "execution_count": 15
+        },
+        {
+          "line": 399,
+          "execution_count": 15
+        },
+        {
+          "line": 400,
+          "execution_count": 13
+        },
+        {
+          "line": 401,
+          "execution_count": 13
+        },
+        {
+          "line": 402,
+          "execution_count": 15
+        },
+        {
+          "line": 403,
+          "execution_count": 12
+        },
+        {
+          "line": 408,
+          "execution_count": 34
+        },
+        {
+          "line": 409,
+          "execution_count": 34
+        },
+        {
+          "line": 410,
+          "execution_count": 34
+        },
+        {
+          "line": 411,
+          "execution_count": 34
+        },
+        {
+          "line": 412,
+          "execution_count": 13
+        },
+        {
+          "line": 413,
+          "execution_count": 13
+        },
+        {
+          "line": 414,
+          "execution_count": 34
+        },
+        {
+          "line": 415,
+          "execution_count": 34
+        },
+        {
+          "line": 416,
+          "execution_count": 2
+        },
+        {
+          "line": 417,
+          "execution_count": 2
+        },
+        {
+          "line": 419,
+          "execution_count": 34
+        },
+        {
+          "line": 427,
+          "execution_count": 34
+        },
+        {
+          "line": 428,
+          "execution_count": 7
+        },
+        {
+          "line": 429,
+          "execution_count": 7
+        },
+        {
+          "line": 430,
+          "execution_count": 7
+        },
+        {
+          "line": 431,
+          "execution_count": 5
+        },
+        {
+          "line": 432,
+          "execution_count": 5
+        },
+        {
+          "line": 433,
+          "execution_count": 7
+        },
+        {
+          "line": 434,
+          "execution_count": 7
+        },
+        {
+          "line": 436,
+          "execution_count": 34
+        },
+        {
+          "line": 443,
+          "execution_count": 17
+        },
+        {
+          "line": 444,
+          "execution_count": 17
+        },
+        {
+          "line": 445,
+          "execution_count": 17
+        },
+        {
+          "line": 447,
+          "execution_count": 17
+        },
+        {
+          "line": 448,
+          "execution_count": 17
+        },
+        {
+          "line": 449,
+          "execution_count": 17
+        },
+        {
+          "line": 450,
+          "execution_count": 17
+        },
+        {
+          "line": 451,
+          "execution_count": 17
+        },
+        {
+          "line": 452,
+          "execution_count": 17
+        },
+        {
+          "line": 453,
+          "execution_count": 17
+        },
+        {
+          "line": 454,
+          "execution_count": 17
+        },
+        {
+          "line": 455,
+          "execution_count": 17
+        }
+      ],
+      "functions": [
+        {
+          "name": "_ZN5carve7refresh10RunRefreshERKNS0_11FileOptionsE",
+          "start_line": 346,
+          "execution_count": 22
+        },
+        {
+          "name": "_ZN5carve7refresh12BuildEntriesESt17basic_string_viewIcSt11char_traitsIcEERKNS0_7OptionsE",
+          "start_line": 339,
+          "execution_count": 5
+        },
+        {
+          "name": "_ZN5carve7refresh18EntriesFromRecordsERKNS_13ActionRecordsESt17basic_string_viewIcSt11char_traitsIcEE",
+          "start_line": 316,
+          "execution_count": 28
+        },
+        {
+          "name": "refresh.cc:_ZN5carve7refresh12_GLOBAL__N_110FindSourceERKSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS8_EE",
+          "start_line": 66,
+          "execution_count": 26
+        },
+        {
+          "name": "refresh.cc:_ZN5carve7refresh12_GLOBAL__N_110MakeRecordERKNS_6aquery13CompileActionESt17basic_string_viewIcSt11char_traitsIcEE",
+          "start_line": 91,
+          "execution_count": 26
+        },
+        {
+          "name": "refresh.cc:_ZN5carve7refresh12_GLOBAL__N_111ScanHeadersERNS_12ActionRecordESt17basic_string_viewIcSt11char_traitsIcEERKSt8functionIFN4absl12lts_202608178StatusOrISt6vectorINSt7__cxx1112basic_stringIcS6_SaIcEEESaISG_EEEENSA_4SpanIKSG_EES7_EE",
+          "start_line": 157,
+          "execution_count": 13
+        },
+        {
+          "name": "refresh.cc:_ZN5carve7refresh12_GLOBAL__N_111WorkerCountEi",
+          "start_line": 240,
+          "execution_count": 19
+        },
+        {
+          "name": "refresh.cc:_ZN5carve7refresh12_GLOBAL__N_112AbsoluteFileB5cxx11ESt17basic_string_viewIcSt11char_traitsIcEES5_",
+          "start_line": 79,
+          "execution_count": 8
+        },
+        {
+          "name": "refresh.cc:_ZN5carve7refresh12_GLOBAL__N_112BuildRecordsESt17basic_string_viewIcSt11char_traitsIcEES5_",
+          "start_line": 117,
+          "execution_count": 24
+        },
+        {
+          "name": "refresh.cc:_ZN5carve7refresh12_GLOBAL__N_112IsSourceFileESt17basic_string_viewIcSt11char_traitsIcEE",
+          "start_line": 53,
+          "execution_count": 80
+        },
+        {
+          "name": "refresh.cc:_ZN5carve7refresh12_GLOBAL__N_112ParallelScan3RunEj",
+          "start_line": 188,
+          "execution_count": 19
+        },
+        {
+          "name": "refresh.cc:_ZN5carve7refresh12_GLOBAL__N_112ParallelScan6WorkerEv",
+          "start_line": 220,
+          "execution_count": 13
+        },
+        {
+          "name": "refresh.cc:_ZN5carve7refresh12_GLOBAL__N_112ParallelScan9ClaimNextEv",
+          "start_line": 211,
+          "execution_count": 26
+        },
+        {
+          "name": "refresh.cc:_ZN5carve7refresh12_GLOBAL__N_112ParallelScanC2ESt6vectorIPNS_12ActionRecordESaIS5_EESt17basic_string_viewIcSt11char_traitsIcEERKSt8functionIFN4absl12lts_202608178StatusOrIS3_INSt7__cxx1112basic_stringIcSA_SaIcEEESaISJ_EEEENSE_4SpanIKSJ_EESB_EE",
+          "start_line": 184,
+          "execution_count": 19
+        },
+        {
+          "name": "refresh.cc:_ZN5carve7refresh12_GLOBAL__N_113BazelExecRootERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE",
+          "start_line": 285,
+          "execution_count": 2
+        },
+        {
+          "name": "refresh.cc:_ZN5carve7refresh12_GLOBAL__N_113ModifiedAfterERKNSt10filesystem7__cxx114pathEl",
+          "start_line": 247,
+          "execution_count": 8
+        },
+        {
+          "name": "refresh.cc:_ZN5carve7refresh12_GLOBAL__N_117CachedScanIsStaleERKNS_12ActionRecordESt17basic_string_viewIcSt11char_traitsIcEE",
+          "start_line": 268,
+          "execution_count": 7
+        },
+        {
+          "name": "refresh.cc:_ZN5carve7refresh12_GLOBAL__N_122ApplyXcodePlaceholdersERNS_13ActionRecordsERKSt8functionIFNS0_10XcodePathsEvEE",
+          "start_line": 134,
+          "execution_count": 1
+        },
+        {
+          "name": "refresh.cc:_ZN5carve7refresh12_GLOBAL__N_19RunAqueryERKSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS8_EERKS8_",
+          "start_line": 302,
+          "execution_count": 3
+        },
+        {
+          "name": "refresh.cc:_ZZN5carve7refresh12_GLOBAL__N_112ParallelScan3RunEjENKUlvE_clEv",
+          "start_line": 197,
+          "execution_count": 4
+        },
+        {
+          "name": "refresh.cc:_ZZN5carve7refresh12_GLOBAL__N_117CachedScanIsStaleERKNS_12ActionRecordESt17basic_string_viewIcSt11char_traitsIcEEENK3$_0clES8_",
+          "start_line": 277,
+          "execution_count": 6
+        },
+        {
+          "name": "refresh.cc:_ZZN5carve7refresh12_GLOBAL__N_117CachedScanIsStaleERKNS_12ActionRecordESt17basic_string_viewIcSt11char_traitsIcEEENK3$_1clES8_",
+          "start_line": 278,
+          "execution_count": 2
+        },
+        {
+          "name": "refresh.cc:_ZZN5carve7refresh12_GLOBAL__N_122ApplyXcodePlaceholdersERNS_13ActionRecordsERKSt8functionIFNS0_10XcodePathsEvEEENK3$_0clERKNS_12ActionRecordE",
+          "start_line": 135,
+          "execution_count": 1
+        },
+        {
+          "name": "refresh.cc:_ZZZN5carve7refresh12_GLOBAL__N_122ApplyXcodePlaceholdersERNS_13ActionRecordsERKSt8functionIFNS0_10XcodePathsEvEEENK3$_0clERKNS_12ActionRecordEENKUlSt17basic_string_viewIcSt11char_traitsIcEEE_clESH_",
+          "start_line": 137,
+          "execution_count": 1
+        }
+      ],
+      "branches": [
+        {
+          "line": 55,
+          "block": "0",
+          "branch": "0",
+          "taken": 54
+        },
+        {
+          "line": 55,
+          "block": "0",
+          "branch": "1",
+          "taken": 26
+        },
+        {
+          "line": 68,
+          "block": "0",
+          "branch": "0",
+          "taken": 80
+        },
+        {
+          "line": 68,
+          "block": "0",
+          "branch": "1",
+          "taken": 26
+        },
+        {
+          "line": 69,
+          "block": "0",
+          "branch": "0",
+          "taken": 25
+        },
+        {
+          "line": 69,
+          "block": "0",
+          "branch": "1",
+          "taken": 55
+        },
+        {
+          "line": 81,
+          "block": "0",
+          "branch": "0",
+          "taken": 0
+        },
+        {
+          "line": 81,
+          "block": "0",
+          "branch": "1",
+          "taken": 8
+        },
+        {
+          "line": 81,
+          "block": "1",
+          "branch": "2",
+          "taken": 1
+        },
+        {
+          "line": 81,
+          "block": "1",
+          "branch": "3",
+          "taken": 7
+        },
+        {
+          "line": 94,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 94,
+          "block": "0",
+          "branch": "1",
+          "taken": 25
+        },
+        {
+          "line": 100,
+          "block": "0",
+          "branch": "0",
+          "taken": 78
+        },
+        {
+          "line": 100,
+          "block": "0",
+          "branch": "1",
+          "taken": 25
+        },
+        {
+          "line": 106,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 106,
+          "block": "0",
+          "branch": "1",
+          "taken": 24
+        },
+        {
+          "line": 109,
+          "block": "0",
+          "branch": "0",
+          "taken": 0
+        },
+        {
+          "line": 109,
+          "block": "0",
+          "branch": "1",
+          "taken": 25
+        },
+        {
+          "line": 118,
+          "block": "0",
+          "branch": "0",
+          "taken": 0
+        },
+        {
+          "line": 118,
+          "block": "0",
+          "branch": "1",
+          "taken": 24
+        },
+        {
+          "line": 120,
+          "block": "0",
+          "branch": "0",
+          "taken": 26
+        },
+        {
+          "line": 120,
+          "block": "0",
+          "branch": "1",
+          "taken": 24
+        },
+        {
+          "line": 122,
+          "block": "0",
+          "branch": "0",
+          "taken": 25
+        },
+        {
+          "line": 122,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 139,
+          "block": "0",
+          "branch": "0",
+          "taken": 0
+        },
+        {
+          "line": 139,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 143,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 143,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 146,
+          "block": "0",
+          "branch": "0",
+          "taken": 4
+        },
+        {
+          "line": 146,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 160,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 160,
+          "block": "0",
+          "branch": "1",
+          "taken": 11
+        },
+        {
+          "line": 163,
+          "block": "0",
+          "branch": "0",
+          "taken": 14
+        },
+        {
+          "line": 163,
+          "block": "0",
+          "branch": "1",
+          "taken": 11
+        },
+        {
+          "line": 189,
+          "block": "0",
+          "branch": "0",
+          "taken": 10
+        },
+        {
+          "line": 189,
+          "block": "0",
+          "branch": "1",
+          "taken": 9
+        },
+        {
+          "line": 191,
+          "block": "0",
+          "branch": "0",
+          "taken": 9
+        },
+        {
+          "line": 191,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 196,
+          "block": "0",
+          "branch": "0",
+          "taken": 4
+        },
+        {
+          "line": 196,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 199,
+          "block": "0",
+          "branch": "0",
+          "taken": 4
+        },
+        {
+          "line": 199,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 213,
+          "block": "0",
+          "branch": "0",
+          "taken": 13
+        },
+        {
+          "line": 213,
+          "block": "0",
+          "branch": "1",
+          "taken": 13
+        },
+        {
+          "line": 221,
+          "block": "0",
+          "branch": "0",
+          "taken": 13
+        },
+        {
+          "line": 221,
+          "block": "0",
+          "branch": "1",
+          "taken": 13
+        },
+        {
+          "line": 223,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 223,
+          "block": "0",
+          "branch": "1",
+          "taken": 11
+        },
+        {
+          "line": 241,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 241,
+          "block": "0",
+          "branch": "1",
+          "taken": 18
+        },
+        {
+          "line": 250,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 250,
+          "block": "0",
+          "branch": "1",
+          "taken": 6
+        },
+        {
+          "line": 269,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 269,
+          "block": "0",
+          "branch": "1",
+          "taken": 6
+        },
+        {
+          "line": 275,
+          "block": "0",
+          "branch": "0",
+          "taken": 4
+        },
+        {
+          "line": 275,
+          "block": "0",
+          "branch": "1",
+          "taken": 2
+        },
+        {
+          "line": 278,
+          "block": "0",
+          "branch": "0",
+          "taken": 0
+        },
+        {
+          "line": 278,
+          "block": "0",
+          "branch": "1",
+          "taken": 2
+        },
+        {
+          "line": 286,
+          "block": "0",
+          "branch": "0",
+          "taken": 0
+        },
+        {
+          "line": 286,
+          "block": "0",
+          "branch": "1",
+          "taken": 4
+        },
+        {
+          "line": 288,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 288,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 293,
+          "block": "0",
+          "branch": "0",
+          "taken": 4
+        },
+        {
+          "line": 293,
+          "block": "0",
+          "branch": "1",
+          "taken": 0
+        },
+        {
+          "line": 293,
+          "block": "1",
+          "branch": "2",
+          "taken": 1
+        },
+        {
+          "line": 293,
+          "block": "1",
+          "branch": "3",
+          "taken": 3
+        },
+        {
+          "line": 293,
+          "block": "2",
+          "branch": "4",
+          "taken": 1
+        },
+        {
+          "line": 293,
+          "block": "2",
+          "branch": "5",
+          "taken": 2
+        },
+        {
+          "line": 293,
+          "block": "3",
+          "branch": "6",
+          "taken": 1
+        },
+        {
+          "line": 293,
+          "block": "3",
+          "branch": "7",
+          "taken": 1
+        },
+        {
+          "line": 306,
+          "block": "0",
+          "branch": "0",
+          "taken": 0
+        },
+        {
+          "line": 306,
+          "block": "0",
+          "branch": "1",
+          "taken": 3
+        },
+        {
+          "line": 307,
+          "block": "0",
+          "branch": "0",
+          "taken": 0
+        },
+        {
+          "line": 307,
+          "block": "0",
+          "branch": "1",
+          "taken": 3
+        },
+        {
+          "line": 308,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 308,
+          "block": "0",
+          "branch": "1",
+          "taken": 2
+        },
+        {
+          "line": 319,
+          "block": "0",
+          "branch": "0",
+          "taken": 30
+        },
+        {
+          "line": 319,
+          "block": "0",
+          "branch": "1",
+          "taken": 28
+        },
+        {
+          "line": 320,
+          "block": "0",
+          "branch": "0",
+          "taken": 0
+        },
+        {
+          "line": 320,
+          "block": "0",
+          "branch": "1",
+          "taken": 30
+        },
+        {
+          "line": 340,
+          "block": "0",
+          "branch": "0",
+          "taken": 0
+        },
+        {
+          "line": 340,
+          "block": "0",
+          "branch": "1",
+          "taken": 5
+        },
+        {
+          "line": 348,
+          "block": "0",
+          "branch": "0",
+          "taken": 19
+        },
+        {
+          "line": 348,
+          "block": "0",
+          "branch": "1",
+          "taken": 3
+        },
+        {
+          "line": 350,
+          "block": "0",
+          "branch": "0",
+          "taken": 3
+        },
+        {
+          "line": 350,
+          "block": "0",
+          "branch": "1",
+          "taken": 0
+        },
+        {
+          "line": 355,
+          "block": "0",
+          "branch": "0",
+          "taken": 42
+        },
+        {
+          "line": 355,
+          "block": "0",
+          "branch": "1",
+          "taken": 24
+        },
+        {
+          "line": 359,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 359,
+          "block": "0",
+          "branch": "1",
+          "taken": 18
+        },
+        {
+          "line": 360,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 360,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 364,
+          "block": "0",
+          "branch": "0",
+          "taken": 0
+        },
+        {
+          "line": 364,
+          "block": "0",
+          "branch": "1",
+          "taken": 19
+        },
+        {
+          "line": 365,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 365,
+          "block": "0",
+          "branch": "1",
+          "taken": 18
+        },
+        {
+          "line": 369,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 369,
+          "block": "0",
+          "branch": "1",
+          "taken": 17
+        },
+        {
+          "line": 372,
+          "block": "0",
+          "branch": "0",
+          "taken": 0
+        },
+        {
+          "line": 372,
+          "block": "0",
+          "branch": "1",
+          "taken": 2
+        },
+        {
+          "line": 373,
+          "block": "0",
+          "branch": "0",
+          "taken": null
+        },
+        {
+          "line": 373,
+          "block": "0",
+          "branch": "1",
+          "taken": null
+        },
+        {
+          "line": 385,
+          "block": "0",
+          "branch": "0",
+          "taken": 4
+        },
+        {
+          "line": 385,
+          "block": "0",
+          "branch": "1",
+          "taken": 2
+        },
+        {
+          "line": 389,
+          "block": "0",
+          "branch": "0",
+          "taken": 0
+        },
+        {
+          "line": 389,
+          "block": "0",
+          "branch": "1",
+          "taken": 17
+        },
+        {
+          "line": 396,
+          "block": "0",
+          "branch": "0",
+          "taken": 12
+        },
+        {
+          "line": 396,
+          "block": "0",
+          "branch": "1",
+          "taken": 5
+        },
+        {
+          "line": 397,
+          "block": "0",
+          "branch": "0",
+          "taken": 15
+        },
+        {
+          "line": 397,
+          "block": "0",
+          "branch": "1",
+          "taken": 12
+        },
+        {
+          "line": 399,
+          "block": "0",
+          "branch": "0",
+          "taken": 8
+        },
+        {
+          "line": 399,
+          "block": "0",
+          "branch": "1",
+          "taken": 7
+        },
+        {
+          "line": 399,
+          "block": "1",
+          "branch": "2",
+          "taken": 5
+        },
+        {
+          "line": 399,
+          "block": "1",
+          "branch": "3",
+          "taken": 2
+        },
+        {
+          "line": 411,
+          "block": "0",
+          "branch": "0",
+          "taken": 13
+        },
+        {
+          "line": 411,
+          "block": "0",
+          "branch": "1",
+          "taken": 17
+        },
+        {
+          "line": 415,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 415,
+          "block": "0",
+          "branch": "1",
+          "taken": 17
+        },
+        {
+          "line": 427,
+          "block": "0",
+          "branch": "0",
+          "taken": 7
+        },
+        {
+          "line": 427,
+          "block": "0",
+          "branch": "1",
+          "taken": 10
+        },
+        {
+          "line": 429,
+          "block": "0",
+          "branch": "0",
+          "taken": 7
+        },
+        {
+          "line": 429,
+          "block": "0",
+          "branch": "1",
+          "taken": 7
+        },
+        {
+          "line": 430,
+          "block": "0",
+          "branch": "0",
+          "taken": 12
+        },
+        {
+          "line": 430,
+          "block": "0",
+          "branch": "1",
+          "taken": 2
+        },
+        {
+          "line": 430,
+          "block": "1",
+          "branch": "2",
+          "taken": 5
+        },
+        {
+          "line": 430,
+          "block": "1",
+          "branch": "3",
+          "taken": 2
+        },
+        {
+          "line": 436,
+          "block": "0",
+          "branch": "0",
+          "taken": 34
+        },
+        {
+          "line": 436,
+          "block": "0",
+          "branch": "1",
+          "taken": 17
+        },
+        {
+          "line": 445,
+          "block": "0",
+          "branch": "0",
+          "taken": 34
+        },
+        {
+          "line": 445,
+          "block": "0",
+          "branch": "1",
+          "taken": 17
+        },
+        {
+          "line": 453,
+          "block": "0",
+          "branch": "0",
+          "taken": 34
+        },
+        {
+          "line": 453,
+          "block": "0",
+          "branch": "1",
+          "taken": 17
+        }
+      ]
+    },
+    {
+      "path": "carve/refresh/refresh.h",
+      "lines": [],
+      "functions": [],
+      "branches": []
+    },
+    {
+      "path": "carve/scan_deps/scan_deps.cc",
+      "lines": [],
+      "functions": [],
+      "branches": []
+    },
+    {
+      "path": "carve/scan_deps/scan_deps.h",
+      "lines": [],
+      "functions": [],
+      "branches": []
+    },
+    {
+      "path": "carve/shard/shard.cc",
+      "lines": [
+        {
+          "line": 32,
+          "execution_count": 7
+        },
+        {
+          "line": 33,
+          "execution_count": 7
+        },
+        {
+          "line": 34,
+          "execution_count": 7
+        },
+        {
+          "line": 35,
+          "execution_count": 1
+        },
+        {
+          "line": 36,
+          "execution_count": 1
+        },
+        {
+          "line": 38,
+          "execution_count": 7
+        },
+        {
+          "line": 39,
+          "execution_count": 7
+        },
+        {
+          "line": 40,
+          "execution_count": 7
+        },
+        {
+          "line": 41,
+          "execution_count": 7
+        },
+        {
+          "line": 42,
+          "execution_count": 22
+        },
+        {
+          "line": 43,
+          "execution_count": 22
+        },
+        {
+          "line": 44,
+          "execution_count": 22
+        },
+        {
+          "line": 48,
+          "execution_count": 7
+        },
+        {
+          "line": 49,
+          "execution_count": 2
+        },
+        {
+          "line": 50,
+          "execution_count": 2
+        },
+        {
+          "line": 51,
+          "execution_count": 7
+        },
+        {
+          "line": 52,
+          "execution_count": 1
+        },
+        {
+          "line": 53,
+          "execution_count": 1
+        },
+        {
+          "line": 58,
+          "execution_count": 7
+        },
+        {
+          "line": 59,
+          "execution_count": 7
+        },
+        {
+          "line": 60,
+          "execution_count": 3
+        },
+        {
+          "line": 61,
+          "execution_count": 3
+        },
+        {
+          "line": 62,
+          "execution_count": 3
+        },
+        {
+          "line": 63,
+          "execution_count": 3
+        },
+        {
+          "line": 66,
+          "execution_count": 3
+        },
+        {
+          "line": 67,
+          "execution_count": 3
+        },
+        {
+          "line": 68,
+          "execution_count": 2
+        },
+        {
+          "line": 69,
+          "execution_count": 1
+        },
+        {
+          "line": 70,
+          "execution_count": 1
+        },
+        {
+          "line": 71,
+          "execution_count": 3
+        },
+        {
+          "line": 78,
+          "execution_count": 7
+        },
+        {
+          "line": 79,
+          "execution_count": 4
+        },
+        {
+          "line": 80,
+          "execution_count": 4
+        },
+        {
+          "line": 81,
+          "execution_count": 4
+        },
+        {
+          "line": 82,
+          "execution_count": 2
+        },
+        {
+          "line": 83,
+          "execution_count": 2
+        },
+        {
+          "line": 85,
+          "execution_count": 7
+        },
+        {
+          "line": 86,
+          "execution_count": 5
+        },
+        {
+          "line": 87,
+          "execution_count": 5
+        },
+        {
+          "line": 88,
+          "execution_count": 7
+        },
+        {
+          "line": 89,
+          "execution_count": 7
+        },
+        {
+          "line": 91,
+          "execution_count": 3
+        },
+        {
+          "line": 92,
+          "execution_count": 3
+        },
+        {
+          "line": 95,
+          "execution_count": 2
+        },
+        {
+          "line": 96,
+          "execution_count": 6
+        },
+        {
+          "line": 97,
+          "execution_count": 6
+        },
+        {
+          "line": 98,
+          "execution_count": 6
+        },
+        {
+          "line": 101,
+          "execution_count": 2
+        },
+        {
+          "line": 102,
+          "execution_count": 2
+        },
+        {
+          "line": 103,
+          "execution_count": 1
+        },
+        {
+          "line": 104,
+          "execution_count": 1
+        },
+        {
+          "line": 105,
+          "execution_count": 1
+        },
+        {
+          "line": 107,
+          "execution_count": 2
+        },
+        {
+          "line": 108,
+          "execution_count": 2
+        },
+        {
+          "line": 109,
+          "execution_count": 2
+        },
+        {
+          "line": 110,
+          "execution_count": 2
+        },
+        {
+          "line": 111,
+          "execution_count": 2
+        },
+        {
+          "line": 112,
+          "execution_count": 2
+        },
+        {
+          "line": 113,
+          "execution_count": 2
+        },
+        {
+          "line": 114,
+          "execution_count": 2
+        },
+        {
+          "line": 115,
+          "execution_count": 2
+        },
+        {
+          "line": 116,
+          "execution_count": 2
+        },
+        {
+          "line": 117,
+          "execution_count": 2
+        },
+        {
+          "line": 118,
+          "execution_count": 2
+        },
+        {
+          "line": 119,
+          "execution_count": 2
+        },
+        {
+          "line": 120,
+          "execution_count": 2
+        },
+        {
+          "line": 121,
+          "execution_count": 2
+        },
+        {
+          "line": 122,
+          "execution_count": 2
+        }
+      ],
+      "functions": [
+        {
+          "name": "_ZN5carve5shard10BuildShardERKNS0_7OptionsE",
+          "start_line": 32,
+          "execution_count": 7
+        },
+        {
+          "name": "_ZN5carve5shard8RunShardERKNS0_11FileOptionsE",
+          "start_line": 91,
+          "execution_count": 3
+        }
+      ],
+      "branches": [
+        {
+          "line": 34,
+          "block": "0",
+          "branch": "0",
+          "taken": 0
+        },
+        {
+          "line": 34,
+          "block": "0",
+          "branch": "1",
+          "taken": 7
+        },
+        {
+          "line": 34,
+          "block": "1",
+          "branch": "2",
+          "taken": 1
+        },
+        {
+          "line": 34,
+          "block": "1",
+          "branch": "3",
+          "taken": 6
+        },
+        {
+          "line": 42,
+          "block": "0",
+          "branch": "0",
+          "taken": 22
+        },
+        {
+          "line": 42,
+          "block": "0",
+          "branch": "1",
+          "taken": 7
+        },
+        {
+          "line": 48,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 48,
+          "block": "0",
+          "branch": "1",
+          "taken": 5
+        },
+        {
+          "line": 51,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 51,
+          "block": "0",
+          "branch": "1",
+          "taken": 6
+        },
+        {
+          "line": 59,
+          "block": "0",
+          "branch": "0",
+          "taken": 3
+        },
+        {
+          "line": 59,
+          "block": "0",
+          "branch": "1",
+          "taken": 4
+        },
+        {
+          "line": 62,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 62,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 63,
+          "block": "0",
+          "branch": "0",
+          "taken": 3
+        },
+        {
+          "line": 63,
+          "block": "0",
+          "branch": "1",
+          "taken": 2
+        },
+        {
+          "line": 78,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 78,
+          "block": "0",
+          "branch": "1",
+          "taken": 5
+        },
+        {
+          "line": 79,
+          "block": "0",
+          "branch": "0",
+          "taken": 4
+        },
+        {
+          "line": 79,
+          "block": "0",
+          "branch": "1",
+          "taken": 2
+        },
+        {
+          "line": 85,
+          "block": "0",
+          "branch": "0",
+          "taken": 6
+        },
+        {
+          "line": 85,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 85,
+          "block": "1",
+          "branch": "2",
+          "taken": 5
+        },
+        {
+          "line": 85,
+          "block": "1",
+          "branch": "3",
+          "taken": 1
+        },
+        {
+          "line": 92,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 92,
+          "block": "0",
+          "branch": "1",
+          "taken": 2
+        },
+        {
+          "line": 96,
+          "block": "0",
+          "branch": "0",
+          "taken": 6
+        },
+        {
+          "line": 96,
+          "block": "0",
+          "branch": "1",
+          "taken": 2
+        },
+        {
+          "line": 102,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 102,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 103,
+          "block": "0",
+          "branch": "0",
+          "taken": 0
+        },
+        {
+          "line": 103,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        }
+      ]
+    },
+    {
+      "path": "carve/shard/shard.h",
+      "lines": [],
+      "functions": [],
+      "branches": []
+    },
+    {
+      "path": "carve/sidecar/sidecar.cc",
+      "lines": [
+        {
+          "line": 35,
+          "execution_count": 44
+        },
+        {
+          "line": 36,
+          "execution_count": 44
+        },
+        {
+          "line": 37,
+          "execution_count": 44
+        },
+        {
+          "line": 38,
+          "execution_count": 10
+        },
+        {
+          "line": 39,
+          "execution_count": 10
+        },
+        {
+          "line": 40,
+          "execution_count": 10
+        },
+        {
+          "line": 41,
+          "execution_count": 0
+        },
+        {
+          "line": 42,
+          "execution_count": 10
+        },
+        {
+          "line": 43,
+          "execution_count": 34
+        },
+        {
+          "line": 44,
+          "execution_count": 34
+        },
+        {
+          "line": 45,
+          "execution_count": 1
+        },
+        {
+          "line": 46,
+          "execution_count": 1
+        },
+        {
+          "line": 47,
+          "execution_count": 33
+        },
+        {
+          "line": 48,
+          "execution_count": 34
+        },
+        {
+          "line": 50,
+          "execution_count": 35
+        },
+        {
+          "line": 51,
+          "execution_count": 35
+        },
+        {
+          "line": 52,
+          "execution_count": 35
+        },
+        {
+          "line": 54,
+          "execution_count": 6
+        },
+        {
+          "line": 55,
+          "execution_count": 6
+        },
+        {
+          "line": 56,
+          "execution_count": 6
+        },
+        {
+          "line": 57,
+          "execution_count": 1
+        },
+        {
+          "line": 58,
+          "execution_count": 1
+        },
+        {
+          "line": 59,
+          "execution_count": 1
+        },
+        {
+          "line": 60,
+          "execution_count": 0
+        },
+        {
+          "line": 61,
+          "execution_count": 1
+        },
+        {
+          "line": 62,
+          "execution_count": 5
+        },
+        {
+          "line": 63,
+          "execution_count": 5
+        },
+        {
+          "line": 64,
+          "execution_count": 1
+        },
+        {
+          "line": 65,
+          "execution_count": 1
+        },
+        {
+          "line": 66,
+          "execution_count": 4
+        },
+        {
+          "line": 67,
+          "execution_count": 5
+        },
+        {
+          "line": 69,
+          "execution_count": 22
+        },
+        {
+          "line": 70,
+          "execution_count": 22
+        },
+        {
+          "line": 71,
+          "execution_count": 22
+        },
+        {
+          "line": 73,
+          "execution_count": 2
+        },
+        {
+          "line": 74,
+          "execution_count": 2
+        },
+        {
+          "line": 75,
+          "execution_count": 2
+        },
+        {
+          "line": 76,
+          "execution_count": 2
+        },
+        {
+          "line": 77,
+          "execution_count": 2
+        },
+        {
+          "line": 78,
+          "execution_count": 2
+        },
+        {
+          "line": 79,
+          "execution_count": 2
+        },
+        {
+          "line": 81,
+          "execution_count": 2
+        },
+        {
+          "line": 82,
+          "execution_count": 4
+        },
+        {
+          "line": 83,
+          "execution_count": 4
+        },
+        {
+          "line": 84,
+          "execution_count": 4
+        },
+        {
+          "line": 85,
+          "execution_count": 2
+        },
+        {
+          "line": 86,
+          "execution_count": 2
+        },
+        {
+          "line": 87,
+          "execution_count": 1
+        },
+        {
+          "line": 88,
+          "execution_count": 1
+        },
+        {
+          "line": 89,
+          "execution_count": 2
+        },
+        {
+          "line": 90,
+          "execution_count": 2
+        },
+        {
+          "line": 91,
+          "execution_count": 2
+        },
+        {
+          "line": 92,
+          "execution_count": 2
+        },
+        {
+          "line": 93,
+          "execution_count": 2
+        },
+        {
+          "line": 94,
+          "execution_count": 2
+        },
+        {
+          "line": 98,
+          "execution_count": 25
+        },
+        {
+          "line": 99,
+          "execution_count": 25
+        },
+        {
+          "line": 100,
+          "execution_count": 25
+        },
+        {
+          "line": 108,
+          "execution_count": 24
+        },
+        {
+          "line": 109,
+          "execution_count": 24
+        },
+        {
+          "line": 112,
+          "execution_count": 24
+        },
+        {
+          "line": 113,
+          "execution_count": 27
+        },
+        {
+          "line": 114,
+          "execution_count": 20
+        },
+        {
+          "line": 115,
+          "execution_count": 18
+        },
+        {
+          "line": 116,
+          "execution_count": 18
+        },
+        {
+          "line": 117,
+          "execution_count": 2
+        },
+        {
+          "line": 118,
+          "execution_count": 2
+        },
+        {
+          "line": 119,
+          "execution_count": 20
+        },
+        {
+          "line": 121,
+          "execution_count": 28
+        },
+        {
+          "line": 122,
+          "execution_count": 28
+        },
+        {
+          "line": 123,
+          "execution_count": 28
+        },
+        {
+          "line": 124,
+          "execution_count": 7
+        },
+        {
+          "line": 125,
+          "execution_count": 21
+        },
+        {
+          "line": 126,
+          "execution_count": 21
+        },
+        {
+          "line": 127,
+          "execution_count": 21
+        },
+        {
+          "line": 128,
+          "execution_count": 28
+        },
+        {
+          "line": 130,
+          "execution_count": 24
+        },
+        {
+          "line": 131,
+          "execution_count": 24
+        },
+        {
+          "line": 132,
+          "execution_count": 24
+        },
+        {
+          "line": 133,
+          "execution_count": 9
+        },
+        {
+          "line": 134,
+          "execution_count": 2
+        },
+        {
+          "line": 135,
+          "execution_count": 2
+        },
+        {
+          "line": 136,
+          "execution_count": 7
+        },
+        {
+          "line": 137,
+          "execution_count": 9
+        },
+        {
+          "line": 138,
+          "execution_count": 24
+        },
+        {
+          "line": 139,
+          "execution_count": 24
+        },
+        {
+          "line": 144,
+          "execution_count": 19
+        },
+        {
+          "line": 145,
+          "execution_count": 19
+        },
+        {
+          "line": 146,
+          "execution_count": 11
+        },
+        {
+          "line": 147,
+          "execution_count": 9
+        },
+        {
+          "line": 148,
+          "execution_count": 8
+        },
+        {
+          "line": 149,
+          "execution_count": 8
+        },
+        {
+          "line": 150,
+          "execution_count": 11
+        },
+        {
+          "line": 151,
+          "execution_count": 11
+        },
+        {
+          "line": 152,
+          "execution_count": 19
+        },
+        {
+          "line": 154,
+          "execution_count": 23
+        },
+        {
+          "line": 158,
+          "execution_count": 23
+        },
+        {
+          "line": 159,
+          "execution_count": 27
+        },
+        {
+          "line": 160,
+          "execution_count": 28
+        },
+        {
+          "line": 161,
+          "execution_count": 24
+        },
+        {
+          "line": 162,
+          "execution_count": 24
+        },
+        {
+          "line": 163,
+          "execution_count": 27
+        },
+        {
+          "line": 165,
+          "execution_count": 23
+        },
+        {
+          "line": 166,
+          "execution_count": 23
+        },
+        {
+          "line": 167,
+          "execution_count": 24
+        },
+        {
+          "line": 168,
+          "execution_count": 22
+        },
+        {
+          "line": 169,
+          "execution_count": 22
+        },
+        {
+          "line": 170,
+          "execution_count": 24
+        },
+        {
+          "line": 171,
+          "execution_count": 24
+        },
+        {
+          "line": 172,
+          "execution_count": 24
+        },
+        {
+          "line": 173,
+          "execution_count": 22
+        },
+        {
+          "line": 174,
+          "execution_count": 23
+        },
+        {
+          "line": 175,
+          "execution_count": 23
+        }
+      ],
+      "functions": [
+        {
+          "name": "_ZN5carve7sidecar12MergeRecordsERKNS_13ActionRecordsES3_St17basic_string_viewIcSt11char_traitsIcEERKN4absl12lts_2026081713flat_hash_setIS7_NS9_18container_internal10StringHashENSB_8StringEqESaIS7_EEE",
+          "start_line": 108,
+          "execution_count": 24
+        },
+        {
+          "name": "_ZN5carve7sidecar14DiffActionKeysERKNS_13ActionRecordsEN4absl12lts_202608174SpanIKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEE",
+          "start_line": 73,
+          "execution_count": 2
+        },
+        {
+          "name": "_ZN5carve7sidecar15LoadHeaderIndexERKNSt10filesystem7__cxx114pathE",
+          "start_line": 54,
+          "execution_count": 6
+        },
+        {
+          "name": "_ZN5carve7sidecar15SaveHeaderIndexERKNSt10filesystem7__cxx114pathERKNS_11HeaderIndexE",
+          "start_line": 69,
+          "execution_count": 22
+        },
+        {
+          "name": "_ZN5carve7sidecar16BuildHeaderIndexERKNS_13ActionRecordsE",
+          "start_line": 154,
+          "execution_count": 23
+        },
+        {
+          "name": "_ZN5carve7sidecar18FindReusableRecordERKNS_13ActionRecordsERKNS_12ActionRecordESt17basic_string_viewIcSt11char_traitsIcEE",
+          "start_line": 144,
+          "execution_count": 19
+        },
+        {
+          "name": "_ZN5carve7sidecar4LoadERKNSt10filesystem7__cxx114pathE",
+          "start_line": 35,
+          "execution_count": 44
+        },
+        {
+          "name": "_ZN5carve7sidecar4SaveERKNSt10filesystem7__cxx114pathERKNS_13ActionRecordsE",
+          "start_line": 50,
+          "execution_count": 35
+        },
+        {
+          "name": "sidecar.cc:_ZN5carve7sidecar12_GLOBAL__N_111SameCommandERKNS_12ActionRecordES4_",
+          "start_line": 98,
+          "execution_count": 25
+        },
+        {
+          "name": "sidecar.cc:_ZZN5carve7sidecar12MergeRecordsERKNS_13ActionRecordsES3_St17basic_string_viewIcSt11char_traitsIcEERKN4absl12lts_2026081713flat_hash_setIS7_NS9_18container_internal10StringHashENSB_8StringEqESaIS7_EEEENK3$_0clEPKNS_12ActionRecordESL_",
+          "start_line": 132,
+          "execution_count": 9
+        }
+      ],
+      "branches": [
+        {
+          "line": 37,
+          "block": "0",
+          "branch": "0",
+          "taken": 10
+        },
+        {
+          "line": 37,
+          "block": "0",
+          "branch": "1",
+          "taken": 34
+        },
+        {
+          "line": 38,
+          "block": "0",
+          "branch": "0",
+          "taken": 10
+        },
+        {
+          "line": 38,
+          "block": "0",
+          "branch": "1",
+          "taken": 0
+        },
+        {
+          "line": 44,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 44,
+          "block": "0",
+          "branch": "1",
+          "taken": 33
+        },
+        {
+          "line": 56,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 56,
+          "block": "0",
+          "branch": "1",
+          "taken": 5
+        },
+        {
+          "line": 57,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 57,
+          "block": "0",
+          "branch": "1",
+          "taken": 0
+        },
+        {
+          "line": 63,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 63,
+          "block": "0",
+          "branch": "1",
+          "taken": 4
+        },
+        {
+          "line": 76,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 76,
+          "block": "0",
+          "branch": "1",
+          "taken": 2
+        },
+        {
+          "line": 82,
+          "block": "0",
+          "branch": "0",
+          "taken": 4
+        },
+        {
+          "line": 82,
+          "block": "0",
+          "branch": "1",
+          "taken": 2
+        },
+        {
+          "line": 83,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 83,
+          "block": "0",
+          "branch": "1",
+          "taken": 3
+        },
+        {
+          "line": 85,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 85,
+          "block": "0",
+          "branch": "1",
+          "taken": 2
+        },
+        {
+          "line": 86,
+          "block": "0",
+          "branch": "0",
+          "taken": 1
+        },
+        {
+          "line": 86,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 113,
+          "block": "0",
+          "branch": "0",
+          "taken": 20
+        },
+        {
+          "line": 113,
+          "block": "0",
+          "branch": "1",
+          "taken": 24
+        },
+        {
+          "line": 114,
+          "block": "0",
+          "branch": "0",
+          "taken": 18
+        },
+        {
+          "line": 114,
+          "block": "0",
+          "branch": "1",
+          "taken": 2
+        },
+        {
+          "line": 121,
+          "block": "0",
+          "branch": "0",
+          "taken": 28
+        },
+        {
+          "line": 121,
+          "block": "0",
+          "branch": "1",
+          "taken": 24
+        },
+        {
+          "line": 123,
+          "block": "0",
+          "branch": "0",
+          "taken": 23
+        },
+        {
+          "line": 123,
+          "block": "0",
+          "branch": "1",
+          "taken": 33
+        },
+        {
+          "line": 123,
+          "block": "1",
+          "branch": "2",
+          "taken": 13
+        },
+        {
+          "line": 123,
+          "block": "1",
+          "branch": "3",
+          "taken": 3
+        },
+        {
+          "line": 123,
+          "block": "2",
+          "branch": "4",
+          "taken": 7
+        },
+        {
+          "line": 123,
+          "block": "2",
+          "branch": "5",
+          "taken": 6
+        },
+        {
+          "line": 133,
+          "block": "0",
+          "branch": "0",
+          "taken": 2
+        },
+        {
+          "line": 133,
+          "block": "0",
+          "branch": "1",
+          "taken": 7
+        },
+        {
+          "line": 145,
+          "block": "0",
+          "branch": "0",
+          "taken": 11
+        },
+        {
+          "line": 145,
+          "block": "0",
+          "branch": "1",
+          "taken": 11
+        },
+        {
+          "line": 146,
+          "block": "0",
+          "branch": "0",
+          "taken": 10
+        },
+        {
+          "line": 146,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 146,
+          "block": "1",
+          "branch": "2",
+          "taken": 9
+        },
+        {
+          "line": 146,
+          "block": "1",
+          "branch": "3",
+          "taken": 1
+        },
+        {
+          "line": 147,
+          "block": "0",
+          "branch": "0",
+          "taken": 8
+        },
+        {
+          "line": 147,
+          "block": "0",
+          "branch": "1",
+          "taken": 1
+        },
+        {
+          "line": 159,
+          "block": "0",
+          "branch": "0",
+          "taken": 27
+        },
+        {
+          "line": 159,
+          "block": "0",
+          "branch": "1",
+          "taken": 23
+        },
+        {
+          "line": 160,
+          "block": "0",
+          "branch": "0",
+          "taken": 24
+        },
+        {
+          "line": 160,
+          "block": "0",
+          "branch": "1",
+          "taken": 27
+        },
+        {
+          "line": 167,
+          "block": "0",
+          "branch": "0",
+          "taken": 22
+        },
+        {
+          "line": 167,
+          "block": "0",
+          "branch": "1",
+          "taken": 23
+        },
+        {
+          "line": 170,
+          "block": "0",
+          "branch": "0",
+          "taken": 24
+        },
+        {
+          "line": 170,
+          "block": "0",
+          "branch": "1",
+          "taken": 22
+        }
+      ]
+    },
+    {
+      "path": "carve/sidecar/sidecar.h",
+      "lines": [],
+      "functions": [],
+      "branches": []
+    }
+  ]
+}
