@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2026-09-05 14:11:37</td>
+            <td class="headerValue">2026-09-05 15:09:30</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">100.0&nbsp;%</td>
@@ -135,11 +135,11 @@
 <span id="L64"><span class="lineNum">      64</span>                 :             :   // The comparator orders pointed-to stable keys, never pointer values.</span>
 <span id="L65"><span class="lineNum">      65</span>                 :             :   // NOLINTNEXTLINE(bugprone-nondeterministic-pointer-iteration-order)</span>
 <span id="L66"><span class="lineNum">      66</span>                 :<span class="tlaGNC">          10 :   std::ranges::sort(ordered, [](const ActionRecord* lhs, const ActionRecord* rhs) {</span></span>
-<span id="L67"><span class="lineNum">      67</span>         [<span class="tlaGBC" title="Branch 0 was taken 1 time"> + </span><span class="tlaGBC" title="Branch 1 was taken 4 times"> + </span>]:<span class="tlaGNC">           5 :     if (lhs-&gt;project_id() != rhs-&gt;project_id()) {</span></span>
+<span id="L67"><span class="lineNum">      67</span>         [<span class="tlaGBC" title="Branch 0 was taken 1 time"> + </span><span class="tlaGBC" title="Branch 1 was taken 3 times"> + </span>]:<span class="tlaGNC">           4 :     if (lhs-&gt;project_id() != rhs-&gt;project_id()) {</span></span>
 <span id="L68"><span class="lineNum">      68</span>                 :<span class="tlaGNC">           1 :       return lhs-&gt;project_id() &lt; rhs-&gt;project_id();</span></span>
 <span id="L69"><span class="lineNum">      69</span>                 :<span class="tlaGNC">           1 :     }</span></span>
-<span id="L70"><span class="lineNum">      70</span>                 :<span class="tlaGNC">           4 :     return lhs-&gt;action_key() &lt; rhs-&gt;action_key();</span></span>
-<span id="L71"><span class="lineNum">      71</span>                 :<span class="tlaGNC">           5 :   });</span></span>
+<span id="L70"><span class="lineNum">      70</span>                 :<span class="tlaGNC">           3 :     return lhs-&gt;action_key() &lt; rhs-&gt;action_key();</span></span>
+<span id="L71"><span class="lineNum">      71</span>                 :<span class="tlaGNC">           4 :   });</span></span>
 <span id="L72"><span class="lineNum">      72</span>         [<span class="tlaGBC" title="Branch 0 was taken 11 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 10 times"> + </span>]:<span class="tlaGNC">          11 :   for (const ActionRecord* record : ordered) {</span></span>
 <span id="L73"><span class="lineNum">      73</span>                 :<span class="tlaGNC">          11 :     *combined.add_records() = *record;</span></span>
 <span id="L74"><span class="lineNum">      74</span>                 :<span class="tlaGNC">          11 :   }</span></span>

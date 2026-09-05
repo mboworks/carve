@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2026-09-05 14:11:37</td>
+            <td class="headerValue">2026-09-05 15:09:30</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryLo">66.7&nbsp;%</td>
@@ -136,7 +136,7 @@
 <span id="L65"><span class="lineNum">      65</span>         [<span class="tlaGBC" title="Branch 0 was taken 134 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 67 times"> + </span>]:<span class="tlaGNC tlaBgGNC">         201 :     for (std::size_t i = 0; i &lt; fds.size(); ++i) {</span></span>
 <span id="L66"><span class="lineNum">      66</span>                 :             :       // POSIX poll flags are signed int macros; the bitmask test is the idiomatic form.</span>
 <span id="L67"><span class="lineNum">      67</span>                 :             :       // NOLINTNEXTLINE(hicpp-signed-bitwise)</span>
-<span id="L68"><span class="lineNum">      68</span> [<span class="tlaGBC" title="Branch 0 was taken 4 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 130 times"> + </span>][<span class="tlaGBC" title="Branch 0 was taken 55 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 75 times"> + </span>]:<span class="tlaGNC">         134 :       if (fds.at(i).fd &lt; 0 || (fds.at(i).revents &amp; (POLLIN | POLLHUP | POLLERR)) == 0) {</span></span>
+<span id="L68"><span class="lineNum">      68</span> [<span class="tlaGBC" title="Branch 0 was taken 3 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 131 times"> + </span>][<span class="tlaGBC" title="Branch 0 was taken 56 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 75 times"> + </span>]:<span class="tlaGNC">         134 :       if (fds.at(i).fd &lt; 0 || (fds.at(i).revents &amp; (POLLIN | POLLHUP | POLLERR)) == 0) {</span></span>
 <span id="L69"><span class="lineNum">      69</span>                 :<span class="tlaGNC">          59 :         continue;</span></span>
 <span id="L70"><span class="lineNum">      70</span>                 :<span class="tlaGNC">          59 :       }</span></span>
 <span id="L71"><span class="lineNum">      71</span>                 :<span class="tlaGNC">          75 :       std::array&lt;char, kReadChunkBytes&gt; buffer{};</span></span>

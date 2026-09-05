@@ -112,7 +112,7 @@
         },
         {
           "line": 67,
-          "execution_count": 5
+          "execution_count": 4
         },
         {
           "line": 68,
@@ -124,11 +124,11 @@
         },
         {
           "line": 70,
-          "execution_count": 4
+          "execution_count": 3
         },
         {
           "line": 71,
-          "execution_count": 5
+          "execution_count": 4
         },
         {
           "line": 72,
@@ -221,7 +221,7 @@
         {
           "name": "aggregate.cc:_ZZN5carve9aggregate7CombineEN4absl12lts_202608174SpanIKNS_13ActionRecordsEEEENK3$_0clEPKNS_12ActionRecordESA_",
           "start_line": 66,
-          "execution_count": 5
+          "execution_count": 4
         }
       ],
       "branches": [
@@ -319,7 +319,7 @@
           "line": 67,
           "block": "0",
           "branch": "1",
-          "taken": 4
+          "taken": 3
         },
         {
           "line": 72,
@@ -3509,19 +3509,19 @@
           "line": 68,
           "block": "0",
           "branch": "0",
-          "taken": 4
+          "taken": 3
         },
         {
           "line": 68,
           "block": "0",
           "branch": "1",
-          "taken": 130
+          "taken": 131
         },
         {
           "line": 68,
           "block": "1",
           "branch": "2",
-          "taken": 55
+          "taken": 56
         },
         {
           "line": 68,
