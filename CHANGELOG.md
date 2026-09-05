@@ -6,6 +6,8 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Raise line/function coverage to 90% minimum and 95% target, branch coverage to 80% minimum
+  and 85% target, and enforce the high target for the overall report and every non-empty category.
 - Normalize LLVM LCOV using tested source-owned exclusion directives; prepare subprocess arguments
   before `fork()` and exclude only the child syscall block that cannot emit a coverage profile.
 - Cover subprocess fork, poll, read, and wait failures and interrupted-system-call retries; report

@@ -152,14 +152,26 @@ def summary(totals: dict[str, dict[str, Counts]], policy: dict) -> dict:
 
 
 def render(totals: dict[str, dict[str, Counts]], policy: dict) -> tuple[str, bool]:
-    rows = ["| Metric | Hit / found | Coverage | Minimum |", "| --- | ---: | ---: | ---: |"]
+    rows = [
+        "| Category | Metric | Hit / found | Coverage | Required |",
+        "| --- | --- | ---: | ---: | ---: |",
+    ]
     passed = True
-    for metric in METRICS:
-        count = totals["overall"][metric]
-        enforced = policy["target"][metric] if policy["enforce"][metric] == "high" else policy["minimum"][metric]
-        passed = passed and count.percent is not None and count.percent >= enforced
-        coverage = "n/a" if count.percent is None else f"{count.percent:.2f}%"
-        rows.append(f"| {metric.title()} | {count.hit} / {count.found} | {coverage} | {enforced:.2f}% |")
+    for category, metrics in totals.items():
+        if category != "overall" and not any(count.found for count in metrics.values()):
+            continue
+        minimum = effective_policy(policy, category, "minimum")
+        target = effective_policy(policy, category, "target")
+        enforce = effective_policy(policy, category, "enforce")
+        for metric in METRICS:
+            count = metrics[metric]
+            required = target[metric] if enforce[metric] == "high" else minimum[metric]
+            passed = passed and count.percent is not None and count.percent >= required
+            coverage = "n/a" if count.percent is None else f"{count.percent:.2f}%"
+            rows.append(
+                f"| {category} | {metric.title()} | {count.hit} / {count.found} | "
+                f"{coverage} | {required:.2f}% |"
+            )
     return "\n".join(rows) + "\n", passed
 
 
