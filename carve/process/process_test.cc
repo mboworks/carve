@@ -15,6 +15,12 @@
 
 #include "carve/process/process.h"
 
+#include <fcntl.h>
+#include <sys/resource.h>
+#include <unistd.h>
+
+#include <algorithm>
+#include <cerrno>
 #include <csignal>
 #include <string>
 #include <vector>
@@ -32,7 +38,51 @@ using ::mbo::testing::StatusIs;
 using ::testing::AllOf;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::Ge;
+using ::testing::HasSubstr;
 using ::testing::SizeIs;
+
+class ProcessFailureTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    ASSERT_THAT(getrlimit(RLIMIT_NOFILE, &original_limit_), Eq(0));
+    struct rlimit test_limit = original_limit_;
+    test_limit.rlim_cur = std::min<rlim_t>(test_limit.rlim_cur, 256);
+    ASSERT_THAT(setrlimit(RLIMIT_NOFILE, &test_limit), Eq(0));
+    limit_changed_ = true;
+
+    int descriptor = open("/dev/null", O_RDONLY);
+    while (descriptor >= 0) {
+      descriptors_.push_back(descriptor);
+      descriptor = open("/dev/null", O_RDONLY);
+    }
+    ASSERT_THAT(errno, Eq(EMFILE));
+    ASSERT_THAT(descriptors_.size(), Ge(2));
+  }
+
+  void TearDown() override {
+    for (const int descriptor : descriptors_) {
+      EXPECT_THAT(close(descriptor), Eq(0));
+    }
+    if (limit_changed_) {
+      EXPECT_THAT(setrlimit(RLIMIT_NOFILE, &original_limit_), Eq(0));
+    }
+  }
+
+  void ReleaseDescriptors(std::size_t count) {
+    ASSERT_THAT(descriptors_.size(), Ge(count));
+    while (count > 0) {
+      EXPECT_THAT(close(descriptors_.back()), Eq(0));
+      descriptors_.pop_back();
+      --count;
+    }
+  }
+
+ private:
+  struct rlimit original_limit_{};
+  std::vector<int> descriptors_;
+  bool limit_changed_ = false;
+};
 
 TEST(RunTest, CapturesStdoutAndZeroExit) {
   EXPECT_THAT(
@@ -70,6 +120,19 @@ TEST(RunTest, LargeOutputDoesNotDeadlock) {
 
 TEST(RunTest, EmptyArgvIsInvalidArgument) {
   EXPECT_THAT(::carve::process::Run(std::vector<std::string>{}), StatusIs(absl::StatusCode::kInvalidArgument));
+}
+
+TEST_F(ProcessFailureTest, ReportsStdoutPipeFailure) {
+  EXPECT_THAT(
+      ::carve::process::Run(std::vector<std::string>{"/bin/true"}),
+      StatusIs(absl::StatusCode::kResourceExhausted, HasSubstr("pipe(stdout)")));
+}
+
+TEST_F(ProcessFailureTest, ReportsStderrPipeFailure) {
+  ReleaseDescriptors(2);
+  EXPECT_THAT(
+      ::carve::process::Run(std::vector<std::string>{"/bin/true"}),
+      StatusIs(absl::StatusCode::kResourceExhausted, HasSubstr("pipe(stderr)")));
 }
 
 }  // namespace
