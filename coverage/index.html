@@ -9,22 +9,40 @@
       a { color: #0969da; }
       table { border-collapse: collapse; margin: 1rem 0 2rem; }
       th, td { border: 1px solid #d0d7de; padding: .35rem .65rem; text-align: right; }
-      th:first-child, td:first-child, .reports th:nth-child(-n+5), .reports td:nth-child(-n+5) { text-align: left; }
-      td { font-variant-numeric: tabular-nums; }
+      .reportTitle { text-align: center; }
+      .coverageTable { border-collapse: separate; border-spacing: 1px; margin-left: auto; margin-right: auto; }
+      .coverageTable th, .coverageTable td { border: 0; }
+      .coverageTable th { background: #6688d4; color: #fff; }
+      .coverageTable thead tr:first-child th { font-size: 120%; text-align: center; }
+      .coverageTable th:first-child, .coverageTable td:first-child,
+      .reportsTable th:nth-child(-n+6), .reportsTable td:nth-child(-n+6) { text-align: left; }
+      .coverageTable td:first-child { background: #dae7fe; color: #284fa8; }
+      .coverageTable td { white-space: nowrap; }
+      .coverageTable td:nth-child(n+3), .reportsTable td:nth-child(n+7) { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-variant-numeric: tabular-nums; }
       .low { background: #f8cecc; }
       .medium { background: #fff2cc; }
       .high { background: #d5e8d4; }
+      .coverageTable .policyGap { background: #fff; min-width: .5rem; padding: 0; }
+      .coverageTable .policyCell { background: #dae7fe; font: 11px/1.25 ui-monospace, SFMono-Regular, Consolas, monospace; text-align: center; }
+      .coverageTable .policy-stricter { background: #a7fc9d; }
+      .coverageTable .policy-weaker { background: #ffea20; }
+      .coverageTable .policy-mixed { background: #ffd580; }
+      .policyNote { font-size: 12px; margin: -1.5rem auto 2rem; max-width: 72rem; text-align: left; }
+      .status-good { background: #d5e8d4; }
+      .status-ok { background: #fff2cc; }
+      .status-bad { background: #f8cecc; color: #cf222e; font-weight: bold; }
     </style>
   </head>
   <body>
     <h1>Carve coverage reports</h1>
-    <table class="reports">
-      <thead><tr><th>Report</th><th>Source</th><th>Completed</th><th>Commit</th><th>Workflow</th><th>Lines</th><th>Branches</th><th>Functions</th></tr></thead>
+    <table class="reportsTable">
+      <thead><tr><th>Report</th><th>Data</th><th>Source</th><th>Completed</th><th>Commit</th><th>Workflow</th><th>Lines</th><th>Branches</th><th>Functions</th></tr></thead>
       <tbody>
-      <tr><td><a href="main/">main</a></td><td><a href="https://github.com/mboworks/carve/tree/main">main branch</a></td><td>2026-09-04 23:11:33 UTC</td><td><a href="https://github.com/mboworks/carve/commit/881a673c37a8cabd01069ad049b71cc3d8264635"><code>881a673</code></a></td><td><a href="https://github.com/mboworks/carve/actions/runs/33927889042">run 33927889042</a></td><td>88.36%</td><td>80.77%</td><td>92.86%</td></tr>
-      <tr><td><a href="pr/84/">PR 84</a></td><td><a href="https://github.com/mboworks/carve/pull/84">PR #84</a></td><td>2026-09-04 23:58:34 UTC</td><td><a href="https://github.com/mboworks/carve/commit/faf7800306472358c3a1f47ba2a58ac2dbbf07d7"><code>faf7800</code></a></td><td><a href="https://github.com/mboworks/carve/actions/runs/33930349108">run 33930349108</a></td><td>88.36%</td><td>80.77%</td><td>92.86%</td></tr>
-      <tr><td><a href="pr/83/">PR 83</a></td><td><a href="https://github.com/mboworks/carve/pull/83">PR #83</a></td><td>2026-09-04 23:32:37 UTC</td><td><a href="https://github.com/mboworks/carve/commit/2cfcfbe9a3b9de7381ff385a7733386500831f9e"><code>2cfcfbe</code></a></td><td><a href="https://github.com/mboworks/carve/actions/runs/33928842254">run 33928842254</a></td><td>88.36%</td><td>80.77%</td><td>92.86%</td></tr>
-      <tr><td><a href="pr/82/">PR 82</a></td><td><a href="https://github.com/mboworks/carve/pull/82">PR #82</a></td><td>2026-09-04 23:01:03 UTC</td><td><a href="https://github.com/mboworks/carve/commit/01266c8da757fab4c89e151e55b988b8b9083ce0"><code>01266c8</code></a></td><td><a href="https://github.com/mboworks/carve/actions/runs/33926053393">run 33926053393</a></td><td>88.36%</td><td>80.77%</td><td>92.86%</td></tr>
+      <tr><td><a href="main/">main</a></td><td><a href="main/coverage-data.json">JSON</a></td><td><a href="https://github.com/mboworks/carve/tree/main">main branch</a></td><td>2026-09-04 23:11:33 UTC</td><td><a href="https://github.com/mboworks/carve/commit/881a673c37a8cabd01069ad049b71cc3d8264635"><code>881a673</code></a></td><td><a href="https://github.com/mboworks/carve/actions/runs/33927889042">run 33927889042</a></td><td>88.36%</td><td>80.77%</td><td>92.86%</td></tr>
+      <tr><td><a href="pr/85/">PR 85</a></td><td><a href="pr/85/coverage-data.json">JSON</a></td><td><a href="https://github.com/mboworks/carve/pull/85">PR #85</a></td><td>2026-09-05 00:21:54 UTC</td><td><a href="https://github.com/mboworks/carve/commit/331e1918a88009c5770ea346016731d7cbdedcc8"><code>331e191</code></a></td><td><a href="https://github.com/mboworks/carve/actions/runs/33932134218">run 33932134218</a></td><td>88.36%</td><td>80.77%</td><td>92.86%</td></tr>
+      <tr><td><a href="pr/84/">PR 84</a></td><td><a href="pr/84/coverage-data.json">JSON</a></td><td><a href="https://github.com/mboworks/carve/pull/84">PR #84</a></td><td>2026-09-04 23:58:34 UTC</td><td><a href="https://github.com/mboworks/carve/commit/faf7800306472358c3a1f47ba2a58ac2dbbf07d7"><code>faf7800</code></a></td><td><a href="https://github.com/mboworks/carve/actions/runs/33930349108">run 33930349108</a></td><td>88.36%</td><td>80.77%</td><td>92.86%</td></tr>
+      <tr><td><a href="pr/83/">PR 83</a></td><td><a href="pr/83/coverage-data.json">JSON</a></td><td><a href="https://github.com/mboworks/carve/pull/83">PR #83</a></td><td>2026-09-04 23:32:37 UTC</td><td><a href="https://github.com/mboworks/carve/commit/2cfcfbe9a3b9de7381ff385a7733386500831f9e"><code>2cfcfbe</code></a></td><td><a href="https://github.com/mboworks/carve/actions/runs/33928842254">run 33928842254</a></td><td>88.36%</td><td>80.77%</td><td>92.86%</td></tr>
+      <tr><td><a href="pr/82/">PR 82</a></td><td><a href="pr/82/coverage-data.json">JSON</a></td><td><a href="https://github.com/mboworks/carve/pull/82">PR #82</a></td><td>2026-09-04 23:01:03 UTC</td><td><a href="https://github.com/mboworks/carve/commit/01266c8da757fab4c89e151e55b988b8b9083ce0"><code>01266c8</code></a></td><td><a href="https://github.com/mboworks/carve/actions/runs/33926053393">run 33926053393</a></td><td>88.36%</td><td>80.77%</td><td>92.86%</td></tr>
       </tbody>
     </table>
 
