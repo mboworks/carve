@@ -7,7 +7,8 @@ follows [SemVer](https://semver.org/).
 ## [Unreleased]
 
 - Include LLVM-linked scan-dependency and end-to-end tests in coverage collection; attribute the
-  end-to-end executions to production modules instead of reporting an empty test-only category.
+  end-to-end executions to production modules instead of reporting an empty test-only category,
+  and retain detailed reports when the coverage gate fails.
 - Raise line/function coverage to 90% minimum and 95% target, branch coverage to 80% minimum
   and 85% target, and enforce the high target for the overall report and every non-empty category.
 - Normalize LLVM LCOV using tested source-owned exclusion directives; prepare subprocess arguments
