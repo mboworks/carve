@@ -10,7 +10,6 @@
     "cdb": {"include": ["carve/cdb/**"]},
     "cli": {"include": ["carve/cli/**"]},
     "command": {"include": ["carve/command/**"]},
-    "e2e": {"include": ["carve/e2e/**"]},
     "io": {"include": ["carve/io/**"]},
     "process": {"include": ["carve/process/**"]},
     "prune": {"include": ["carve/prune/**"]},
