@@ -44,8 +44,6 @@ namespace carve::refresh {
 namespace {
 
 constexpr auto kCompileArgs = std::to_array<std::string_view>({"clang", "-c", "src/a.cc"});
-constexpr auto kCompileArgsWithOutput = std::to_array<std::string_view>(
-    {"clang", "-fno-canonical-system-headers", "-c", "src/a.cc", "-o", "bazel-out/a.o"});
 constexpr auto kRootCompileArgs = std::to_array<std::string_view>({"clang", "-c", "a.cc"});
 
 using ::mbo::proto::EqualsProto;
@@ -105,11 +103,22 @@ analysis::Action* AddCompile(analysis::ActionGraphContainer& container, std::str
 }
 
 TEST(BuildEntriesTest, MapsCompileActionToDeBazeledEntry) {
-  analysis::ActionGraphContainer container;
-  analysis::Action* compile = AddCompile(container, "k1");
-  for (const std::string_view arg : kCompileArgsWithOutput) {
-    compile->add_arguments(std::string(arg));
-  }
+  const analysis::ActionGraphContainer container = ParseTextProtoOrDie(
+      R"pb(
+        path_fragments { id: 1 label: "bazel-out" parent_id: 0 }
+        path_fragments { id: 2 label: "a.o" parent_id: 1 }
+        artifacts { id: 10 path_fragment_id: 2 }
+        actions {
+          mnemonic: "CppCompile"
+          action_key: "k1"
+          arguments: "clang"
+          arguments: "-fno-canonical-system-headers"
+          arguments: "-c"
+          arguments: "src/a.cc"
+          arguments: "-o"
+          arguments: "bazel-out/a.o"
+          primary_output_id: 10
+        })pb");
 
   // `file` stays exec-relative (clangd resolves it against `directory`); arguments
   // stay exec-relative and the de-Bazel transform dropped -fno-canonical-system-headers.
@@ -117,7 +126,8 @@ TEST(BuildEntriesTest, MapsCompileActionToDeBazeledEntry) {
       BuildEntries(container.SerializeAsString(), Options{.directory = "/execroot/ws"}),
       IsOkAndHolds(ElementsAre(AllOf(
           Field(&cdb::CompileCommand::directory, Eq("/execroot/ws")), Field(&cdb::CompileCommand::file, Eq("src/a.cc")),
-          Field(&cdb::CompileCommand::arguments, ElementsAre("clang", "-c", "src/a.cc", "-o", "bazel-out/a.o"))))));
+          Field(&cdb::CompileCommand::arguments, ElementsAre("clang", "-c", "src/a.cc", "-o", "bazel-out/a.o")),
+          Field(&cdb::CompileCommand::output, Eq("bazel-out/a.o"))))));
 }
 
 TEST(BuildEntriesTest, AbsoluteSourcePathIsLeftUnchanged) {
