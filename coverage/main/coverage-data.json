@@ -2,16 +2,16 @@
   "schema": 1,
   "totals": {
     "lines": {
-      "found": 996,
-      "hit": 966
+      "found": 988,
+      "hit": 972
     },
     "functions": {
       "found": 78,
       "hit": 78
     },
     "branches": {
-      "found": 474,
-      "hit": 432
+      "found": 470,
+      "hit": 433
     }
   },
   "files": [
@@ -3299,60 +3299,44 @@
           "execution_count": 1
         },
         {
-          "line": 125,
-          "execution_count": 19
-        },
-        {
-          "line": 126,
-          "execution_count": 19
-        },
-        {
           "line": 127,
           "execution_count": 19
         },
         {
           "line": 128,
-          "execution_count": 1
+          "execution_count": 19
         },
         {
           "line": 129,
-          "execution_count": 1
-        },
-        {
-          "line": 130,
-          "execution_count": 18
-        },
-        {
-          "line": 131,
-          "execution_count": 1
+          "execution_count": 42
         },
         {
           "line": 132,
-          "execution_count": 1
+          "execution_count": 42
         },
         {
           "line": 133,
-          "execution_count": 1
+          "execution_count": 42
         },
         {
           "line": 134,
-          "execution_count": 1
-        },
-        {
-          "line": 135,
-          "execution_count": 1
+          "execution_count": 19
         },
         {
           "line": 136,
-          "execution_count": 17
+          "execution_count": 19
+        },
+        {
+          "line": 137,
+          "execution_count": 19
         },
         {
           "line": 138,
-          "execution_count": 17
+          "execution_count": 19
         },
         {
           "line": 139,
-          "execution_count": 17
+          "execution_count": 1
         },
         {
           "line": 140,
@@ -3360,15 +3344,15 @@
         },
         {
           "line": 141,
-          "execution_count": 4
+          "execution_count": 18
         },
         {
           "line": 142,
-          "execution_count": 4
+          "execution_count": 1
         },
         {
           "line": 143,
-          "execution_count": 4
+          "execution_count": 1
         },
         {
           "line": 144,
@@ -3379,128 +3363,80 @@
           "execution_count": 1
         },
         {
+          "line": 146,
+          "execution_count": 1
+        },
+        {
           "line": 147,
-          "execution_count": 16
-        },
-        {
-          "line": 149,
-          "execution_count": 0
-        },
-        {
-          "line": 150,
-          "execution_count": 0
-        },
-        {
-          "line": 151,
-          "execution_count": 0
-        },
-        {
-          "line": 152,
-          "execution_count": 0
-        },
-        {
-          "line": 153,
-          "execution_count": 0
-        },
-        {
-          "line": 154,
-          "execution_count": 0
-        },
-        {
-          "line": 155,
-          "execution_count": 0
-        },
-        {
-          "line": 156,
-          "execution_count": 0
-        },
-        {
-          "line": 159,
-          "execution_count": 0
-        },
-        {
-          "line": 160,
-          "execution_count": 0
-        },
-        {
-          "line": 161,
-          "execution_count": 0
-        },
-        {
-          "line": 162,
-          "execution_count": 0
-        },
-        {
-          "line": 163,
-          "execution_count": 0
-        },
-        {
-          "line": 164,
-          "execution_count": 0
-        },
-        {
-          "line": 167,
-          "execution_count": 16
-        },
-        {
-          "line": 168,
-          "execution_count": 16
-        },
-        {
-          "line": 169,
-          "execution_count": 16
-        },
-        {
-          "line": 170,
-          "execution_count": 16
-        },
-        {
-          "line": 172,
-          "execution_count": 16
-        },
-        {
-          "line": 173,
           "execution_count": 17
         },
         {
-          "line": 174,
-          "execution_count": 2
+          "line": 149,
+          "execution_count": 17
+        },
+        {
+          "line": 150,
+          "execution_count": 17
+        },
+        {
+          "line": 151,
+          "execution_count": 1
+        },
+        {
+          "line": 152,
+          "execution_count": 4
+        },
+        {
+          "line": 153,
+          "execution_count": 4
+        },
+        {
+          "line": 154,
+          "execution_count": 4
+        },
+        {
+          "line": 155,
+          "execution_count": 1
+        },
+        {
+          "line": 156,
+          "execution_count": 1
+        },
+        {
+          "line": 158,
+          "execution_count": 16
         },
         {
           "line": 175,
-          "execution_count": 1
+          "execution_count": 16
         },
         {
           "line": 176,
-          "execution_count": 1
+          "execution_count": 16
         },
         {
           "line": 177,
-          "execution_count": 2
+          "execution_count": 16
         },
         {
           "line": 178,
-          "execution_count": 15
-        },
-        {
-          "line": 179,
-          "execution_count": 2
+          "execution_count": 16
         },
         {
           "line": 180,
-          "execution_count": 2
+          "execution_count": 16
         },
         {
           "line": 181,
-          "execution_count": 13
+          "execution_count": 17
         },
         {
           "line": 182,
-          "execution_count": 12
+          "execution_count": 2
         },
         {
           "line": 183,
-          "execution_count": 12
+          "execution_count": 1
         },
         {
           "line": 184,
@@ -3508,15 +3444,19 @@
         },
         {
           "line": 185,
-          "execution_count": 1
+          "execution_count": 2
         },
         {
           "line": 186,
-          "execution_count": 13
+          "execution_count": 15
         },
         {
           "line": 187,
-          "execution_count": 15
+          "execution_count": 2
+        },
+        {
+          "line": 188,
+          "execution_count": 2
         },
         {
           "line": 189,
@@ -3524,14 +3464,42 @@
         },
         {
           "line": 190,
-          "execution_count": 13
+          "execution_count": 12
         },
         {
           "line": 191,
-          "execution_count": 13
+          "execution_count": 12
         },
         {
           "line": 192,
+          "execution_count": 1
+        },
+        {
+          "line": 193,
+          "execution_count": 1
+        },
+        {
+          "line": 194,
+          "execution_count": 13
+        },
+        {
+          "line": 195,
+          "execution_count": 15
+        },
+        {
+          "line": 197,
+          "execution_count": 13
+        },
+        {
+          "line": 198,
+          "execution_count": 13
+        },
+        {
+          "line": 199,
+          "execution_count": 13
+        },
+        {
+          "line": 200,
           "execution_count": 13
         }
       ],
@@ -3543,7 +3511,7 @@
         },
         {
           "name": "_ZN5carve7process3RunEN4absl12lts_202608174SpanIKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEE",
-          "start_line": 189,
+          "start_line": 197,
           "execution_count": 13
         },
         {
@@ -3640,19 +3608,19 @@
           "line": 90,
           "block": "0",
           "branch": "0",
-          "taken": 18
+          "taken": 16
         },
         {
           "line": 90,
           "block": "0",
           "branch": "1",
-          "taken": 126
+          "taken": 128
         },
         {
           "line": 90,
           "block": "1",
           "branch": "2",
-          "taken": 40
+          "taken": 42
         },
         {
           "line": 90,
@@ -3757,145 +3725,121 @@
           "taken": 19
         },
         {
-          "line": 127,
+          "line": 129,
+          "block": "0",
+          "branch": "0",
+          "taken": 42
+        },
+        {
+          "line": 129,
+          "block": "0",
+          "branch": "1",
+          "taken": 19
+        },
+        {
+          "line": 138,
           "block": "0",
           "branch": "0",
           "taken": 1
         },
         {
-          "line": 127,
+          "line": 138,
           "block": "0",
           "branch": "1",
           "taken": 18
         },
         {
-          "line": 130,
+          "line": 141,
           "block": "0",
           "branch": "0",
           "taken": 1
         },
         {
-          "line": 130,
+          "line": 141,
           "block": "0",
           "branch": "1",
           "taken": 17
         },
         {
-          "line": 139,
+          "line": 150,
           "block": "0",
           "branch": "0",
           "taken": 1
         },
         {
-          "line": 139,
+          "line": 150,
           "block": "0",
           "branch": "1",
           "taken": 16
         },
         {
-          "line": 141,
+          "line": 152,
           "block": "0",
           "branch": "0",
           "taken": 4
         },
         {
-          "line": 141,
+          "line": 152,
           "block": "0",
           "branch": "1",
           "taken": 1
         },
         {
-          "line": 147,
-          "block": "0",
-          "branch": "0",
-          "taken": 0
-        },
-        {
-          "line": 147,
-          "block": "0",
-          "branch": "1",
-          "taken": 16
-        },
-        {
-          "line": 151,
-          "block": "0",
-          "branch": "0",
-          "taken": null
-        },
-        {
-          "line": 151,
-          "block": "0",
-          "branch": "1",
-          "taken": null
-        },
-        {
-          "line": 156,
-          "block": "0",
-          "branch": "0",
-          "taken": null
-        },
-        {
-          "line": 156,
-          "block": "0",
-          "branch": "1",
-          "taken": null
-        },
-        {
-          "line": 173,
+          "line": 181,
           "block": "0",
           "branch": "0",
           "taken": 2
         },
         {
-          "line": 173,
+          "line": 181,
           "block": "0",
           "branch": "1",
           "taken": 15
         },
         {
-          "line": 174,
+          "line": 182,
           "block": "0",
           "branch": "0",
           "taken": 1
         },
         {
-          "line": 174,
+          "line": 182,
           "block": "0",
           "branch": "1",
           "taken": 1
         },
         {
-          "line": 178,
+          "line": 186,
           "block": "0",
           "branch": "0",
           "taken": 2
         },
         {
-          "line": 178,
+          "line": 186,
           "block": "0",
           "branch": "1",
           "taken": 13
         },
         {
-          "line": 181,
+          "line": 189,
           "block": "0",
           "branch": "0",
           "taken": 12
         },
         {
-          "line": 181,
+          "line": 189,
           "block": "0",
           "branch": "1",
           "taken": 1
         },
         {
-          "line": 183,
+          "line": 191,
           "block": "0",
           "branch": "0",
           "taken": 1
         },
         {
-          "line": 183,
+          "line": 191,
           "block": "0",
           "branch": "1",
           "taken": 0

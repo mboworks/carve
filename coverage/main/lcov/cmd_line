@@ -1,1 +1,1 @@
-genhtml --branch-coverage --output-directory coverage-html/lcov bazel-out/_coverage/_coverage_report.dat
+genhtml --branch-coverage --output-directory coverage-html/lcov coverage.lcov
