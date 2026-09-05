@@ -59,9 +59,15 @@ jobs:
       - name: Materialize generated and external headers
         # A cached top-level test object does not necessarily materialize its
         # generated transitive headers. clang-tidy reads those headers directly
-        # from the execroot, so make protobuf's generated Struct header a
-        # top-level output before extracting the compilation database.
-        run: bazel build --config=ci --config=clang //... @protobuf//:struct_cc_proto
+        # from the execroot, so make protobuf's generated Any, SourceContext,
+        # Struct, and Type headers top-level outputs before extracting the
+        # compilation database.
+        run: >-
+          bazel build --config=ci --config=clang //...
+          @protobuf//:any_cc_proto
+          @protobuf//:source_context_cc_proto
+          @protobuf//:struct_cc_proto
+          @protobuf//:type_cc_proto
       - name: Generate the Clang compilation database
         run: bazel run --config=ci //:refresh_compile_commands
       - name: Locate the matching hermetic clang-tidy
