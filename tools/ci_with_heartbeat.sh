@@ -15,9 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -uo pipefail
+set -euo pipefail
 
-if (( $# == 0 )); then
+if (($# == 0)); then
   echo "Usage: $0 COMMAND [ARG...]" >&2
   exit 2
 fi
@@ -43,8 +43,10 @@ function heartbeat() {
 heartbeat "$1" &
 readonly heartbeat_pid="$!"
 
-status=0
-wait "${command_pid}" || status="$?"
+set +e
+wait "${command_pid}"
+status="$?"
+set -e
 kill "${heartbeat_pid}" 2>/dev/null || true
 wait "${heartbeat_pid}" 2>/dev/null || true
 exit "${status}"

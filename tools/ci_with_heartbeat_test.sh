@@ -17,7 +17,8 @@
 
 set -euo pipefail
 
-readonly tool="$(dirname "$0")/ci_with_heartbeat.sh"
+tool="$(dirname "$0")/ci_with_heartbeat.sh"
+readonly tool
 
 output="$(CARVE_CI_HEARTBEAT_SECONDS=0.01 "${tool}" sh -c 'echo warning; sleep 0.04; echo error >&2' 2>&1)"
 grep -q '^warning$' <<<"${output}"
