@@ -41,11 +41,16 @@ class BazelrcPolicyTest(unittest.TestCase):
         )
 
     def test_first_party_sources_enable_extra_and_pedantic_warnings(self):
-        self.assertIn(
-            "common --per_file_copt=.*,-external/.*@-Wextra,-Wpedantic", self.lines
+        warning_flags = (
+            "-Wextra,-Wpedantic,-Wno-c2y-extensions,-Wno-gcc-compat,"
+            "-Wno-nullability-extension,-Wno-missing-field-initializers,"
+            "-Wno-missing-designated-field-initializers"
         )
         self.assertIn(
-            "common --host_per_file_copt=.*,-external/.*@-Wextra,-Wpedantic",
+            f"common --per_file_copt=.*,-external/.*@{warning_flags}", self.lines
+        )
+        self.assertIn(
+            f"common --host_per_file_copt=.*,-external/.*@{warning_flags}",
             self.lines,
         )
 

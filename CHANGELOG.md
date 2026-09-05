@@ -7,7 +7,8 @@ follows [SemVer](https://semver.org/).
 ## [Unreleased]
 
 - Enforce `-Wall`, `-Wextra`, `-Wpedantic`, and `-Werror` for first-party C and C++ in target and
-  host/tool configurations while suppressing diagnostics from external headers and sources.
+  host/tool configurations while suppressing diagnostics from external code, including macro
+  expansions attributed to first-party invocation sites.
 - Consolidate Bazel CI cache flags, isolate action-cache namespaces, and preserve sanitizer debug
   information; mute external-module source warnings in target and host/tool compilations while
   retaining fatal warnings for first-party code.

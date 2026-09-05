@@ -46,9 +46,13 @@ common --features=external_include_paths --host_features=external_include_paths
 common --copt=-Wall --copt=-Werror --cxxopt=-Wall --cxxopt=-Werror
 common --per_file_copt=external/.*@-w
 common --host_per_file_copt=external/.*@-w
-common --per_file_copt=.*,-external/.*@-Wextra,-Wpedantic
+# Keep the shared MBO Works carve-outs for diagnostics caused by external
+# macros expanding at a first-party source location, plus the deliberate
+# partial-designated-initializer idiom. Every other enabled warning remains an
+# error. GCC ignores the Clang-only -Wno-* spellings on a clean compilation.
+common --per_file_copt=.*,-external/.*@-Wextra,-Wpedantic,-Wno-c2y-extensions,-Wno-gcc-compat,-Wno-nullability-extension,-Wno-missing-field-initializers,-Wno-missing-designated-field-initializers
 common --host_copt=-Wall --host_copt=-Werror --host_cxxopt=-Wall --host_cxxopt=-Werror
-common --host_per_file_copt=.*,-external/.*@-Wextra,-Wpedantic
+common --host_per_file_copt=.*,-external/.*@-Wextra,-Wpedantic,-Wno-c2y-extensions,-Wno-gcc-compat,-Wno-nullability-extension,-Wno-missing-field-initializers,-Wno-missing-designated-field-initializers
 
 # Enforce clang's thread-safety annotations (ABSL_GUARDED_BY / ABSL_LOCKS_EXCLUDED
 # etc.) on our own code; with -Werror above, an unguarded access is a build error.

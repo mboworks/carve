@@ -31,7 +31,10 @@ file is corrected.
   formatting is enforced, not negotiated.
 - Compiler warnings for first-party C and C++ sources are enabled with `-Wall`,
   `-Wextra`, and `-Wpedantic` and treated as errors in target and host/tool
-  configurations. Diagnostics from external headers and sources are suppressed.
+  configurations. Diagnostics from external headers and sources are suppressed;
+  the shared MBO Works carve-outs cover external macros whose diagnostics are
+  attributed to their first-party expansion site and deliberate partial
+  designated initialization.
 - Lints: [.clang-tidy](.clang-tidy) with `WarningsAsErrors: true`.
 - No exceptions (`-fno-exceptions`); errors flow through `absl::Status`,
   `absl::StatusOr`, or `std::expected`.
