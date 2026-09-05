@@ -118,7 +118,8 @@ TEST_F(IoFailureTest, ReportsWriteFailureAndRemovesTemporaryFile) {
   struct rlimit zero_limit = original_limit;
   zero_limit.rlim_cur = 0;
   if (setrlimit(RLIMIT_FSIZE, &zero_limit) != 0) {
-    std::signal(SIGXFSZ, previous_handler);
+    const auto restore_handler_result = std::signal(SIGXFSZ, previous_handler);
+    ASSERT_THAT(restore_handler_result, Not(Eq(SIG_ERR)));
     GTEST_SKIP() << "the file-size resource limit cannot be lowered";
   }
 
