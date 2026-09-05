@@ -20,7 +20,10 @@ package(default_visibility = ["//visibility:private"])
 cc_library(
     name = "process_cc",
     srcs = ["process.cc"],
-    hdrs = ["process.h"],
+    hdrs = [
+        "process.h",
+        "process_internal.h",
+    ],
     implementation_deps = [
         "@abseil-cpp//absl/status",
         "@abseil-cpp//absl/strings",
