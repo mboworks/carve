@@ -36,8 +36,9 @@ struct CommandResult {
 
 // Runs `argv` to completion (argv[0] is resolved on PATH), capturing stdout and
 // stderr separately and concurrently (so large output does not deadlock).
-// Returns a non-OK status only if the child cannot be spawned or waited on; a
-// non-zero exit is reported via `CommandResult::exit_code`, not as an error.
+// Returns a non-OK status if the child cannot be spawned, its output cannot be
+// captured, or it cannot be waited on. A non-zero exit is reported via
+// `CommandResult::exit_code`, not as an error.
 [[nodiscard]] absl::StatusOr<CommandResult> Run(absl::Span<const std::string> argv);
 
 }  // namespace carve::process

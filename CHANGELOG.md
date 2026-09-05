@@ -6,6 +6,8 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Cover subprocess fork, poll, read, and wait failures and interrupted-system-call retries; report
+  output-capture failures after reaping the child instead of silently discarding them.
 - Cover subprocess pipe-creation failures and descriptor cleanup using real OS limits.
 - Materialize all protobuf headers required by compilation-database entries before clang-tidy
   analysis.

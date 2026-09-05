@@ -15,6 +15,7 @@
 
 #include "carve/process/process.h"
 
+#include <poll.h>
 #include <sys/resource.h>
 #include <unistd.h>
 
@@ -22,10 +23,12 @@
 #include <array>
 #include <cerrno>
 #include <csignal>
+#include <cstddef>
 #include <string>
 #include <vector>
 
 #include "absl/status/status.h"
+#include "carve/process/process_internal.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "mbo/testing/status.h"
@@ -41,6 +44,118 @@ using ::testing::Field;
 using ::testing::Ge;
 using ::testing::HasSubstr;
 using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
+
+class FakeSystemCalls final : public process_internal::SystemCalls {
+ public:
+  enum class Failure { kNone, kFork, kPoll, kRead, kWaitPid };
+
+  void SetFailure(Failure failure) { failure_ = failure; }
+
+  void InterruptPoll() { interrupt_poll_ = true; }
+
+  void InterruptRead() { interrupt_read_ = true; }
+
+  void InterruptWaitPid() { interrupt_wait_pid_ = true; }
+
+  int PollCalls() const { return poll_calls_; }
+
+  int ReadCalls() const { return read_calls_; }
+
+  int WaitPidCalls() const { return wait_pid_calls_; }
+
+  const std::vector<int>& ClosedDescriptors() const { return closed_descriptors_; }
+
+  int Pipe(int* descriptors) override {
+    descriptors[0] = next_descriptor_++;
+    descriptors[1] = next_descriptor_++;
+    return 0;
+  }
+
+  pid_t Fork() override {
+    if (failure_ == Failure::kFork) {
+      errno = EAGAIN;
+      return -1;
+    }
+    return kChildPid;
+  }
+
+  int Poll(pollfd* descriptors, nfds_t count, int /*timeout*/) override {
+    ++poll_calls_;
+    if (interrupt_poll_ && poll_calls_ == 1) {
+      errno = EINTR;
+      return -1;
+    }
+    if (failure_ == Failure::kPoll) {
+      errno = EIO;
+      return -1;
+    }
+    int ready = 0;
+    for (nfds_t index = 0; index < count; ++index) {
+      if (descriptors[index].fd >= 0) {
+        descriptors[index].revents = POLLIN;
+        ++ready;
+      }
+    }
+    return ready;
+  }
+
+  ssize_t Read(int /*descriptor*/, void* /*buffer*/, std::size_t /*count*/) override {
+    ++read_calls_;
+    if (interrupt_read_ && read_calls_ == 1) {
+      errno = EINTR;
+      return -1;
+    }
+    if (failure_ == Failure::kRead && read_calls_ == 1) {
+      errno = EIO;
+      return -1;
+    }
+    return 0;
+  }
+
+  pid_t WaitPid(pid_t pid, int* status, int /*options*/) override {
+    ++wait_pid_calls_;
+    if (interrupt_wait_pid_ && wait_pid_calls_ == 1) {
+      errno = EINTR;
+      return -1;
+    }
+    if (failure_ == Failure::kWaitPid) {
+      errno = EIO;
+      return -1;
+    }
+    *status = 0;
+    return pid;
+  }
+
+  int Close(int descriptor) override {
+    closed_descriptors_.push_back(descriptor);
+    return 0;
+  }
+
+ private:
+  static constexpr pid_t kChildPid = 123;
+  int next_descriptor_ = 10;
+  Failure failure_ = Failure::kNone;
+  bool interrupt_poll_ = false;
+  bool interrupt_read_ = false;
+  bool interrupt_wait_pid_ = false;
+  int poll_calls_ = 0;
+  int read_calls_ = 0;
+  int wait_pid_calls_ = 0;
+  std::vector<int> closed_descriptors_;
+};
+
+class ProcessSystemCallsTest : public ::testing::Test {
+ protected:
+  static absl::StatusOr<CommandResult> Execute(FakeSystemCalls& system_calls) {
+    return process_internal::RunWithSystemCalls(std::vector<std::string>{"unused"}, system_calls);
+  }
+
+  FakeSystemCalls& SystemCalls() { return system_calls_; }
+
+ private:
+  FakeSystemCalls system_calls_;
+};
 
 class ProcessFailureTest : public ::testing::Test {
  protected:
@@ -137,6 +252,56 @@ TEST_F(ProcessFailureTest, ReportsStderrPipeFailure) {
   EXPECT_THAT(
       ::carve::process::Run(std::vector<std::string>{"/bin/true"}),
       StatusIs(absl::StatusCode::kResourceExhausted, HasSubstr("pipe(stderr)")));
+}
+
+TEST_F(ProcessSystemCallsTest, ReportsForkFailureAndClosesEveryPipeDescriptor) {
+  SystemCalls().SetFailure(FakeSystemCalls::Failure::kFork);
+
+  EXPECT_THAT(Execute(SystemCalls()), StatusIs(absl::StatusCode::kUnavailable, HasSubstr("fork")));
+  EXPECT_THAT(SystemCalls().ClosedDescriptors(), UnorderedElementsAre(10, 11, 12, 13));
+}
+
+TEST_F(ProcessSystemCallsTest, RetriesInterruptedPoll) {
+  SystemCalls().InterruptPoll();
+
+  EXPECT_THAT(Execute(SystemCalls()), IsOkAndHolds(Field(&CommandResult::exit_code, Eq(0))));
+  EXPECT_THAT(SystemCalls().PollCalls(), Eq(2));
+}
+
+TEST_F(ProcessSystemCallsTest, ReportsPollFailureAfterReapingChild) {
+  SystemCalls().SetFailure(FakeSystemCalls::Failure::kPoll);
+
+  EXPECT_THAT(Execute(SystemCalls()), StatusIs(absl::StatusCode::kUnknown, HasSubstr("poll")));
+  EXPECT_THAT(SystemCalls().WaitPidCalls(), Eq(1));
+  EXPECT_THAT(SystemCalls().ClosedDescriptors(), UnorderedElementsAre(10, 11, 12, 13));
+}
+
+TEST_F(ProcessSystemCallsTest, RetriesInterruptedRead) {
+  SystemCalls().InterruptRead();
+
+  EXPECT_THAT(Execute(SystemCalls()), IsOkAndHolds(Field(&CommandResult::exit_code, Eq(0))));
+  EXPECT_THAT(SystemCalls().ReadCalls(), Eq(3));
+}
+
+TEST_F(ProcessSystemCallsTest, ReportsReadFailureAfterReapingChild) {
+  SystemCalls().SetFailure(FakeSystemCalls::Failure::kRead);
+
+  EXPECT_THAT(Execute(SystemCalls()), StatusIs(absl::StatusCode::kUnknown, HasSubstr("read")));
+  EXPECT_THAT(SystemCalls().WaitPidCalls(), Eq(1));
+}
+
+TEST_F(ProcessSystemCallsTest, RetriesInterruptedWaitPid) {
+  SystemCalls().InterruptWaitPid();
+
+  EXPECT_THAT(Execute(SystemCalls()), IsOkAndHolds(Field(&CommandResult::exit_code, Eq(0))));
+  EXPECT_THAT(SystemCalls().WaitPidCalls(), Eq(2));
+}
+
+TEST_F(ProcessSystemCallsTest, ReportsWaitPidFailure) {
+  SystemCalls().SetFailure(FakeSystemCalls::Failure::kWaitPid);
+
+  EXPECT_THAT(Execute(SystemCalls()), StatusIs(absl::StatusCode::kUnknown, HasSubstr("waitpid")));
+  EXPECT_THAT(SystemCalls().WaitPidCalls(), Eq(1));
 }
 
 }  // namespace

@@ -29,6 +29,7 @@
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "absl/types/span.h"
+#include "carve/process/process_internal.h"
 
 namespace carve::process {
 namespace {
@@ -48,18 +49,39 @@ absl::Status ErrnoError(std::string_view what) {
   return absl::ErrnoToStatus(errno, what);
 }
 
+class PosixSystemCalls final : public process_internal::SystemCalls {
+ public:
+  int Pipe(int* descriptors) override {
+    // macOS has no pipe2(); the child closes every pipe fd before exec.
+    // NOLINTNEXTLINE(android-cloexec-pipe)
+    return ::pipe(descriptors);
+  }
+
+  pid_t Fork() override { return ::fork(); }
+
+  int Poll(pollfd* descriptors, nfds_t count, int timeout) override { return ::poll(descriptors, count, timeout); }
+
+  ssize_t Read(int descriptor, void* buffer, std::size_t count) override { return ::read(descriptor, buffer, count); }
+
+  pid_t WaitPid(pid_t pid, int* status, int options) override { return ::waitpid(pid, status, options); }
+
+  int Close(int descriptor) override { return ::close(descriptor); }
+};
+
 // Drains `out_fd` and `err_fd` into the result strings until both reach EOF,
 // polling so neither pipe blocks the other.
-void DrainPipes(int out_fd, int err_fd, CommandResult& result) {
+absl::Status DrainPipes(int out_fd, int err_fd, CommandResult& result, process_internal::SystemCalls& system_calls) {
   std::array<pollfd, 2> fds = {
       pollfd{.fd = out_fd, .events = POLLIN, .revents = 0}, pollfd{.fd = err_fd, .events = POLLIN, .revents = 0}};
   std::array<std::string*, 2> sinks = {&result.stdout_data, &result.stderr_data};
   int open_fds = 2;
+  absl::Status status;
   while (open_fds > 0) {
-    if (::poll(fds.data(), fds.size(), -1) < 0) {
+    if (system_calls.Poll(fds.data(), fds.size(), -1) < 0) {
       if (errno == EINTR) {
         continue;
       }
+      status = ErrnoError("poll");
       break;
     }
     for (std::size_t i = 0; i < fds.size(); ++i) {
@@ -69,11 +91,14 @@ void DrainPipes(int out_fd, int err_fd, CommandResult& result) {
         continue;
       }
       std::array<char, kReadChunkBytes> buffer{};
-      const ssize_t got = ::read(fds.at(i).fd, buffer.data(), buffer.size());
+      const ssize_t got = system_calls.Read(fds.at(i).fd, buffer.data(), buffer.size());
       if (got > 0) {
         sinks.at(i)->append(buffer.data(), static_cast<std::size_t>(got));
       } else if (got == 0 || errno != EINTR) {
-        ::close(fds.at(i).fd);
+        if (got < 0 && status.ok()) {
+          status = ErrnoError("read");
+        }
+        system_calls.Close(fds.at(i).fd);
         fds.at(i).fd = -1;
         --open_fds;
       }
@@ -82,39 +107,41 @@ void DrainPipes(int out_fd, int err_fd, CommandResult& result) {
   // Close anything still open (e.g. if poll() failed and broke the loop).
   for (const pollfd& entry : fds) {
     if (entry.fd >= 0) {
-      ::close(entry.fd);
+      system_calls.Close(entry.fd);
     }
   }
+  return status;
 }
 
 }  // namespace
 
-absl::StatusOr<CommandResult> Run(absl::Span<const std::string> argv) {
+absl::StatusOr<CommandResult> process_internal::RunWithSystemCalls(
+    absl::Span<const std::string> argv,
+    process_internal::SystemCalls& system_calls) {
   if (argv.empty()) {
     return absl::InvalidArgumentError("Run requires a non-empty argv");
   }
 
   std::array<int, 2> out_pipe{};
   std::array<int, 2> err_pipe{};
-  // macOS has no pipe2(); the child closes every pipe fd before exec (below), so none leak.
-  // NOLINTNEXTLINE(android-cloexec-pipe)
-  if (::pipe(out_pipe.data()) != 0) {
+  if (system_calls.Pipe(out_pipe.data()) != 0) {
     return ErrnoError("pipe(stdout)");
   }
-  // NOLINTNEXTLINE(android-cloexec-pipe)
-  if (::pipe(err_pipe.data()) != 0) {
-    ::close(out_pipe.at(0));
-    ::close(out_pipe.at(1));
-    return ErrnoError("pipe(stderr)");
+  if (system_calls.Pipe(err_pipe.data()) != 0) {
+    absl::Status status = ErrnoError("pipe(stderr)");
+    system_calls.Close(out_pipe.at(0));
+    system_calls.Close(out_pipe.at(1));
+    return status;
   }
   const std::array descriptors = {out_pipe.at(0), out_pipe.at(1), err_pipe.at(0), err_pipe.at(1)};
 
-  const pid_t pid = ::fork();
+  const pid_t pid = system_calls.Fork();
   if (pid < 0) {
+    absl::Status status = ErrnoError("fork");
     for (const int descriptor : descriptors) {
-      ::close(descriptor);
+      system_calls.Close(descriptor);
     }
-    return ErrnoError("fork");
+    return status;
   }
 
   if (pid == 0) {
@@ -137,16 +164,19 @@ absl::StatusOr<CommandResult> Run(absl::Span<const std::string> argv) {
   }
 
   // Parent: close write ends, drain, and reap.
-  ::close(out_pipe.at(1));
-  ::close(err_pipe.at(1));
+  system_calls.Close(out_pipe.at(1));
+  system_calls.Close(err_pipe.at(1));
   CommandResult result;
-  DrainPipes(out_pipe.at(0), err_pipe.at(0), result);
+  absl::Status drain_status = DrainPipes(out_pipe.at(0), err_pipe.at(0), result, system_calls);
 
   int status = 0;
-  while (::waitpid(pid, &status, 0) < 0) {
+  while (system_calls.WaitPid(pid, &status, 0) < 0) {
     if (errno != EINTR) {
       return ErrnoError("waitpid");
     }
+  }
+  if (!drain_status.ok()) {
+    return drain_status;
   }
   if (WIFEXITED(status)) {
     result.exit_code = WEXITSTATUS(status);
@@ -154,6 +184,11 @@ absl::StatusOr<CommandResult> Run(absl::Span<const std::string> argv) {
     result.exit_code = kSignalExitBase + WTERMSIG(status);
   }
   return result;
+}
+
+absl::StatusOr<CommandResult> Run(absl::Span<const std::string> argv) {
+  PosixSystemCalls system_calls;
+  return process_internal::RunWithSystemCalls(argv, system_calls);
 }
 
 }  // namespace carve::process
