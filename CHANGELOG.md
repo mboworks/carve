@@ -6,6 +6,7 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Cover malformed aquery protobufs and unresolved output path fragments.
 - Cover corrupt action-record and header-index sidecar diagnostics.
 - Transition proto test utilities from `helly25_proto` 1.2.1 to `mboworks_proto` 1.2.2.
 - Cover the JSON matcher's positive and negative diagnostic descriptions.

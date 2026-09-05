@@ -15,6 +15,7 @@
 
 #include "carve/aquery/aquery.h"
 
+#include "absl/status/status.h"
 #include "carve/third_party/bazel/analysis_v2.pb.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -24,11 +25,21 @@ namespace carve::aquery {
 namespace {
 
 using ::mbo::testing::IsOkAndHolds;
+using ::mbo::testing::StatusIs;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::HasSubstr;
 using ::testing::IsEmpty;
+
+struct AqueryTest : ::testing::Test {};
+
+TEST_F(AqueryTest, RejectsMalformedActionGraphProto) {
+  EXPECT_THAT(
+      ParseCompileActions("\x80"),
+      StatusIs(absl::StatusCode::kInvalidArgument, HasSubstr("failed to parse aquery ActionGraphContainer proto")));
+}
 
 TEST(ParseCompileActionsTest, EmptyInputYieldsNoActions) {
   EXPECT_THAT(ParseCompileActions(""), IsOkAndHolds(IsEmpty()));
@@ -111,6 +122,22 @@ TEST(ParseCompileActionsTest, UnknownPrimaryOutputLeavesPathEmpty) {
   compile->set_mnemonic("ObjcCompile");
   compile->set_action_key("k2");
   compile->set_primary_output_id(999);  // No matching artifact.
+
+  EXPECT_THAT(
+      ParseCompileActions(container.SerializeAsString()),
+      IsOkAndHolds(ElementsAre(Field(&CompileAction::primary_output, IsEmpty()))));
+}
+
+TEST_F(AqueryTest, UnknownOutputPathFragmentLeavesPathEmpty) {
+  analysis::ActionGraphContainer container;
+  analysis::Artifact* artifact = container.add_artifacts();
+  artifact->set_id(10);
+  artifact->set_path_fragment_id(999);  // No matching path fragment.
+
+  analysis::Action* compile = container.add_actions();
+  compile->set_mnemonic("CppCompile");
+  compile->set_action_key("k3");
+  compile->set_primary_output_id(10);
 
   EXPECT_THAT(
       ParseCompileActions(container.SerializeAsString()),
