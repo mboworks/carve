@@ -40,11 +40,13 @@ std::string ReadFile(const std::filesystem::path& path) {
   return {std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>()};
 }
 
-TEST(ToJsonTest, EmptyIsBracketsAndNewline) {
+struct ToJsonTest : ::testing::Test {};
+
+TEST_F(ToJsonTest, EmptyIsBracketsAndNewline) {
   EXPECT_THAT(ToJson({}), Eq("[]\n"));
 }
 
-TEST(ToJsonTest, SingleEntryWithArguments) {
+TEST_F(ToJsonTest, SingleEntryWithArguments) {
   const std::vector<CompileCommand> entries = {
       {.directory = "/work", .file = "a.cc", .arguments = {"clang", "-c", "a.cc"}, .output = ""},
   };
@@ -53,28 +55,35 @@ TEST(ToJsonTest, SingleEntryWithArguments) {
       EqJson(R"json([{"directory": "/work", "file": "a.cc", "arguments": ["clang", "-c", "a.cc"]}])json"));
 }
 
-TEST(ToJsonTest, OutputFieldEmittedWhenPresent) {
+TEST_F(ToJsonTest, OutputFieldEmittedWhenPresent) {
   const std::vector<CompileCommand> entries = {
       {.directory = "/w", .file = "a.cc", .arguments = {"cc"}, .output = "a.o"},
   };
   EXPECT_THAT(ToJson(entries), HasSubstr("\"output\": \"a.o\""));
 }
 
-TEST(ToJsonTest, EscapesSpecialCharacters) {
+TEST_F(ToJsonTest, EscapesSpecialCharacters) {
   const std::vector<CompileCommand> entries = {
       {.directory = "/w", .file = std::string("a\"b\\c\nd\te"), .arguments = {}, .output = ""},
   };
   EXPECT_THAT(ToJson(entries), HasSubstr("\"file\": \"a\\\"b\\\\c\\nd\\te\""));
 }
 
-TEST(ToJsonTest, ControlCharacterUsesUnicodeEscape) {
+TEST_F(ToJsonTest, EscapesNamedControlCharacters) {
+  const std::vector<CompileCommand> entries = {
+      {.directory = "/w", .file = std::string("\b\f\r"), .arguments = {}, .output = ""},
+  };
+  EXPECT_THAT(ToJson(entries), HasSubstr("\"file\": \"\\b\\f\\r\""));
+}
+
+TEST_F(ToJsonTest, ControlCharacterUsesUnicodeEscape) {
   const std::vector<CompileCommand> entries = {
       {.directory = "/w", .file = std::string(1, '\x01'), .arguments = {}, .output = ""},
   };
   EXPECT_THAT(ToJson(entries), HasSubstr("\\u0001"));
 }
 
-TEST(ToJsonTest, EntriesAreCommaSeparated) {
+TEST_F(ToJsonTest, EntriesAreCommaSeparated) {
   const std::vector<CompileCommand> entries = {
       {.directory = "/w", .file = "a.cc", .arguments = {}, .output = ""},
       {.directory = "/w", .file = "b.cc", .arguments = {}, .output = ""},
@@ -84,7 +93,9 @@ TEST(ToJsonTest, EntriesAreCommaSeparated) {
       EqJson(R"json([{"directory": "/w", "file": "a.cc"}, {"directory": "/w", "file": "b.cc"}])json"));
 }
 
-TEST(WriteTest, RoundTripsThroughToJson) {
+struct WriteTest : ::testing::Test {};
+
+TEST_F(WriteTest, RoundTripsThroughToJson) {
   const std::vector<CompileCommand> entries = {
       {.directory = "/w", .file = "a.cc", .arguments = {"cc", "-c", "a.cc"}, .output = ""},
   };

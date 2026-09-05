@@ -6,6 +6,7 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Cover every named JSON control-character escape emitted into compilation database fields.
 - Cover targets-based refresh through Bazel aquery, automatic execution-root discovery, and both
   subprocess failure paths with deterministic fake-Bazel tests.
 - Apply the same warning policy when Carve is built from its release archive, keeping Carve strict
