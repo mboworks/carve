@@ -57,6 +57,29 @@ TEST(WriteAtomicallyTest, OverwritesInPlaceWithoutLeavingTempFiles) {
   EXPECT_THAT(entries, SizeIs(1)) << "temp files were left behind";
 }
 
+TEST(WriteAtomicallyTest, ReportsParentCreationFailure) {
+  const std::filesystem::path dir = std::filesystem::path(::testing::TempDir()) / "carve_io_parent_failure";
+  std::filesystem::remove_all(dir);
+  const std::filesystem::path blocker = dir / "not_a_directory";
+  ASSERT_THAT(WriteAtomically(blocker, "blocker"), IsOk());
+
+  EXPECT_THAT(WriteAtomically(blocker / "out.bin", "content"), StatusIs(absl::StatusCode::kUnknown));
+}
+
+TEST(WriteAtomicallyTest, RenameFailureRemovesTemporaryFile) {
+  const std::filesystem::path dir = std::filesystem::path(::testing::TempDir()) / "carve_io_rename_failure";
+  std::filesystem::remove_all(dir);
+  const std::filesystem::path destination = dir / "out.bin";
+  ASSERT_THAT(WriteAtomically(destination / "occupied", "blocker"), IsOk());
+
+  EXPECT_THAT(WriteAtomically(destination, "content"), StatusIs(absl::StatusCode::kUnknown));
+  std::vector<std::filesystem::path> entries;
+  for (const auto& entry : std::filesystem::directory_iterator(dir)) {
+    entries.push_back(entry.path());
+  }
+  EXPECT_THAT(entries, SizeIs(1)) << "temp files were left behind";
+}
+
 TEST(ReadFileTest, MissingFileIsNotFound) {
   EXPECT_THAT(ReadFile("/no/such/carve/file"), StatusIs(absl::StatusCode::kNotFound));
 }
