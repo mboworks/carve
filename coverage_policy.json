@@ -1,9 +1,9 @@
 {
   "include": ["carve/**"],
   "exclude": ["carve/*_test.cc", "carve/**/*_test.cc", "carve/third_party/**"],
-  "minimum": {"lines": 60, "functions": 60, "branches": 50},
-  "target": {"lines": 85, "functions": 90, "branches": 75},
-  "enforce": {"lines": "medium", "functions": "medium", "branches": "medium"},
+  "minimum": {"lines": 90, "functions": 90, "branches": 80},
+  "target": {"lines": 95, "functions": 95, "branches": 85},
+  "enforce": {"lines": "high", "functions": "high", "branches": "high"},
   "categories": {
     "aggregate": {"include": ["carve/aggregate/**"]},
     "aquery": {"include": ["carve/aquery/**"]},

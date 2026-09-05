@@ -3,14 +3,17 @@
 # SPDX-License-Identifier: Apache-2.0
 """Tests for the LCOV coverage policy gate."""
 
-import tempfile
-import unittest
+import json
 import os
 import sys
+import tempfile
+import unittest
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import coverage_policy
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
 def policy():
@@ -61,6 +64,42 @@ end_of_record
         report, passed = coverage_policy.render(totals, policy())
         self.assertFalse(passed)
         self.assertIn("50.00%", report)
+
+    def test_nonempty_category_is_enforced_but_empty_category_is_not(self):
+        totals = {
+            "overall": {
+                metric: coverage_policy.Counts(found=10, hit=9)
+                for metric in coverage_policy.METRICS
+            },
+            "weak": {
+                metric: coverage_policy.Counts(found=10, hit=5)
+                for metric in coverage_policy.METRICS
+            },
+            "empty": {metric: coverage_policy.Counts() for metric in coverage_policy.METRICS},
+        }
+        config = {
+            **policy(),
+            "categories": {
+                "weak": {"include": ["carve/weak/**"]},
+                "empty": {"include": ["carve/empty/**"]},
+            },
+        }
+        report, passed = coverage_policy.render(totals, config)
+        self.assertFalse(passed)
+        self.assertIn("| weak | Lines | 5 / 10 | 50.00% | 60.00% |", report)
+        self.assertNotIn("| empty |", report)
+
+    def test_checked_in_policy_has_requested_high_thresholds(self):
+        config = json.loads(
+            (REPO_ROOT / "coverage_policy.json").read_text(encoding="utf-8")
+        )
+        coverage_policy.validate(config)
+        self.assertEqual(config["minimum"], {"lines": 90, "functions": 90, "branches": 80})
+        self.assertEqual(config["target"], {"lines": 95, "functions": 95, "branches": 85})
+        self.assertEqual(
+            config["enforce"],
+            {"lines": "high", "functions": "high", "branches": "high"},
+        )
 
     def test_empty_report_fails_policy(self):
         totals = {"overall": {metric: coverage_policy.Counts() for metric in coverage_policy.METRICS}}
