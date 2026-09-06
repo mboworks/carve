@@ -6,6 +6,7 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Cover defensive response-file and output-path cycle limits and unmatched response tokens.
 - Cover refresh input validation, malformed persisted data, project stamping, source-less records,
   and the no-op Apple toolchain resolver path.
 - Require the fast Trunk and pre-commit policy gates to pass before starting expensive CI jobs.
