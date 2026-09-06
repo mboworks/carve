@@ -71,7 +71,7 @@ TEST_F(SidecarTest, InvalidActionRecordsProtoIsRejected) {
 TEST_F(SidecarTest, ReadFailureIsPropagatedForBothSidecarFormats) {
   const std::filesystem::path path = std::filesystem::path(::testing::TempDir()) / "unreadable-sidecar.binpb";
   {
-    std::ofstream stream(path, std::ios::binary | std::ios::trunc);
+    const std::ofstream stream(path, std::ios::binary | std::ios::trunc);
     ASSERT_THAT(stream.good(), IsTrue());
   }
   std::filesystem::permissions(path, std::filesystem::perms::none, std::filesystem::perm_options::replace);
