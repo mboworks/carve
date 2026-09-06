@@ -16,6 +16,7 @@
 #include "carve/refresh/refresh.h"
 
 #include <array>
+#include <chrono>
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
@@ -660,9 +661,16 @@ StalenessFixture MakeStalenessFixture(std::string_view name, std::int64_t writte
 }
 
 TEST(RunRefreshTest, EditedHeaderForcesRescanOfTheOwningAction) {
-  // written_at = 1 (epoch): the on-disk source/header are far newer, so the
-  // cached scan reads as stale and the action must be re-scanned.
-  StalenessFixture fixture = MakeStalenessFixture("carve_stale_header", /*written_at=*/1);
+  // Keep the source older than the cached scan while making only the header
+  // newer, so the header check itself - not the source short circuit - proves
+  // the cached include set stale.
+  constexpr std::int64_t kWrittenAt = 1'700'000'000;
+  StalenessFixture fixture = MakeStalenessFixture("carve_stale_header", kWrittenAt);
+  const auto baseline = std::chrono::system_clock::time_point{std::chrono::seconds{kWrittenAt}};
+  std::filesystem::last_write_time(
+      fixture.dir / "a.cc", std::filesystem::file_time_type::clock::from_sys(baseline - std::chrono::seconds{10}));
+  std::filesystem::last_write_time(
+      fixture.header, std::filesystem::file_time_type::clock::from_sys(baseline + std::chrono::seconds{10}));
   const std::string new_header = (fixture.dir / "new.h").string();
   fixture.options.scanner = [&fixture, &new_header](
                                 absl::Span<const std::string> /*argv*/,
