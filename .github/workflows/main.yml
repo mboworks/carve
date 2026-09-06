@@ -267,7 +267,7 @@ jobs:
           printf '%s\n' "${coverage_target}" >coverage-target.txt
           python3 tools/coverage_index.py report \
             coverage-html/coverage-summary.json "${coverage_target}" coverage-html/index.html
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: coverage-report
           path: |
