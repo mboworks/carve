@@ -13,9 +13,9 @@
         "percent": 98.9
       },
       "branches": {
-        "covered": 504,
+        "covered": 505,
         "total": 530,
-        "percent": 95.09
+        "percent": 95.28
       }
     },
     "aggregate": {
@@ -166,9 +166,9 @@
         "percent": 100.0
       },
       "branches": {
-        "covered": 126,
+        "covered": 127,
         "total": 132,
-        "percent": 95.45
+        "percent": 96.21
       }
     },
     "scan_deps": {

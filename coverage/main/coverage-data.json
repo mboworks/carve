@@ -11,7 +11,7 @@
     },
     "branches": {
       "found": 530,
-      "hit": 504
+      "hit": 505
     }
   },
   "files": [
@@ -5106,23 +5106,23 @@
         },
         {
           "line": 79,
-          "execution_count": 8
+          "execution_count": 9
         },
         {
           "line": 80,
-          "execution_count": 8
+          "execution_count": 9
         },
         {
           "line": 81,
-          "execution_count": 8
+          "execution_count": 9
         },
         {
           "line": 82,
-          "execution_count": 1
+          "execution_count": 2
         },
         {
           "line": 83,
-          "execution_count": 1
+          "execution_count": 2
         },
         {
           "line": 84,
@@ -5130,7 +5130,7 @@
         },
         {
           "line": 85,
-          "execution_count": 8
+          "execution_count": 9
         },
         {
           "line": 91,
@@ -5526,19 +5526,19 @@
         },
         {
           "line": 247,
-          "execution_count": 8
+          "execution_count": 9
         },
         {
           "line": 248,
-          "execution_count": 8
+          "execution_count": 9
         },
         {
           "line": 249,
-          "execution_count": 8
+          "execution_count": 9
         },
         {
           "line": 250,
-          "execution_count": 8
+          "execution_count": 9
         },
         {
           "line": 251,
@@ -5550,23 +5550,23 @@
         },
         {
           "line": 253,
-          "execution_count": 6
+          "execution_count": 7
         },
         {
           "line": 254,
-          "execution_count": 6
+          "execution_count": 7
         },
         {
           "line": 255,
-          "execution_count": 6
+          "execution_count": 7
         },
         {
           "line": 256,
-          "execution_count": 6
+          "execution_count": 7
         },
         {
           "line": 257,
-          "execution_count": 8
+          "execution_count": 9
         },
         {
           "line": 268,
@@ -5602,15 +5602,15 @@
         },
         {
           "line": 278,
-          "execution_count": 2
+          "execution_count": 3
         },
         {
           "line": 279,
-          "execution_count": 2
+          "execution_count": 3
         },
         {
           "line": 280,
-          "execution_count": 2
+          "execution_count": 3
         },
         {
           "line": 281,
@@ -6152,7 +6152,7 @@
         {
           "name": "refresh.cc:_ZN5carve7refresh12_GLOBAL__N_112AbsoluteFileB5cxx11ESt17basic_string_viewIcSt11char_traitsIcEES5_",
           "start_line": 79,
-          "execution_count": 8
+          "execution_count": 9
         },
         {
           "name": "refresh.cc:_ZN5carve7refresh12_GLOBAL__N_112BuildRecordsESt17basic_string_viewIcSt11char_traitsIcEES5_",
@@ -6192,7 +6192,7 @@
         {
           "name": "refresh.cc:_ZN5carve7refresh12_GLOBAL__N_113ModifiedAfterERKNSt10filesystem7__cxx114pathEl",
           "start_line": 247,
-          "execution_count": 8
+          "execution_count": 9
         },
         {
           "name": "refresh.cc:_ZN5carve7refresh12_GLOBAL__N_117CachedScanIsStaleERKNS_12ActionRecordESt17basic_string_viewIcSt11char_traitsIcEE",
@@ -6222,7 +6222,7 @@
         {
           "name": "refresh.cc:_ZZN5carve7refresh12_GLOBAL__N_117CachedScanIsStaleERKNS_12ActionRecordESt17basic_string_viewIcSt11char_traitsIcEEENK3$_1clES8_",
           "start_line": 278,
-          "execution_count": 2
+          "execution_count": 3
         },
         {
           "name": "refresh.cc:_ZZN5carve7refresh12_GLOBAL__N_122ApplyXcodePlaceholdersERNS_13ActionRecordsERKSt8functionIFNS0_10XcodePathsEvEEENK3$_0clERKNS_12ActionRecordE",
@@ -6282,13 +6282,13 @@
           "line": 81,
           "block": "0",
           "branch": "1",
-          "taken": 8
+          "taken": 9
         },
         {
           "line": 81,
           "block": "1",
           "branch": "2",
-          "taken": 1
+          "taken": 2
         },
         {
           "line": 81,
@@ -6546,7 +6546,7 @@
           "line": 250,
           "block": "0",
           "branch": "1",
-          "taken": 6
+          "taken": 7
         },
         {
           "line": 269,
@@ -6564,19 +6564,19 @@
           "line": 275,
           "block": "0",
           "branch": "0",
-          "taken": 4
+          "taken": 3
         },
         {
           "line": 275,
           "block": "0",
           "branch": "1",
-          "taken": 2
+          "taken": 3
         },
         {
           "line": 278,
           "block": "0",
           "branch": "0",
-          "taken": 0
+          "taken": 1
         },
         {
           "line": 278,

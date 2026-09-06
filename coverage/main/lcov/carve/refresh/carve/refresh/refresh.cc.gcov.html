@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2026-09-06 15:06:57</td>
+            <td class="headerValue">2026-09-06 15:29:52</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">100.0&nbsp;%</td>
@@ -49,9 +49,9 @@
             <td></td>
             <td></td>
             <td class="headerItem">Branches:</td>
-            <td class="headerCovTableEntryHi">95.5&nbsp;%</td>
+            <td class="headerCovTableEntryHi">96.2&nbsp;%</td>
             <td class="headerCovTableEntry">132</td>
-            <td class="headerCovTableEntry">126</td>
+            <td class="headerCovTableEntry">127</td>
           </tr>
                   <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
                 </table>
@@ -147,13 +147,13 @@
 <span id="L76"><span class="lineNum">      76</span>                 :             : // Resolves a (possibly exec-root-relative) source path to an absolute path so</span>
 <span id="L77"><span class="lineNum">      77</span>                 :             : // clangd matches it unambiguously. A path that is already absolute, or any path</span>
 <span id="L78"><span class="lineNum">      78</span>                 :             : // when `directory` is empty, is returned unchanged.</span>
-<span id="L79"><span class="lineNum">      79</span>                 :<span class="tlaGNC">           8 : std::string AbsoluteFile(std::string_view directory, std::string_view source) {</span></span>
-<span id="L80"><span class="lineNum">      80</span>                 :<span class="tlaGNC">           8 :   const std::filesystem::path path(source);</span></span>
-<span id="L81"><span class="lineNum">      81</span> [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 8 times"> + </span>][<span class="tlaGBC" title="Branch 0 was taken 1 time"> + </span><span class="tlaGBC" title="Branch 1 was taken 7 times"> + </span>]:<span class="tlaGNC">           8 :   if (directory.empty() || path.is_absolute()) {</span></span>
-<span id="L82"><span class="lineNum">      82</span>                 :<span class="tlaGNC">           1 :     return std::string(source);</span></span>
-<span id="L83"><span class="lineNum">      83</span>                 :<span class="tlaGNC">           1 :   }</span></span>
+<span id="L79"><span class="lineNum">      79</span>                 :<span class="tlaGNC">           9 : std::string AbsoluteFile(std::string_view directory, std::string_view source) {</span></span>
+<span id="L80"><span class="lineNum">      80</span>                 :<span class="tlaGNC">           9 :   const std::filesystem::path path(source);</span></span>
+<span id="L81"><span class="lineNum">      81</span> [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 9 times"> + </span>][<span class="tlaGBC" title="Branch 0 was taken 2 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 7 times"> + </span>]:<span class="tlaGNC">           9 :   if (directory.empty() || path.is_absolute()) {</span></span>
+<span id="L82"><span class="lineNum">      82</span>                 :<span class="tlaGNC">           2 :     return std::string(source);</span></span>
+<span id="L83"><span class="lineNum">      83</span>                 :<span class="tlaGNC">           2 :   }</span></span>
 <span id="L84"><span class="lineNum">      84</span>                 :<span class="tlaGNC">           7 :   return (std::filesystem::path(directory) / path).lexically_normal().string();</span></span>
-<span id="L85"><span class="lineNum">      85</span>                 :<span class="tlaGNC">           8 : }</span></span>
+<span id="L85"><span class="lineNum">      85</span>                 :<span class="tlaGNC">           9 : }</span></span>
 <span id="L86"><span class="lineNum">      86</span>                 :             : </span>
 <span id="L87"><span class="lineNum">      87</span>                 :             : // Maps one compile action to an ActionRecord, de-Bazeling its argv and detecting</span>
 <span id="L88"><span class="lineNum">      88</span>                 :             : // the source operand. Headers are NOT scanned here; `RunRefresh` scans only the</span>
@@ -315,17 +315,17 @@
 <span id="L244"><span class="lineNum">     244</span>                 :             : // True if `path` exists and was last modified strictly after `since` (unix</span>
 <span id="L245"><span class="lineNum">     245</span>                 :             : // seconds). A path that cannot be stat'd (missing, unreadable) returns false: we</span>
 <span id="L246"><span class="lineNum">     246</span>                 :             : // cannot prove it changed, so it does not on its own force a re-scan.</span>
-<span id="L247"><span class="lineNum">     247</span>                 :<span class="tlaGNC">           8 : bool ModifiedAfter(const std::filesystem::path&amp; path, std::int64_t since) {</span></span>
-<span id="L248"><span class="lineNum">     248</span>                 :<span class="tlaGNC">           8 :   std::error_code error;</span></span>
-<span id="L249"><span class="lineNum">     249</span>                 :<span class="tlaGNC">           8 :   const std::filesystem::file_time_type mtime = std::filesystem::last_write_time(path, error);</span></span>
-<span id="L250"><span class="lineNum">     250</span>         [<span class="tlaGBC" title="Branch 0 was taken 2 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 6 times"> + </span>]:<span class="tlaGNC">           8 :   if (error) {</span></span>
+<span id="L247"><span class="lineNum">     247</span>                 :<span class="tlaGNC">           9 : bool ModifiedAfter(const std::filesystem::path&amp; path, std::int64_t since) {</span></span>
+<span id="L248"><span class="lineNum">     248</span>                 :<span class="tlaGNC">           9 :   std::error_code error;</span></span>
+<span id="L249"><span class="lineNum">     249</span>                 :<span class="tlaGNC">           9 :   const std::filesystem::file_time_type mtime = std::filesystem::last_write_time(path, error);</span></span>
+<span id="L250"><span class="lineNum">     250</span>         [<span class="tlaGBC" title="Branch 0 was taken 2 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 7 times"> + </span>]:<span class="tlaGNC">           9 :   if (error) {</span></span>
 <span id="L251"><span class="lineNum">     251</span>                 :<span class="tlaGNC">           2 :     return false;</span></span>
 <span id="L252"><span class="lineNum">     252</span>                 :<span class="tlaGNC">           2 :   }</span></span>
-<span id="L253"><span class="lineNum">     253</span>                 :<span class="tlaGNC">           6 :   const auto seconds =</span></span>
-<span id="L254"><span class="lineNum">     254</span>                 :<span class="tlaGNC">           6 :       std::chrono::duration_cast&lt;std::chrono::seconds&gt;(std::chrono::file_clock::to_sys(mtime).time_since_epoch())</span></span>
-<span id="L255"><span class="lineNum">     255</span>                 :<span class="tlaGNC">           6 :           .count();</span></span>
-<span id="L256"><span class="lineNum">     256</span>                 :<span class="tlaGNC">           6 :   return seconds &gt; since;</span></span>
-<span id="L257"><span class="lineNum">     257</span>                 :<span class="tlaGNC">           8 : }</span></span>
+<span id="L253"><span class="lineNum">     253</span>                 :<span class="tlaGNC">           7 :   const auto seconds =</span></span>
+<span id="L254"><span class="lineNum">     254</span>                 :<span class="tlaGNC">           7 :       std::chrono::duration_cast&lt;std::chrono::seconds&gt;(std::chrono::file_clock::to_sys(mtime).time_since_epoch())</span></span>
+<span id="L255"><span class="lineNum">     255</span>                 :<span class="tlaGNC">           7 :           .count();</span></span>
+<span id="L256"><span class="lineNum">     256</span>                 :<span class="tlaGNC">           7 :   return seconds &gt; since;</span></span>
+<span id="L257"><span class="lineNum">     257</span>                 :<span class="tlaGNC">           9 : }</span></span>
 <span id="L258"><span class="lineNum">     258</span>                 :             : </span>
 <span id="L259"><span class="lineNum">     259</span>                 :             : // True if `stored`'s cached scan can no longer be trusted: any source or header</span>
 <span id="L260"><span class="lineNum">     260</span>                 :             : // it recorded has been modified since `written_at`, so its include set may have</span>
@@ -343,12 +343,12 @@
 <span id="L272"><span class="lineNum">     272</span>                 :<span class="tlaGNC">           6 :   const std::int64_t since = stored.written_at();</span></span>
 <span id="L273"><span class="lineNum">     273</span>                 :             :   // Sources and scan-deps headers are both execroot-relative; resolve each</span>
 <span id="L274"><span class="lineNum">     274</span>                 :             :   // against `directory` (the execroot) to stat the file on disk.</span>
-<span id="L275"><span class="lineNum">     275</span>         [<span class="tlaGBC" title="Branch 0 was taken 4 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 2 times"> + </span>]:<span class="tlaGNC">           6 :   return absl::c_any_of(</span></span>
+<span id="L275"><span class="lineNum">     275</span>         [<span class="tlaGBC" title="Branch 0 was taken 3 times"> + </span><span class="tlaGBC" title="Branch 1 was taken 3 times"> + </span>]:<span class="tlaGNC">           6 :   return absl::c_any_of(</span></span>
 <span id="L276"><span class="lineNum">     276</span>                 :<span class="tlaGNC">           6 :              stored.sources(),</span></span>
 <span id="L277"><span class="lineNum">     277</span>                 :<span class="tlaGNC">           6 :              [&amp;](std::string_view source) { return ModifiedAfter(AbsoluteFile(directory, source), since); })</span></span>
-<span id="L278"><span class="lineNum">     278</span>         [<span class="tlaUNC" title="Branch 0 was not taken"> - </span><span class="tlaGBC" title="Branch 1 was taken 2 times"> + </span>]:<span class="tlaGNC">           2 :          || absl::c_any_of(stored.headers(), [&amp;](std::string_view header) {</span></span>
-<span id="L279"><span class="lineNum">     279</span>                 :<span class="tlaGNC">           2 :               return ModifiedAfter(AbsoluteFile(directory, header), since);</span></span>
-<span id="L280"><span class="lineNum">     280</span>                 :<span class="tlaGNC">           2 :             });</span></span>
+<span id="L278"><span class="lineNum">     278</span>         [<span class="tlaGBC" title="Branch 0 was taken 1 time"> + </span><span class="tlaGBC" title="Branch 1 was taken 2 times"> + </span>]:<span class="tlaGNC">           3 :          || absl::c_any_of(stored.headers(), [&amp;](std::string_view header) {</span></span>
+<span id="L279"><span class="lineNum">     279</span>                 :<span class="tlaGNC">           3 :               return ModifiedAfter(AbsoluteFile(directory, header), since);</span></span>
+<span id="L280"><span class="lineNum">     280</span>                 :<span class="tlaGNC">           3 :             });</span></span>
 <span id="L281"><span class="lineNum">     281</span>                 :<span class="tlaGNC">           7 : }</span></span>
 <span id="L282"><span class="lineNum">     282</span>                 :             : </span>
 <span id="L283"><span class="lineNum">     283</span>                 :             : // Returns `bazel info execution_root` (trimmed): the directory clangd should</span>
