@@ -103,6 +103,17 @@ end_of_record
         self.assertIn("scan_deps", config["categories"])
         self.assertNotIn("e2e", config["categories"])
 
+    def test_expensive_ci_jobs_require_fast_policy_gates(self):
+        workflow = (REPO_ROOT / ".github/workflows/main.yml").read_text(
+            encoding="utf-8"
+        )
+        for job in ("clang-tidy", "test", "asan", "tsan", "msan", "coverage"):
+            with self.subTest(job=job):
+                self.assertIn(
+                    f"  {job}:\n    needs: [trunk, pre-commit]\n",
+                    workflow,
+                )
+
     def test_empty_report_fails_policy(self):
         totals = {"overall": {metric: coverage_policy.Counts() for metric in coverage_policy.METRICS}}
         report, passed = coverage_policy.render(totals, policy())

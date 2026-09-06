@@ -6,6 +6,7 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Require the fast Trunk and pre-commit policy gates to pass before starting expensive CI jobs.
 - Cover atomic writes to parentless relative paths and distinguish filesystem inspection failures
   from absent files.
 - Include LLVM-linked scan-dependency and end-to-end tests in coverage collection; attribute the

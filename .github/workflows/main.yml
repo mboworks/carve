@@ -42,6 +42,7 @@ jobs:
       - uses: pre-commit/action@v3.0.1
 
   clang-tidy:
+    needs: [trunk, pre-commit]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -102,6 +103,7 @@ jobs:
           key: bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-clang-tidy-${{ github.ref }}-${{ github.sha }}
 
   test:
+    needs: [trunk, pre-commit]
     strategy:
       fail-fast: false
       matrix:
@@ -142,6 +144,7 @@ jobs:
   # Sanitizers run on ubuntu only. The LLVM-linking targets are tagged `no_san`
   # and skipped; the remaining //carve/... targets are instrumented.
   asan:
+    needs: [trunk, pre-commit]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -164,6 +167,7 @@ jobs:
           key: bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-asan-${{ github.ref }}-${{ github.sha }}
 
   tsan:
+    needs: [trunk, pre-commit]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -190,6 +194,7 @@ jobs:
   # tagged no_san remain excluded because their prebuilt LLVM archives use the
   # ordinary libstdc++ ABI.
   msan:
+    needs: [trunk, pre-commit]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -212,6 +217,7 @@ jobs:
           key: bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-msan-${{ github.ref }}-${{ github.sha }}
 
   coverage:
+    needs: [trunk, pre-commit]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
