@@ -227,134 +227,134 @@
     "overall": {
       "lines": 90,
       "functions": 90,
-      "branches": 80
+      "branches": 90
     },
     "aggregate": {
       "lines": 90,
       "functions": 90,
-      "branches": 80
+      "branches": 90
     },
     "aquery": {
       "lines": 90,
       "functions": 90,
-      "branches": 80
+      "branches": 90
     },
     "cdb": {
       "lines": 90,
       "functions": 90,
-      "branches": 80
+      "branches": 90
     },
     "cli": {
       "lines": 90,
       "functions": 90,
-      "branches": 80
+      "branches": 90
     },
     "command": {
       "lines": 90,
       "functions": 90,
-      "branches": 80
+      "branches": 90
     },
     "io": {
       "lines": 90,
       "functions": 90,
-      "branches": 80
+      "branches": 90
     },
     "process": {
       "lines": 90,
       "functions": 90,
-      "branches": 80
+      "branches": 90
     },
     "prune": {
       "lines": 90,
       "functions": 90,
-      "branches": 80
+      "branches": 90
     },
     "refresh": {
       "lines": 90,
       "functions": 90,
-      "branches": 80
+      "branches": 90
     },
     "scan_deps": {
       "lines": 90,
       "functions": 90,
-      "branches": 80
+      "branches": 90
     },
     "shard": {
       "lines": 90,
       "functions": 90,
-      "branches": 80
+      "branches": 90
     },
     "sidecar": {
       "lines": 90,
       "functions": 90,
-      "branches": 80
+      "branches": 90
     }
   },
   "targets": {
     "overall": {
       "lines": 95,
       "functions": 95,
-      "branches": 85
+      "branches": 95
     },
     "aggregate": {
       "lines": 95,
       "functions": 95,
-      "branches": 85
+      "branches": 95
     },
     "aquery": {
       "lines": 95,
       "functions": 95,
-      "branches": 85
+      "branches": 95
     },
     "cdb": {
       "lines": 95,
       "functions": 95,
-      "branches": 85
+      "branches": 95
     },
     "cli": {
       "lines": 95,
       "functions": 95,
-      "branches": 85
+      "branches": 95
     },
     "command": {
       "lines": 95,
       "functions": 95,
-      "branches": 85
+      "branches": 95
     },
     "io": {
       "lines": 95,
       "functions": 95,
-      "branches": 85
+      "branches": 95
     },
     "process": {
       "lines": 95,
       "functions": 95,
-      "branches": 85
+      "branches": 95
     },
     "prune": {
       "lines": 95,
       "functions": 95,
-      "branches": 85
+      "branches": 95
     },
     "refresh": {
       "lines": 95,
       "functions": 95,
-      "branches": 85
+      "branches": 95
     },
     "scan_deps": {
       "lines": 95,
       "functions": 95,
-      "branches": 85
+      "branches": 95
     },
     "shard": {
       "lines": 95,
       "functions": 95,
-      "branches": 85
+      "branches": 95
     },
     "sidecar": {
       "lines": 95,
       "functions": 95,
-      "branches": 85
+      "branches": 95
     }
   },
   "enforcement": {
