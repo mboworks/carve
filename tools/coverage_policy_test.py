@@ -94,8 +94,8 @@ end_of_record
             (REPO_ROOT / "coverage_policy.json").read_text(encoding="utf-8")
         )
         coverage_policy.validate(config)
-        self.assertEqual(config["minimum"], {"lines": 90, "functions": 90, "branches": 80})
-        self.assertEqual(config["target"], {"lines": 95, "functions": 95, "branches": 85})
+        self.assertEqual(config["minimum"], {"lines": 90, "functions": 90, "branches": 90})
+        self.assertEqual(config["target"], {"lines": 95, "functions": 95, "branches": 95})
         self.assertEqual(
             config["enforce"],
             {"lines": "high", "functions": "high", "branches": "high"},

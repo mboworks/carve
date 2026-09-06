@@ -1,8 +1,8 @@
 {
   "include": ["carve/**"],
   "exclude": ["carve/*_test.cc", "carve/**/*_test.cc", "carve/third_party/**"],
-  "minimum": {"lines": 90, "functions": 90, "branches": 80},
-  "target": {"lines": 95, "functions": 95, "branches": 85},
+  "minimum": {"lines": 90, "functions": 90, "branches": 90},
+  "target": {"lines": 95, "functions": 95, "branches": 95},
   "enforce": {"lines": "high", "functions": "high", "branches": "high"},
   "categories": {
     "aggregate": {"include": ["carve/aggregate/**"]},
