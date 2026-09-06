@@ -38,6 +38,8 @@ TEST(SubcommandTest, NamesRoundTripThroughParse) {
 }
 
 TEST(SubcommandTest, InvalidEnumeratorHasNoName) {
+  // Exercise the function's defensive fallback with a value no declared enumerator represents.
+  // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
   EXPECT_THAT(SubcommandName(static_cast<Subcommand>(-1)), IsEmpty());
 }
 
