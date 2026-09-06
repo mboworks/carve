@@ -13,9 +13,9 @@
         "percent": 98.9
       },
       "branches": {
-        "covered": 491,
+        "covered": 495,
         "total": 530,
-        "percent": 92.64
+        "percent": 93.4
       }
     },
     "aggregate": {
@@ -47,9 +47,9 @@
         "percent": 100.0
       },
       "branches": {
-        "covered": 34,
+        "covered": 38,
         "total": 38,
-        "percent": 89.47
+        "percent": 100.0
       }
     },
     "cdb": {
