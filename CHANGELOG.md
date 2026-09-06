@@ -6,6 +6,7 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Cover developer-directory-only Xcode shard substitution and missing depfile diagnostics.
 - Cover prune diagnostics for malformed action-record sidecars.
 - Cover Make dependency parsing for carriage returns, tabs, and literal or trailing backslashes.
 - Cover defensive response-file and output-path cycle limits and unmatched response tokens.
