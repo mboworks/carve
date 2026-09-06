@@ -160,5 +160,33 @@ TEST(EndToEndTest, ShardWithoutRequiredFlagsExitsOne) {
   EXPECT_THAT(process::Run({CarveBinary(), "shard"}), IsOkAndHolds(Field(&process::CommandResult::exit_code, Eq(1))));
 }
 
+TEST(EndToEndTest, ShardThenAggregateWritesCompileCommands) {
+  const std::filesystem::path dir = std::filesystem::path(::testing::TempDir()) / "carve_e2e_shard";
+  std::filesystem::remove_all(dir);
+  std::filesystem::create_directories(dir);
+  const std::filesystem::path command_file = dir / "command.txt";
+  const std::filesystem::path shard = dir / "shard.binpb";
+  const std::filesystem::path out = dir / "compile_commands.json";
+  {
+    std::ofstream stream(command_file);
+    stream << "clang\n-c\nsrc/a.cc\n";
+  }
+
+  ASSERT_THAT(
+      process::Run(
+          {CarveBinary(), "shard", "--action_key=k1", "--command_file=" + command_file.string(), "--source=src/a.cc",
+           "--directory=/execroot/ws", "--scan=false", "--out=" + shard.string()}),
+      IsOkAndHolds(Field(&process::CommandResult::exit_code, Eq(0))));
+  ASSERT_THAT(
+      process::Run(
+          {CarveBinary(), "aggregate", "--sidecars=" + shard.string(), "--output=" + out.string(),
+           "--directory=/execroot/ws"}),
+      IsOkAndHolds(Field(&process::CommandResult::exit_code, Eq(0))));
+
+  const std::string cdb = ReadFile(out);
+  EXPECT_THAT(cdb, HasSubstr("\"file\": \"src/a.cc\""));
+  EXPECT_THAT(cdb, HasSubstr("\"directory\": \"/execroot/ws\""));
+}
+
 }  // namespace
 }  // namespace carve

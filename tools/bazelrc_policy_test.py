@@ -71,6 +71,7 @@ class BazelrcPolicyTest(unittest.TestCase):
         self.assertIn("common --host_per_file_copt=external/.*@-w", self.root_lines)
 
     def test_coverage_includes_targets_excluded_only_from_sanitizers(self):
+        self.assertIn("coverage:coverage --copt=-fcoverage-compilation-dir=.", self.root_lines)
         self.assertNotIn("coverage:coverage --build_tag_filters=-no_san", self.root_lines)
         self.assertNotIn("coverage:coverage --test_tag_filters=-no_san", self.root_lines)
         for config in ("asan", "tsan", "msan"):

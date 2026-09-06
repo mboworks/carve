@@ -144,6 +144,7 @@ coverage:coverage --config=clang
 coverage:coverage --combined_report=lcov
 coverage:coverage --experimental_generate_llvm_lcov
 coverage:coverage --experimental_use_llvm_covmap
+coverage:coverage --copt=-fcoverage-compilation-dir=.
 coverage:coverage --instrumentation_filter=^//carve[/:]
 coverage:coverage --repo_env=BAZEL_USE_LLVM_NATIVE_COVERAGE=1
 

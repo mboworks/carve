@@ -65,10 +65,9 @@ TEST(ScanDependenciesTest, NonErrorDiagnosticDoesNotFailScan) {
   const std::filesystem::path dir = std::filesystem::path(::testing::TempDir()) / "carve_scan_warning";
   std::filesystem::remove_all(dir);
   std::filesystem::create_directories(dir);
-  Write(dir / "main.cc", "int main() { return 0; }\n");
+  Write(dir / "main.cc", "#warning carve dependency-scan warning\nint main() { return 0; }\n");
 
-  const std::vector<std::string> args = {
-      "clang", "-Wunknown-warning-option", "-Wcarve-does-not-exist", "-c", (dir / "main.cc").string()};
+  const std::vector<std::string> args = {"clang", "-c", (dir / "main.cc").string()};
   EXPECT_THAT(ScanDependencies(args, dir.string()), IsOkAndHolds(Contains(HasSubstr("main.cc"))));
 }
 
