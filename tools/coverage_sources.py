@@ -87,7 +87,7 @@ def normalize_record(record: str, source: Path) -> str:
     functions = [
         (name, definition)
         for number, name, definition in definitions
-        if number not in excluded_functions
+        if number not in excluded_functions and number not in excluded_lines
     ]
     result = headers
     result.extend(definition for _, definition in functions)
