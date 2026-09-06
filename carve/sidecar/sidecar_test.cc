@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "absl/status/status.h"
+#include "absl/status/statusor.h"
 #include "carve/sidecar/carve.pb.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -65,6 +66,25 @@ TEST_F(SidecarTest, InvalidActionRecordsProtoIsRejected) {
   WriteInvalidProto(path);
 
   EXPECT_THAT(Load(path), StatusIs(absl::StatusCode::kInvalidArgument, HasSubstr("not a valid ActionRecords proto")));
+}
+
+TEST_F(SidecarTest, ReadFailureIsPropagatedForBothSidecarFormats) {
+  const std::filesystem::path path = std::filesystem::path(::testing::TempDir()) / "unreadable-sidecar.binpb";
+  {
+    const std::ofstream stream(path, std::ios::binary | std::ios::trunc);
+    ASSERT_THAT(stream.good(), IsTrue());
+  }
+  std::filesystem::permissions(path, std::filesystem::perms::none, std::filesystem::perm_options::replace);
+
+  const absl::StatusOr<ActionRecords> records = Load(path);
+  const absl::StatusOr<HeaderIndex> index = LoadHeaderIndex(path);
+  std::filesystem::permissions(path, std::filesystem::perms::owner_all, std::filesystem::perm_options::replace);
+
+  if (records.ok() || index.ok()) {
+    GTEST_SKIP() << "the current user can read a non-readable file";
+  }
+  EXPECT_THAT(records, StatusIs(absl::StatusCode::kUnknown, HasSubstr("cannot open")));
+  EXPECT_THAT(index, StatusIs(absl::StatusCode::kUnknown, HasSubstr("cannot open")));
 }
 
 TEST(SaveLoadTest, RoundTripsContent) {

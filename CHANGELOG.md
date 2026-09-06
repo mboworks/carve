@@ -6,6 +6,7 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Cover sidecar read-error propagation and reject malformed aggregate inputs before writing output.
 - Cover simultaneous subprocess output-read failures and preserve the first reported error.
 - Verify an edited cached header independently forces refresh rescanning when its source is unchanged.
 - Cover the defensive empty name for an invalid CLI subcommand enumerator.
