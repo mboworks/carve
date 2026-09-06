@@ -116,6 +116,35 @@ TEST(ParseCompileActionsTest, UnmatchedResponseFileTokenIsKeptVerbatim) {
       IsOkAndHolds(ElementsAre(Field(&CompileAction::arguments, ElementsAre("clang", "@bazel-out/k1.params")))));
 }
 
+TEST(ParseCompileActionsTest, PreservesShortAndUnmatchedTokensWithEmbeddedParamFiles) {
+  analysis::ActionGraphContainer container;
+  analysis::Action* compile = container.add_actions();
+  compile->set_mnemonic("CppCompile");
+  compile->add_arguments("@");
+  compile->add_arguments("@missing.params");
+  analysis::ParamFile* param_file = compile->add_param_files();
+  param_file->set_exec_path("present.params");
+  param_file->add_arguments("unused");
+
+  EXPECT_THAT(
+      ParseCompileActions(container.SerializeAsString()),
+      IsOkAndHolds(ElementsAre(Field(&CompileAction::arguments, ElementsAre("@", "@missing.params")))));
+}
+
+TEST(ParseCompileActionsTest, StopsExpandingACyclicParamFile) {
+  analysis::ActionGraphContainer container;
+  analysis::Action* compile = container.add_actions();
+  compile->set_mnemonic("CppCompile");
+  compile->add_arguments("@loop.params");
+  analysis::ParamFile* param_file = compile->add_param_files();
+  param_file->set_exec_path("loop.params");
+  param_file->add_arguments("@loop.params");
+
+  EXPECT_THAT(
+      ParseCompileActions(container.SerializeAsString()),
+      IsOkAndHolds(ElementsAre(Field(&CompileAction::arguments, ElementsAre("@loop.params")))));
+}
+
 TEST(ParseCompileActionsTest, UnknownPrimaryOutputLeavesPathEmpty) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = container.add_actions();
@@ -142,6 +171,29 @@ TEST_F(AqueryTest, UnknownOutputPathFragmentLeavesPathEmpty) {
   EXPECT_THAT(
       ParseCompileActions(container.SerializeAsString()),
       IsOkAndHolds(ElementsAre(Field(&CompileAction::primary_output, IsEmpty()))));
+}
+
+TEST(ParseCompileActionsTest, StopsResolvingACyclicOutputPath) {
+  analysis::ActionGraphContainer container;
+  analysis::PathFragment* first = container.add_path_fragments();
+  first->set_id(1);
+  first->set_label("one");
+  first->set_parent_id(2);
+  analysis::PathFragment* second = container.add_path_fragments();
+  second->set_id(2);
+  second->set_label("two");
+  second->set_parent_id(1);
+
+  analysis::Artifact* artifact = container.add_artifacts();
+  artifact->set_id(10);
+  artifact->set_path_fragment_id(1);
+  analysis::Action* compile = container.add_actions();
+  compile->set_mnemonic("CppCompile");
+  compile->set_primary_output_id(10);
+
+  EXPECT_THAT(
+      ParseCompileActions(container.SerializeAsString()),
+      IsOkAndHolds(ElementsAre(Field(&CompileAction::primary_output, Eq("one/two/one")))));
 }
 
 }  // namespace
