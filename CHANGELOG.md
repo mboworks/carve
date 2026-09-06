@@ -6,6 +6,7 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Cover prune diagnostics for malformed action-record sidecars.
 - Cover Make dependency parsing for carriage returns, tabs, and literal or trailing backslashes.
 - Cover defensive response-file and output-path cycle limits and unmatched response tokens.
 - Cover refresh input validation, malformed persisted data, project stamping, source-less records,

@@ -16,7 +16,10 @@
 #include "carve/prune/prune.h"
 
 #include <filesystem>
+#include <fstream>
+#include <ios>
 
+#include "absl/status/status.h"
 #include "carve/sidecar/carve.pb.h"
 #include "carve/sidecar/sidecar.h"
 #include "gmock/gmock.h"
@@ -32,7 +35,9 @@ using ::mbo::proto::EqualsProto;
 using ::mbo::proto::ParseTextProtoOrDie;
 using ::mbo::testing::IsOk;
 using ::mbo::testing::IsOkAndHolds;
+using ::mbo::testing::StatusIs;
 using ::testing::Eq;
+using ::testing::HasSubstr;
 
 TEST(PruneRecordsTest, DropsStampedRecordsOlderThanCutoffKeepsRest) {
   const ActionRecords records = ParseTextProtoOrDie(
@@ -62,6 +67,20 @@ TEST(PruneRecordsTest, EmptyStaysEmpty) {
 
 TEST(RunPruneTest, MissingSidecarRemovesNothing) {
   EXPECT_THAT(RunPrune("/no/such/carve/sidecar.binpb", /*cutoff=*/1'000), IsOkAndHolds(Eq(0)));
+}
+
+TEST(RunPruneTest, RejectsACorruptSidecar) {
+  const std::filesystem::path path =
+      std::filesystem::path(::testing::TempDir()) / "carve_prune_corrupt" / "entries.binpb";
+  std::filesystem::remove_all(path.parent_path());
+  std::filesystem::create_directories(path.parent_path());
+  std::ofstream file(path, std::ios::binary);
+  file.put('\x80');
+  file.close();
+
+  EXPECT_THAT(
+      RunPrune(path, /*cutoff=*/1'000),
+      StatusIs(absl::StatusCode::kInvalidArgument, HasSubstr("sidecar is not a valid ActionRecords proto")));
 }
 
 TEST(RunPruneTest, RewritesSidecarWithoutStaleRecords) {
