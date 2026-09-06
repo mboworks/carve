@@ -6,6 +6,7 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Verify an edited cached header independently forces refresh rescanning when its source is unchanged.
 - Cover the defensive empty name for an invalid CLI subcommand enumerator.
 - Cover developer-directory-only Xcode shard substitution and missing depfile diagnostics.
 - Cover prune diagnostics for malformed action-record sidecars.
