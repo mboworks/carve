@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 
+#include "absl/status/status.h"
 #include "carve/sidecar/carve.pb.h"
 #include "carve/sidecar/sidecar.h"
 #include "gmock/gmock.h"
@@ -37,8 +38,11 @@ using ::mbo::proto::EqualsProto;
 using ::mbo::proto::ParseTextProtoOrDie;
 using ::mbo::testing::IsOk;
 using ::mbo::testing::IsOkAndHolds;
+using ::mbo::testing::StatusIs;
 using ::testing::Eq;
 using ::testing::HasSubstr;
+using ::testing::IsFalse;
+using ::testing::IsTrue;
 
 std::string ReadFile(const std::filesystem::path& path) {
   std::ifstream stream(path, std::ios::binary);
@@ -150,6 +154,25 @@ TEST(RunAggregateTest, MissingSidecarContributesNothing) {
   const std::vector<std::filesystem::path> shards = {dir / "absent.binpb"};
   EXPECT_THAT(RunAggregate(shards, out, /*directory=*/"/exec/root"), IsOkAndHolds(Eq(0)));
   EXPECT_THAT(ReadFile(out), Eq("[]\n"));
+}
+
+TEST(RunAggregateTest, MalformedSidecarIsRejectedWithoutWritingOutput) {
+  const std::filesystem::path dir = std::filesystem::path(::testing::TempDir()) / "carve_aggregate_malformed";
+  std::filesystem::remove_all(dir);
+  std::filesystem::create_directories(dir);
+  const std::filesystem::path shard = dir / "malformed.binpb";
+  const std::filesystem::path out = dir / "compile_commands.json";
+  {
+    std::ofstream stream(shard, std::ios::binary | std::ios::trunc);
+    stream.put(static_cast<char>(0x80));  // Truncated varint.
+    ASSERT_THAT(stream.good(), IsTrue());
+  }
+
+  const std::vector<std::filesystem::path> shards = {shard};
+  EXPECT_THAT(
+      RunAggregate(shards, out, /*directory=*/"/exec/root"),
+      StatusIs(absl::StatusCode::kInvalidArgument, HasSubstr("not a valid ActionRecords proto")));
+  EXPECT_THAT(std::filesystem::exists(out), IsFalse());
 }
 
 TEST(RunAggregateTest, WritesHeaderIndexFromShardHeaders) {

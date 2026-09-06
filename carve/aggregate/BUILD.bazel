@@ -45,6 +45,7 @@ cc_test(
         "//carve/cdb:cdb_cc",
         "//carve/sidecar:carve_cc_proto",
         "//carve/sidecar:sidecar_cc",
+        "@abseil-cpp//absl/status",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
         "@mboworks_mbo//mbo/testing:status_cc",
