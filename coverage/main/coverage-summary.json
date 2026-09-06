@@ -3,19 +3,19 @@
   "measurements": {
     "overall": {
       "lines": {
-        "covered": 972,
-        "total": 988,
-        "percent": 98.38
+        "covered": 1133,
+        "total": 1162,
+        "percent": 97.5
       },
       "functions": {
-        "covered": 78,
-        "total": 78,
-        "percent": 100.0
+        "covered": 90,
+        "total": 91,
+        "percent": 98.9
       },
       "branches": {
-        "covered": 433,
-        "total": 470,
-        "percent": 92.13
+        "covered": 481,
+        "total": 530,
+        "percent": 90.75
       }
     },
     "aggregate": {
@@ -103,23 +103,6 @@
         "percent": 91.07
       }
     },
-    "e2e": {
-      "lines": {
-        "covered": 0,
-        "total": 0,
-        "percent": null
-      },
-      "functions": {
-        "covered": 0,
-        "total": 0,
-        "percent": null
-      },
-      "branches": {
-        "covered": 0,
-        "total": 0,
-        "percent": null
-      }
-    },
     "io": {
       "lines": {
         "covered": 49,
@@ -173,9 +156,9 @@
     },
     "refresh": {
       "lines": {
-        "covered": 259,
+        "covered": 263,
         "total": 271,
-        "percent": 95.57
+        "percent": 97.05
       },
       "functions": {
         "covered": 24,
@@ -183,26 +166,26 @@
         "percent": 100.0
       },
       "branches": {
-        "covered": 115,
+        "covered": 118,
         "total": 132,
-        "percent": 87.12
+        "percent": 89.39
       }
     },
     "scan_deps": {
       "lines": {
-        "covered": 0,
-        "total": 0,
-        "percent": null
+        "covered": 28,
+        "total": 28,
+        "percent": 100.0
       },
       "functions": {
-        "covered": 0,
-        "total": 0,
-        "percent": null
+        "covered": 3,
+        "total": 3,
+        "percent": 100.0
       },
       "branches": {
-        "covered": 0,
-        "total": 0,
-        "percent": null
+        "covered": 6,
+        "total": 6,
+        "percent": 100.0
       }
     },
     "shard": {
@@ -267,11 +250,6 @@
       "branches": 80
     },
     "command": {
-      "lines": 90,
-      "functions": 90,
-      "branches": 80
-    },
-    "e2e": {
       "lines": 90,
       "functions": 90,
       "branches": 80
@@ -343,11 +321,6 @@
       "functions": 95,
       "branches": 85
     },
-    "e2e": {
-      "lines": 95,
-      "functions": 95,
-      "branches": 85
-    },
     "io": {
       "lines": 95,
       "functions": 95,
@@ -411,11 +384,6 @@
       "branches": "high"
     },
     "command": {
-      "lines": "high",
-      "functions": "high",
-      "branches": "high"
-    },
-    "e2e": {
       "lines": "high",
       "functions": "high",
       "branches": "high"
