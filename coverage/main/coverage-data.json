@@ -11,7 +11,7 @@
     },
     "branches": {
       "found": 530,
-      "hit": 500
+      "hit": 501
     }
   },
   "files": [
@@ -3881,19 +3881,19 @@
         },
         {
           "line": 82,
-          "execution_count": 92
+          "execution_count": 93
         },
         {
           "line": 83,
-          "execution_count": 92
+          "execution_count": 93
         },
         {
           "line": 84,
-          "execution_count": 92
+          "execution_count": 93
         },
         {
           "line": 85,
-          "execution_count": 92
+          "execution_count": 93
         },
         {
           "line": 86,
@@ -3905,7 +3905,7 @@
         },
         {
           "line": 88,
-          "execution_count": 91
+          "execution_count": 92
         },
         {
           "line": 89,
@@ -3917,11 +3917,11 @@
         },
         {
           "line": 91,
-          "execution_count": 73
+          "execution_count": 74
         },
         {
           "line": 92,
-          "execution_count": 73
+          "execution_count": 74
         },
         {
           "line": 93,
@@ -3933,11 +3933,11 @@
         },
         {
           "line": 95,
-          "execution_count": 72
+          "execution_count": 73
         },
         {
           "line": 96,
-          "execution_count": 73
+          "execution_count": 74
         }
       ],
       "functions": [
@@ -3949,7 +3949,7 @@
         {
           "name": "_ZN5carve2io8ReadFileERKNSt10filesystem7__cxx114pathE",
           "start_line": 82,
-          "execution_count": 92
+          "execution_count": 93
         },
         {
           "name": "io.cc:_ZN5carve2io12_GLOBAL__N_111TempSiblingERKNSt10filesystem7__cxx114pathE",
@@ -4028,7 +4028,7 @@
           "line": 85,
           "block": "0",
           "branch": "1",
-          "taken": 91
+          "taken": 92
         },
         {
           "line": 88,
@@ -4040,7 +4040,7 @@
           "line": 88,
           "block": "0",
           "branch": "1",
-          "taken": 73
+          "taken": 74
         },
         {
           "line": 92,
@@ -4052,7 +4052,7 @@
           "line": 92,
           "block": "0",
           "branch": "1",
-          "taken": 72
+          "taken": 73
         }
       ]
     },
@@ -4897,11 +4897,11 @@
         },
         {
           "line": 39,
-          "execution_count": 3
+          "execution_count": 4
         },
         {
           "line": 40,
-          "execution_count": 3
+          "execution_count": 4
         },
         {
           "line": 41,
@@ -4941,7 +4941,7 @@
         {
           "name": "_ZN5carve5prune8RunPruneERKNSt10filesystem7__cxx114pathEl",
           "start_line": 39,
-          "execution_count": 3
+          "execution_count": 4
         }
       ],
       "branches": [
@@ -4985,7 +4985,7 @@
           "line": 40,
           "block": "0",
           "branch": "0",
-          "taken": 0
+          "taken": 1
         },
         {
           "line": 40,
@@ -7725,15 +7725,15 @@
       "lines": [
         {
           "line": 35,
-          "execution_count": 50
+          "execution_count": 51
         },
         {
           "line": 36,
-          "execution_count": 50
+          "execution_count": 51
         },
         {
           "line": 37,
-          "execution_count": 50
+          "execution_count": 51
         },
         {
           "line": 38,
@@ -7757,19 +7757,19 @@
         },
         {
           "line": 43,
-          "execution_count": 37
+          "execution_count": 38
         },
         {
           "line": 44,
-          "execution_count": 37
+          "execution_count": 38
         },
         {
           "line": 45,
-          "execution_count": 2
+          "execution_count": 3
         },
         {
           "line": 46,
-          "execution_count": 2
+          "execution_count": 3
         },
         {
           "line": 47,
@@ -7777,7 +7777,7 @@
         },
         {
           "line": 48,
-          "execution_count": 37
+          "execution_count": 38
         },
         {
           "line": 50,
@@ -8210,7 +8210,7 @@
         {
           "name": "_ZN5carve7sidecar4LoadERKNSt10filesystem7__cxx114pathE",
           "start_line": 35,
-          "execution_count": 50
+          "execution_count": 51
         },
         {
           "name": "_ZN5carve7sidecar4SaveERKNSt10filesystem7__cxx114pathERKNS_13ActionRecordsE",
@@ -8239,7 +8239,7 @@
           "line": 37,
           "block": "0",
           "branch": "1",
-          "taken": 37
+          "taken": 38
         },
         {
           "line": 38,
@@ -8257,7 +8257,7 @@
           "line": 44,
           "block": "0",
           "branch": "0",
-          "taken": 2
+          "taken": 3
         },
         {
           "line": 44,
