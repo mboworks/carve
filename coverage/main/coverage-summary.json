@@ -3,9 +3,9 @@
   "measurements": {
     "overall": {
       "lines": {
-        "covered": 1146,
+        "covered": 1147,
         "total": 1166,
-        "percent": 98.28
+        "percent": 98.37
       },
       "functions": {
         "covered": 90,
@@ -13,9 +13,9 @@
         "percent": 98.9
       },
       "branches": {
-        "covered": 503,
+        "covered": 504,
         "total": 530,
-        "percent": 94.91
+        "percent": 95.09
       }
     },
     "aggregate": {
@@ -71,9 +71,9 @@
     },
     "cli": {
       "lines": {
-        "covered": 27,
+        "covered": 28,
         "total": 28,
-        "percent": 96.43
+        "percent": 100.0
       },
       "functions": {
         "covered": 3,
@@ -81,9 +81,9 @@
         "percent": 100.0
       },
       "branches": {
-        "covered": 17,
+        "covered": 18,
         "total": 18,
-        "percent": 94.44
+        "percent": 100.0
       }
     },
     "command": {

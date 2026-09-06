@@ -3,7 +3,7 @@
   "totals": {
     "lines": {
       "found": 1166,
-      "hit": 1146
+      "hit": 1147
     },
     "functions": {
       "found": 91,
@@ -11,7 +11,7 @@
     },
     "branches": {
       "found": 530,
-      "hit": 503
+      "hit": 504
     }
   },
   "files": [
@@ -2762,11 +2762,11 @@
       "lines": [
         {
           "line": 27,
-          "execution_count": 5
+          "execution_count": 6
         },
         {
           "line": 28,
-          "execution_count": 5
+          "execution_count": 6
         },
         {
           "line": 29,
@@ -2786,15 +2786,15 @@
         },
         {
           "line": 33,
-          "execution_count": 5
+          "execution_count": 6
         },
         {
           "line": 34,
-          "execution_count": 0
+          "execution_count": 1
         },
         {
           "line": 35,
-          "execution_count": 5
+          "execution_count": 6
         },
         {
           "line": 37,
@@ -2877,7 +2877,7 @@
         {
           "name": "_ZN5carve3cli14SubcommandNameENS0_10SubcommandE",
           "start_line": 27,
-          "execution_count": 5
+          "execution_count": 6
         },
         {
           "name": "_ZN5carve3cli15ParseSubcommandESt17basic_string_viewIcSt11char_traitsIcEE",
@@ -2901,7 +2901,7 @@
           "line": 28,
           "block": "0",
           "branch": "1",
-          "taken": 0
+          "taken": 1
         },
         {
           "line": 29,
@@ -2913,7 +2913,7 @@
           "line": 29,
           "block": "0",
           "branch": "1",
-          "taken": 3
+          "taken": 4
         },
         {
           "line": 30,
@@ -2925,7 +2925,7 @@
           "line": 30,
           "block": "0",
           "branch": "1",
-          "taken": 4
+          "taken": 5
         },
         {
           "line": 31,
@@ -2937,7 +2937,7 @@
           "line": 31,
           "block": "0",
           "branch": "1",
-          "taken": 4
+          "taken": 5
         },
         {
           "line": 32,
@@ -2949,7 +2949,7 @@
           "line": 32,
           "block": "0",
           "branch": "1",
-          "taken": 4
+          "taken": 5
         },
         {
           "line": 38,
