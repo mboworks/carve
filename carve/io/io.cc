@@ -81,7 +81,11 @@ absl::Status WriteAtomically(const std::filesystem::path& path, std::string_view
 
 absl::StatusOr<std::string> ReadFile(const std::filesystem::path& path) {
   std::error_code error_code;
-  if (!std::filesystem::exists(path, error_code) || error_code) {
+  const bool exists = std::filesystem::exists(path, error_code);
+  if (error_code) {
+    return absl::NotFoundError(absl::StrCat("cannot inspect '", path.string(), "': ", error_code.message()));
+  }
+  if (!exists) {
     return absl::NotFoundError(absl::StrCat("no such file '", path.string(), "'"));
   }
   std::ifstream stream(path, std::ios::binary);

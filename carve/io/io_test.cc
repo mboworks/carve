@@ -60,6 +60,15 @@ TEST(WriteAtomicallyTest, CreatesParentsAndWritesContent) {
   EXPECT_THAT(ReadFile(path), IsOkAndHolds(Eq("hello\n")));
 }
 
+TEST(WriteAtomicallyTest, WritesRelativePathWithoutParent) {
+  const std::filesystem::path path = "carve_io_parentless.bin";
+  std::filesystem::remove(path);
+
+  ASSERT_THAT(WriteAtomically(path, "content"), IsOk());
+  EXPECT_THAT(ReadFile(path), IsOkAndHolds(Eq("content")));
+  EXPECT_THAT(std::filesystem::remove(path), Eq(true));
+}
+
 TEST(WriteAtomicallyTest, OverwritesInPlaceWithoutLeavingTempFiles) {
   const std::filesystem::path dir = std::filesystem::path(::testing::TempDir()) / "carve_io_overwrite";
   std::filesystem::remove_all(dir);
@@ -136,6 +145,16 @@ TEST_F(IoFailureTest, ReportsWriteFailureAndRemovesTemporaryFile) {
 
 TEST(ReadFileTest, MissingFileIsNotFound) {
   EXPECT_THAT(ReadFile("/no/such/carve/file"), StatusIs(absl::StatusCode::kNotFound));
+}
+
+TEST(ReadFileTest, FilesystemInspectionErrorIsNotFound) {
+  const std::filesystem::path dir = std::filesystem::path(::testing::TempDir()) / "carve_io_symlink_loop";
+  std::filesystem::remove_all(dir);
+  std::filesystem::create_directories(dir);
+  const std::filesystem::path loop = dir / "loop";
+  std::filesystem::create_symlink(loop.filename(), loop);
+
+  EXPECT_THAT(ReadFile(loop), StatusIs(absl::StatusCode::kNotFound, HasSubstr("cannot inspect")));
 }
 
 TEST_F(IoFailureTest, ReportsExistingFileOpenFailure) {
