@@ -6,6 +6,8 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Cover refresh input validation, malformed persisted data, project stamping, source-less records,
+  and the no-op Apple toolchain resolver path.
 - Require the fast Trunk and pre-commit policy gates to pass before starting expensive CI jobs.
 - Cover atomic writes to parentless relative paths and distinguish filesystem inspection failures
   from absent files.

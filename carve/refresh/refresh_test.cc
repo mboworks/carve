@@ -167,6 +167,19 @@ TEST(BuildEntriesTest, EmptyInputYieldsNoEntries) {
   EXPECT_THAT(BuildEntries("", Options{.directory = "/ws"}), IsOkAndHolds(IsEmpty()));
 }
 
+TEST(BuildEntriesTest, RejectsMalformedAqueryProto) {
+  EXPECT_THAT(
+      BuildEntries(std::string(1, '\x80'), Options{.directory = "/ws"}),
+      StatusIs(absl::StatusCode::kInvalidArgument, HasSubstr("failed to parse aquery")));
+}
+
+TEST(EntriesFromRecordsTest, SkipsRecordsWithoutASource) {
+  ActionRecords records;
+  records.add_records()->add_command("clang");
+
+  EXPECT_THAT(EntriesFromRecords(records, "/ws"), IsEmpty());
+}
+
 TEST(RunRefreshTest, ReadsProtoFileAndWritesCompileCommands) {
   analysis::ActionGraphContainer container;
   analysis::Action* compile = AddCompile(container, "k1");
@@ -210,6 +223,27 @@ TEST(RunRefreshTest, MissingProtoFileIsNotFound) {
               .sidecar_path = "",
           }),
       StatusIs(absl::StatusCode::kNotFound));
+}
+
+TEST(RunRefreshTest, RequiresAnInputSource) {
+  EXPECT_THAT(
+      RunRefresh(FileOptions{}),
+      StatusIs(absl::StatusCode::kInvalidArgument, HasSubstr("needs --aquery_proto or --targets")));
+}
+
+TEST(RunRefreshTest, RejectsMalformedAqueryProto) {
+  const std::filesystem::path dir = std::filesystem::path(::testing::TempDir()) / "carve_malformed_aquery";
+  std::filesystem::remove_all(dir);
+  const std::filesystem::path proto_path = WriteText(dir / "aquery.pb", std::string(1, '\x80'));
+
+  EXPECT_THAT(
+      RunRefresh(
+          FileOptions{
+              .aquery_proto_path = proto_path.string(),
+              .output_path = (dir / "compile_commands.json").string(),
+              .directory = "/ws",
+          }),
+      StatusIs(absl::StatusCode::kInvalidArgument, HasSubstr("failed to parse aquery")));
 }
 
 struct BazelInvocationTest : ::testing::Test {};
@@ -310,6 +344,45 @@ FileOptions TempRefresh(std::string_view name, const analysis::ActionGraphContai
       .directory = "/execroot/ws",
       .sidecar_path = (dir / "entries.binpb").string(),
   };
+}
+
+TEST(RunRefreshTest, StoresTheConfiguredProjectId) {
+  analysis::ActionGraphContainer container;
+  analysis::Action* compile = AddCompile(container, "k1");
+  for (const std::string_view arg : kCompileArgs) {
+    compile->add_arguments(std::string(arg));
+  }
+  FileOptions options = TempRefresh("carve_project_id", container);
+  options.project_id = "project-a";
+
+  ASSERT_THAT(RunRefresh(options), IsOk());
+
+  EXPECT_THAT(  // NL
+      sidecar::Load(options.sidecar_path),
+      IsOkAndHolds(EqualsProto(  // NL
+          R"pb(
+            records {
+              action_key: "k1"
+              sources: "src/a.cc"
+              command: "clang"
+              command: "-c"
+              command: "src/a.cc"
+              project_id: "project-a"
+            })pb")));
+}
+
+TEST(RunRefreshTest, RejectsACorruptSidecar) {
+  analysis::ActionGraphContainer container;
+  analysis::Action* compile = AddCompile(container, "k1");
+  for (const std::string_view arg : kCompileArgs) {
+    compile->add_arguments(std::string(arg));
+  }
+  const FileOptions options = TempRefresh("carve_corrupt_sidecar", container);
+  WriteText(options.sidecar_path, std::string(1, '\x80'));
+
+  EXPECT_THAT(
+      RunRefresh(options),
+      StatusIs(absl::StatusCode::kInvalidArgument, HasSubstr("sidecar is not a valid ActionRecords proto")));
 }
 
 TEST(RunRefreshTest, UnchangedActionReusesStoredRecordWithCachedHeaders) {
@@ -853,6 +926,24 @@ TEST(RunRefreshTest, ResolvesXcodePlaceholdersViaTheInjectedResolver) {
               command: "-c"
               command: "a.cc"
             })pb")));
+}
+
+TEST(RunRefreshTest, DoesNotResolveXcodePathsWithoutPlaceholders) {
+  analysis::ActionGraphContainer container;
+  analysis::Action* compile = AddCompile(container, "k1");
+  for (const std::string_view arg : kCompileArgs) {
+    compile->add_arguments(std::string(arg));
+  }
+  FileOptions options = TempRefresh("carve_xcode_not_needed", container);
+  bool resolver_called = false;
+  options.xcode_resolver = [&resolver_called] {
+    resolver_called = true;
+    return XcodePaths{.developer_dir = "/Dev", .sdkroot = "/SDK"};
+  };
+
+  ASSERT_THAT(RunRefresh(options), IsOk());
+
+  EXPECT_FALSE(resolver_called);
 }
 
 }  // namespace
