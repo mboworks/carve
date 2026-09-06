@@ -6,6 +6,7 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Cover simultaneous subprocess output-read failures and preserve the first reported error.
 - Cover the defensive empty name for an invalid CLI subcommand enumerator.
 - Cover developer-directory-only Xcode shard substitution and missing depfile diagnostics.
 - Cover prune diagnostics for malformed action-record sidecars.

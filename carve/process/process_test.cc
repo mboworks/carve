@@ -48,7 +48,7 @@ using ::testing::UnorderedElementsAre;
 
 class FakeSystemCalls final : public process_internal::SystemCalls {
  public:
-  enum class Failure { kNone, kFork, kPoll, kRead, kWaitPid };
+  enum class Failure { kNone, kFork, kPoll, kRead, kBothReads, kWaitPid };
 
   void SetFailure(Failure failure) { failure_ = failure; }
 
@@ -108,6 +108,10 @@ class FakeSystemCalls final : public process_internal::SystemCalls {
     }
     if (failure_ == Failure::kRead && read_calls_ == 1) {
       errno = EIO;
+      return -1;
+    }
+    if (failure_ == Failure::kBothReads && read_calls_ <= 2) {
+      errno = read_calls_ == 1 ? EIO : EBADF;
       return -1;
     }
     return 0;
@@ -288,6 +292,14 @@ TEST_F(ProcessSystemCallsTest, ReportsReadFailureAfterReapingChild) {
 
   EXPECT_THAT(Execute(SystemCalls()), StatusIs(absl::StatusCode::kUnknown, HasSubstr("read")));
   EXPECT_THAT(SystemCalls().WaitPidCalls(), Eq(1));
+}
+
+TEST_F(ProcessSystemCallsTest, PreservesFirstFailureWhenBothPipeReadsFail) {
+  SystemCalls().SetFailure(FakeSystemCalls::Failure::kBothReads);
+
+  EXPECT_THAT(Execute(SystemCalls()), StatusIs(absl::StatusCode::kUnknown, HasSubstr("read")));
+  EXPECT_THAT(SystemCalls().ReadCalls(), Eq(2));
+  EXPECT_THAT(SystemCalls().ClosedDescriptors(), UnorderedElementsAre(10, 11, 12, 13));
 }
 
 TEST_F(ProcessSystemCallsTest, RetriesInterruptedWaitPid) {
