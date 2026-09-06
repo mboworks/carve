@@ -6,6 +6,8 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Cover atomic writes to parentless relative paths and distinguish filesystem inspection failures
+  from absent files.
 - Include LLVM-linked scan-dependency and end-to-end tests in coverage collection; attribute the
   end-to-end executions to production modules instead of reporting an empty test-only category,
   retain detailed reports when the coverage gate fails, and cover the newly visible diagnostic and
