@@ -39,6 +39,7 @@ namespace {
 using ::mbo::proto::EqualsProto;
 using ::mbo::testing::IsOk;
 using ::mbo::testing::IsOkAndHolds;
+using ::mbo::testing::StatusIs;
 using ::testing::Not;
 
 // A scanner returning a fixed header set, regardless of input.
@@ -146,6 +147,26 @@ TEST(BuildShardTest, ResolvesXcodePlaceholders) {
             })pb"));
 }
 
+TEST(BuildShardTest, ResolvesAnXcodeDeveloperDirWithoutAnSdkroot) {
+  Options options;
+  options.action_key = "k";
+  options.command = {"__BAZEL_XCODE_DEVELOPER_DIR__/usr/bin/clang", "-c", "a.cc"};
+  options.source = "a.cc";
+  options.xcode_developer_dir = "/Applications/Xcode.app/Contents/Developer";
+
+  EXPECT_THAT(  // NL
+      BuildShard(options),
+      EqualsProto(  // NL
+          R"pb(
+            records {
+              action_key: "k"
+              sources: "a.cc"
+              command: "/Applications/Xcode.app/Contents/Developer/usr/bin/clang"
+              command: "-c"
+              command: "a.cc"
+            })pb"));
+}
+
 TEST(BuildShardTest, RecordsDepfileHeadersAsAspectMRelativeToExecroot) {
   Options options;
   options.action_key = "k";
@@ -244,6 +265,20 @@ TEST(RunShardTest, ParsesDepfileIntoAspectMHeaders) {
               source_kind: ASPECT_M
               written_at: 42
             })pb")));
+}
+
+TEST(RunShardTest, MissingDepfileIsAnError) {
+  const std::filesystem::path dir = std::filesystem::path(::testing::TempDir()) / "carve_shard_missing_depfile";
+  std::filesystem::remove_all(dir);
+  const std::filesystem::path command_file = dir / "command.txt";
+  ASSERT_THAT(io::WriteAtomically(command_file, "clang\n-c\na.cc\n"), IsOk());
+
+  FileOptions options;
+  options.command_file = command_file.string();
+  options.depfile = (dir / "missing.d").string();
+  options.out_path = (dir / "unused.binpb").string();
+
+  EXPECT_THAT(RunShard(options), StatusIs(absl::StatusCode::kNotFound));
 }
 
 TEST(RunShardTest, MissingCommandFileIsAnError) {
