@@ -154,8 +154,24 @@ TEST(ParseMakeDependenciesTest, HandlesLineContinuations) {
   EXPECT_THAT(ParseMakeDependencies("a.o: a.cc \\\n  b.h \\\n  c.h\n"), ElementsAre("a.cc", "b.h", "c.h"));
 }
 
+TEST(ParseMakeDependenciesTest, HandlesCarriageReturnLineContinuations) {
+  EXPECT_THAT(ParseMakeDependencies("a.o: a.cc \\\r\n  b.h"), ElementsAre("a.cc", "b.h"));
+}
+
 TEST(ParseMakeDependenciesTest, UnescapesSpacesInPaths) {
   EXPECT_THAT(ParseMakeDependencies("a.o: dir\\ with\\ spaces/a.h"), ElementsAre("dir with spaces/a.h"));
+}
+
+TEST(ParseMakeDependenciesTest, PreservesAnOrdinaryBackslash) {
+  EXPECT_THAT(ParseMakeDependencies("a.o: dir\\name/a.h"), ElementsAre("dir\\name/a.h"));
+}
+
+TEST(ParseMakeDependenciesTest, PreservesATrailingBackslash) {
+  EXPECT_THAT(ParseMakeDependencies("a.o: path\\"), ElementsAre("path\\"));
+}
+
+TEST(ParseMakeDependenciesTest, TreatsTabAndCarriageReturnAsSeparators) {
+  EXPECT_THAT(ParseMakeDependencies("a.o:\ta.cc\rb.h"), ElementsAre("a.cc", "b.h"));
 }
 
 TEST(ParseMakeDependenciesTest, WithoutAColonTreatsTheWholeInputAsDeps) {
