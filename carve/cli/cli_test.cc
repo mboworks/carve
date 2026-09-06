@@ -27,6 +27,7 @@ namespace {
 
 using ::mbo::testing::IsOkAndHolds;
 using ::mbo::testing::StatusIs;
+using ::testing::IsEmpty;
 
 TEST(SubcommandTest, NamesRoundTripThroughParse) {
   constexpr auto kSubcommands =
@@ -34,6 +35,10 @@ TEST(SubcommandTest, NamesRoundTripThroughParse) {
   for (const Subcommand cmd : kSubcommands) {
     EXPECT_THAT(ParseSubcommand(SubcommandName(cmd)), IsOkAndHolds(cmd));
   }
+}
+
+TEST(SubcommandTest, InvalidEnumeratorHasNoName) {
+  EXPECT_THAT(SubcommandName(static_cast<Subcommand>(-1)), IsEmpty());
 }
 
 TEST(SubcommandTest, KnownTokensParse) {
