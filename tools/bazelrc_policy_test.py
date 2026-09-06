@@ -70,6 +70,14 @@ class BazelrcPolicyTest(unittest.TestCase):
         self.assertIn("common --per_file_copt=external/.*@-w", self.root_lines)
         self.assertIn("common --host_per_file_copt=external/.*@-w", self.root_lines)
 
+    def test_coverage_includes_targets_excluded_only_from_sanitizers(self):
+        self.assertIn("coverage:coverage --copt=-fcoverage-compilation-dir=.", self.root_lines)
+        self.assertNotIn("coverage:coverage --build_tag_filters=-no_san", self.root_lines)
+        self.assertNotIn("coverage:coverage --test_tag_filters=-no_san", self.root_lines)
+        for config in ("asan", "tsan", "msan"):
+            self.assertIn(f"common:{config} --build_tag_filters=-no_san", self.root_lines)
+            self.assertIn(f"common:{config} --test_tag_filters=-no_san", self.root_lines)
+
     def test_public_policy_is_strict_for_carve_and_mutes_other_external_sources(self):
         warning_flags = (
             "-Wall,-Wextra,-Wpedantic,-Werror,-Wno-c2y-extensions,-Wno-gcc-compat,"

@@ -41,6 +41,9 @@
 #include "carve/shard/shard.h"
 #include "mbo/status/status_macros.h"
 
+// Abseil expands these declarations into registration machinery and help/default
+// generator functions. Their behavior belongs to Abseil; Carve exercises the
+// resulting flags through end-to-end tests.  // LCOV_EXCL_START
 ABSL_FLAG(
     std::string,
     aquery_proto,
@@ -101,6 +104,8 @@ ABSL_FLAG(
     xcode_sdkroot,
     "",
     "shard: value for __BAZEL_XCODE_SDKROOT__; resolved via xcrun on macOS when empty.");
+
+// LCOV_EXCL_STOP
 
 namespace {
 

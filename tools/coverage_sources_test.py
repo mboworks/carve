@@ -27,8 +27,9 @@ class CoverageSourcesTest(unittest.TestCase):
             )
             report = (
                 "SF:carve/process/example.cc\n"
-                "FN:1,excluded\nFN:6,covered\nFNDA:0,excluded\nFNDA:1,covered\n"
-                "FNF:2\nFNH:1\n"
+                "FN:1,excluded\nFN:4,generated\nFN:6,covered\n"
+                "FNDA:0,excluded\nFNDA:0,generated\nFNDA:1,covered\n"
+                "FNF:3\nFNH:1\n"
                 "BRDA:2,0,0,0\nBRDA:2,0,1,1\nBRDA:4,0,0,0\n"
                 "BRF:3\nBRH:1\n"
                 "DA:1,0\nDA:2,1\nDA:3,1\nDA:4,0\nDA:5,1\nDA:6,1\n"
@@ -38,6 +39,7 @@ class CoverageSourcesTest(unittest.TestCase):
             actual = coverage_sources.normalized(report, workspace)
 
             self.assertNotIn("excluded", actual)
+            self.assertNotIn("generated", actual)
             self.assertIn("FN:6,covered\nFNDA:1,covered\nFNF:1\nFNH:1", actual)
             self.assertNotIn("BRDA:", actual)
             self.assertIn("BRF:0\nBRH:0", actual)

@@ -100,6 +100,8 @@ end_of_record
             config["enforce"],
             {"lines": "high", "functions": "high", "branches": "high"},
         )
+        self.assertIn("scan_deps", config["categories"])
+        self.assertNotIn("e2e", config["categories"])
 
     def test_empty_report_fails_policy(self):
         totals = {"overall": {metric: coverage_policy.Counts() for metric in coverage_policy.METRICS}}

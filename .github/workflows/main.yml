@@ -233,6 +233,8 @@ jobs:
           python3 tools/coverage_sources.py \
             bazel-out/_coverage/_coverage_report.dat coverage.lcov
       - name: Enforce coverage policy
+        id: coverage_policy
+        continue-on-error: true
         run: |
           python3 tools/coverage_policy.py \
             coverage.lcov coverage_policy.json \
@@ -266,6 +268,9 @@ jobs:
             coverage-html
             coverage-target.txt
           retention-days: 30
+      - name: Fail on coverage policy violation
+        if: steps.coverage_policy.outcome != 'success'
+        run: exit 1
       - name: Save Bazel disk cache
         if: always() && github.ref == 'refs/heads/main'
         uses: actions/cache/save@v6

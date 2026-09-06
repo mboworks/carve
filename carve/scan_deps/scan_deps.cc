@@ -25,10 +25,9 @@
 #include "absl/strings/str_cat.h"
 #include "absl/types/span.h"
 #include "carve/command/command.h"
-#include "clang/Basic/Diagnostic.h"
+#include "carve/scan_deps/diagnostic_consumer.h"
 #include "clang/DependencyScanning/DependencyScanningService.h"
 #include "clang/Tooling/DependencyScanningTool.h"
-#include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/StringRef.h"
 
 namespace carve::scan_deps {
@@ -38,28 +37,6 @@ namespace {
 // tool in clang::tooling. Scan errors are reported to a DiagnosticConsumer
 // rather than returned, so we capture them into a string for the status.
 namespace deps = clang::dependencies;
-
-class CapturingDiagnosticConsumer : public clang::DiagnosticConsumer {
- public:
-  explicit CapturingDiagnosticConsumer(std::string& sink) : sink_(sink) {}
-
-  void HandleDiagnostic(clang::DiagnosticsEngine::Level level, const clang::Diagnostic& info) override {
-    clang::DiagnosticConsumer::HandleDiagnostic(level, info);
-    if (level < clang::DiagnosticsEngine::Error) {
-      return;
-    }
-    constexpr unsigned kMessageInlineCapacity = 256;
-    llvm::SmallString<kMessageInlineCapacity> message;
-    info.FormatDiagnostic(message);
-    if (!sink_.empty()) {
-      sink_.push_back('\n');
-    }
-    sink_.append(message.data(), message.size());
-  }
-
- private:
-  std::string& sink_;
-};
 
 }  // namespace
 
@@ -71,7 +48,7 @@ absl::StatusOr<std::vector<std::string>> ScanDependencies(
   clang::tooling::DependencyScanningTool tool(service);
 
   std::string diagnostics;
-  CapturingDiagnosticConsumer diag_consumer(diagnostics);
+  scan_deps_internal::CapturingDiagnosticConsumer diag_consumer(diagnostics);
   const std::vector<std::string> command(args.begin(), args.end());
   const std::optional<std::string> result =
       tool.getDependencyFile(command, llvm::StringRef(working_dir.data(), working_dir.size()), diag_consumer);
