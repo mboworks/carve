@@ -21,8 +21,13 @@
 #include <vector>
 
 #include "absl/status/status.h"
+#include "carve/scan_deps/diagnostic_consumer.h"
+#include "clang/Basic/Diagnostic.h"
+#include "clang/Basic/DiagnosticIDs.h"
+#include "clang/Basic/DiagnosticOptions.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "llvm/ADT/IntrusiveRefCntPtr.h"
 #include "mbo/testing/status.h"
 
 namespace carve::scan_deps {
@@ -32,7 +37,15 @@ using ::mbo::testing::IsOkAndHolds;
 using ::mbo::testing::StatusIs;
 using ::testing::AllOf;
 using ::testing::Contains;
+using ::testing::Eq;
 using ::testing::HasSubstr;
+
+void EmitDiagnostic(clang::DiagnosticsEngine::Level level, clang::DiagnosticConsumer& consumer) {
+  auto ids = llvm::makeIntrusiveRefCnt<clang::DiagnosticIDs>();
+  clang::DiagnosticOptions options;
+  clang::DiagnosticsEngine diagnostics(ids, options, &consumer, /*ShouldOwnClient=*/false);
+  diagnostics.Report(diagnostics.getCustomDiagID(level, "test diagnostic"));
+}
 
 void Write(const std::filesystem::path& path, std::string_view content) {
   std::ofstream(path) << content;
@@ -69,6 +82,17 @@ TEST(ScanDependenciesTest, NonErrorDiagnosticDoesNotFailScan) {
 
   const std::vector<std::string> args = {"clang", "-c", (dir / "main.cc").string()};
   EXPECT_THAT(ScanDependencies(args, dir.string()), IsOkAndHolds(Contains(HasSubstr("main.cc"))));
+}
+
+TEST(CapturingDiagnosticConsumerTest, IgnoresWarningsAndCombinesErrors) {
+  std::string captured;
+  scan_deps_internal::CapturingDiagnosticConsumer consumer(captured);
+
+  EmitDiagnostic(clang::DiagnosticsEngine::Warning, consumer);
+  EXPECT_THAT(captured, Eq(""));
+  EmitDiagnostic(clang::DiagnosticsEngine::Error, consumer);
+  EmitDiagnostic(clang::DiagnosticsEngine::Error, consumer);
+  EXPECT_THAT(captured, Eq("test diagnostic\ntest diagnostic"));
 }
 
 }  // namespace

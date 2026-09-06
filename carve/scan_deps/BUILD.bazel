@@ -27,10 +27,19 @@ _LLVM_PLATFORM = select({
 })
 
 cc_library(
+    name = "diagnostic_consumer_cc",
+    srcs = ["diagnostic_consumer.cc"],
+    hdrs = ["diagnostic_consumer.h"],
+    target_compatible_with = _LLVM_PLATFORM,
+    deps = ["//third_party/llvm:clang_dependency_scanning"],
+)
+
+cc_library(
     name = "scan_deps_cc",
     srcs = ["scan_deps.cc"],
     hdrs = ["scan_deps.h"],
     implementation_deps = [
+        ":diagnostic_consumer_cc",
         "//carve/command:command_cc",  # ParseMakeDependencies (make-format depfile parser).
         "//third_party/llvm:clang_dependency_scanning",
         "@abseil-cpp//absl/status",
@@ -52,6 +61,7 @@ cc_test(
     tags = ["no_san"],
     target_compatible_with = _LLVM_PLATFORM,
     deps = [
+        ":diagnostic_consumer_cc",
         ":scan_deps_cc",
         "@abseil-cpp//absl/status",
         "@googletest//:gtest",
