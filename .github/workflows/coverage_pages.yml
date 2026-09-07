@@ -11,6 +11,7 @@ on:
 
 concurrency:
   group: coverage-pages
+  queue: max
   cancel-in-progress: false
 
 permissions: {}
@@ -121,8 +122,8 @@ jobs:
             git -C site commit -m "coverage: publish ${target} from run ${SOURCE_RUN_ID}"
             git -C site push
           fi
-          mkdir -p public/coverage
-          rsync --archive --delete site/coverage/ public/coverage/
+          mkdir -p public
+          rsync --archive --exclude='.git' site/ public/
       - uses: actions/upload-pages-artifact@v5
         if: steps.target.outputs.publish == 'true'
         with:

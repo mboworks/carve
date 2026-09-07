@@ -38,6 +38,10 @@ repos:
     rev: v1.7.7
     hooks:
       - id: actionlint
+        # GitHub supports queue: max; actionlint (including v1.7.12) does not yet.
+        # Keep the exception limited to that documented concurrency key.
+        # https://docs.github.com/en/actions/concepts/workflows-and-actions/concurrency
+        args: ['-ignore', 'unexpected key "queue" for "concurrency" section']
 
   - repo: local
     hooks:
@@ -110,8 +114,9 @@ repos:
 
       - id: todos-need-context
         name: TODO/FIXME must cite an issue URL or email
-        entry: '(TODO|FIXME)(?!.*(https?://|[A-Za-z0-9._%+-]+@))'
+        entry: '(TODO|FIXME)(?!\.(md|html)\b)(?!.*(https?://|[A-Za-z0-9._%+-]+@))'
         language: pygrep
+        # File references such as TODO.md are not task markers.
         # Enforced on code/config, not Markdown prose that documents the rule.
         exclude: '(\.md$|^\.pre-commit-config\.yaml$)'
 

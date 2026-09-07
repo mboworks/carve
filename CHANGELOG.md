@@ -6,6 +6,7 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Publish configured static release websites with retained versions and tag-specific coverage links.
 - Replace the retired setup-bazelisk action with bazel-contrib/setup-bazel 0.19.0 while retaining
   Carve's explicit bounded build caches.
 - Raise enforced branch coverage to 90% minimum and 95% high target.
