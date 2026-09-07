@@ -117,3 +117,6 @@ bazel_dep(name = "${BAZELMOD_NAME}", version = "${TAG}")
 carve builds from source through your toolchain on first use; later builds hit
 Bazel's cache. See the README for the \`carve_refresh\` / \`cc_carve_aspect\` rules.
 EOF
+
+printf '\n'
+bash tools/release_notes.sh "${TAG}"
