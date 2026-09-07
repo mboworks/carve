@@ -4095,11 +4095,11 @@
         },
         {
           "line": 62,
-          "execution_count": 90
+          "execution_count": 100
         },
         {
           "line": 64,
-          "execution_count": 111
+          "execution_count": 112
         },
         {
           "line": 66,
@@ -4135,11 +4135,11 @@
         },
         {
           "line": 79,
-          "execution_count": 127
+          "execution_count": 137
         },
         {
           "line": 80,
-          "execution_count": 99
+          "execution_count": 109
         },
         {
           "line": 81,
@@ -4167,35 +4167,35 @@
         },
         {
           "line": 87,
-          "execution_count": 291
+          "execution_count": 321
         },
         {
           "line": 90,
-          "execution_count": 194
+          "execution_count": 214
         },
         {
           "line": 91,
-          "execution_count": 70
+          "execution_count": 89
         },
         {
           "line": 92,
-          "execution_count": 70
+          "execution_count": 89
         },
         {
           "line": 93,
-          "execution_count": 124
+          "execution_count": 125
         },
         {
           "line": 94,
-          "execution_count": 124
+          "execution_count": 125
         },
         {
           "line": 95,
-          "execution_count": 124
+          "execution_count": 125
         },
         {
           "line": 96,
-          "execution_count": 67
+          "execution_count": 68
         },
         {
           "line": 97,
@@ -4231,11 +4231,11 @@
         },
         {
           "line": 105,
-          "execution_count": 124
+          "execution_count": 125
         },
         {
           "line": 106,
-          "execution_count": 97
+          "execution_count": 107
         },
         {
           "line": 108,
@@ -4520,12 +4520,12 @@
         {
           "name": "process.cc:_ZN5carve7process12_GLOBAL__N_116PosixSystemCalls4PollEP6pollfdmi",
           "start_line": 62,
-          "execution_count": 90
+          "execution_count": 100
         },
         {
           "name": "process.cc:_ZN5carve7process12_GLOBAL__N_116PosixSystemCalls4ReadEiPvm",
           "start_line": 64,
-          "execution_count": 111
+          "execution_count": 112
         },
         {
           "name": "process.cc:_ZN5carve7process12_GLOBAL__N_116PosixSystemCalls5CloseEi",
@@ -4543,7 +4543,7 @@
           "line": 79,
           "block": "0",
           "branch": "0",
-          "taken": 99
+          "taken": 109
         },
         {
           "line": 79,
@@ -4561,7 +4561,7 @@
           "line": 80,
           "block": "0",
           "branch": "1",
-          "taken": 97
+          "taken": 107
         },
         {
           "line": 81,
@@ -4579,43 +4579,43 @@
           "line": 87,
           "block": "0",
           "branch": "0",
-          "taken": 194
+          "taken": 214
         },
         {
           "line": 87,
           "block": "0",
           "branch": "1",
-          "taken": 97
+          "taken": 107
         },
         {
           "line": 90,
           "block": "0",
           "branch": "0",
-          "taken": 3
+          "taken": 15
         },
         {
           "line": 90,
           "block": "0",
           "branch": "1",
-          "taken": 191
+          "taken": 199
         },
         {
           "line": 90,
           "block": "1",
           "branch": "2",
-          "taken": 67
+          "taken": 74
         },
         {
           "line": 90,
           "block": "1",
           "branch": "3",
-          "taken": 124
+          "taken": 125
         },
         {
           "line": 95,
           "block": "0",
           "branch": "0",
-          "taken": 67
+          "taken": 68
         },
         {
           "line": 95,
