@@ -6,9 +6,12 @@
 import os
 import sys
 import unittest
+from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import cache_cleanup
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
 class ExpiredCacheIdsTest(unittest.TestCase):
@@ -45,6 +48,18 @@ class ExpiredCacheIdsTest(unittest.TestCase):
             }
         ]
         self.assertEqual(cache_cleanup.expired_cache_ids(caches), [7])
+
+
+class BazelSetupPolicyTest(unittest.TestCase):
+    def test_uses_maintained_setup_without_delegating_cache_ownership(self):
+        workflow = (REPO_ROOT / ".github/workflows/main.yml").read_text(encoding="utf-8")
+
+        self.assertNotIn("bazelbuild/setup-bazelisk", workflow)
+        self.assertEqual(workflow.count("uses: bazel-contrib/setup-bazel@0.19.0"), 6)
+        self.assertNotIn("bazelisk-cache:", workflow)
+        self.assertNotIn("disk-cache:", workflow)
+        self.assertNotIn("repository-cache:", workflow)
+        self.assertNotIn("external-cache:", workflow)
 
 
 if __name__ == "__main__":
