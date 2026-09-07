@@ -6,6 +6,8 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Replace the retired setup-bazelisk action with bazel-contrib/setup-bazel 0.19.0 while retaining
+  Carve's explicit bounded build caches.
 - Raise enforced branch coverage to 90% minimum and 95% high target.
 - Cover sidecar read-error propagation and reject malformed aggregate inputs before writing output.
 - Cover simultaneous subprocess output-read failures and preserve the first reported error.

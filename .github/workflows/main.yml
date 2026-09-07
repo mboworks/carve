@@ -48,7 +48,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: bazelbuild/setup-bazelisk@v3
+      - uses: bazel-contrib/setup-bazel@0.19.0
       - name: Restore Bazel disk cache
         uses: actions/cache/restore@v6
         with:
@@ -112,7 +112,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       # bazelisk launches the Bazel release pinned in .bazelversion.
-      - uses: bazelbuild/setup-bazelisk@v3
+      - uses: bazel-contrib/setup-bazel@0.19.0
       # Cache compiled actions only. The repository cache contains the multi-gigabyte LLVM
       # distribution and must not consume GitHub's shared 10 GB cache allowance.
       - name: Restore Bazel disk cache
@@ -148,7 +148,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: bazelbuild/setup-bazelisk@v3
+      - uses: bazel-contrib/setup-bazel@0.19.0
       - name: Restore Bazel disk cache
         uses: actions/cache/restore@v6
         with:
@@ -171,7 +171,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: bazelbuild/setup-bazelisk@v3
+      - uses: bazel-contrib/setup-bazel@0.19.0
       - name: Restore Bazel disk cache
         uses: actions/cache/restore@v6
         with:
@@ -198,7 +198,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: bazelbuild/setup-bazelisk@v3
+      - uses: bazel-contrib/setup-bazel@0.19.0
       - name: Restore Bazel disk cache
         uses: actions/cache/restore@v6
         with:
@@ -221,7 +221,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: bazelbuild/setup-bazelisk@v3
+      - uses: bazel-contrib/setup-bazel@0.19.0
       - name: Install LCOV
         run: sudo apt-get update && sudo apt-get install --yes lcov
       - name: Restore Bazel disk cache
