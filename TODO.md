@@ -6,21 +6,23 @@ short list of remaining work.
 
 ## First release
 
-- [x] Author and validate the consumer `.bazelrc` fragment required to build
-  carve and its source-built LLVM dependencies outside this repository.
-- [ ] Add a valid `BCR_PUBLISH_TOKEN` with access to
-  `mboworks/bazel-central-registry`.
+- [x] Author and validate the consumer `.bazelrc` fragment and BCR test module
+  required to build Carve with the matching prebuilt LLVM toolchain.
 - [x] Allow repository administrators to create signed release tags without
   weakening the existing update, deletion, signature, or non-fast-forward
   protections.
-- [ ] Prepare `0.1.0`: finalize the changelog and verify the module, changelog,
-  tag, archive, and BCR metadata all use the same version.
-- [ ] Create the signed `0.1.0` tag and keep the GitHub release marked as a
-  prerelease while the secondary BCR publication process is pending.
-- [ ] Merge the generated BCR pull request, verify `mboworks_carve@0.1.0`, and
-  then mark the GitHub release as final.
+- [x] Prepare `0.1.0`: finalize the changelog and verify the module, changelog,
+  test module, tag, archive, and BCR metadata use the same version.
+- [ ] Create the signed `0.1.0` tag and validate the generated prerelease and
+  source archive.
+- [ ] Promote the validated GitHub prerelease to a stable release.
+- [ ] Dispatch `pages.yml` for `0.1.0` after promotion and verify the root site
+  redirects to the stable release documentation.
 
 ## Deferred enhancements
+
+- [ ] Add a valid `BCR_PUBLISH_TOKEN`, dispatch `publish.yaml`, merge the
+  generated registry pull request, and verify `mboworks_carve@0.1.0`.
 
 - [ ] Make the emitted compilation database relocatable by rewriting it to
   workspace-relative paths and handling Bazel's external-repository links.

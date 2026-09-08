@@ -176,9 +176,11 @@ action cache on `command_file`). **M5 complete.**
   empty root BUILD, comments the dev `include`, excludes dev paths, builds the
   source tarball, prints Keep-a-Changelog notes). Nothing publishes until a tag is
   pushed. **Prebuilt binaries are out of scope (source-only); see design §7.**
-- 🟡 Cut the actual release: `MODULE.bazel` and the changelog are prepared for
-  `0.1.0`; after the remaining publication prerequisites pass, push the signed
-  tag and approve the generated BCR draft PR.
+- 🟡 Cut the actual release: `MODULE.bazel`, changelog, archive consumer, and
+  BCR test module are prepared for `0.1.0`. Push the signed tag, validate the
+  GitHub prerelease and source archive, promote it to stable, then dispatch the
+  Pages workflow so the root site follows the new stable release. BCR
+  publication is an independent, deferred manual workflow.
 - ✅ **Consumability gap:** resolved with a dependency-safe module extension
   for the prebuilt LLVM distribution. Consumers no longer compile `@llvm-project` or
   need Carve's former C++17 `per_file_copt` workaround. Carve links only the

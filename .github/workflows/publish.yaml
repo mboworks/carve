@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Publish a release to the Bazel Central Registry (BCR). Called by release.yml
-# after a release is cut; can also be run from the Actions UI against a release
-# tag to retry a failed run.
+# Publish a release to the Bazel Central Registry (BCR). This is deliberately
+# independent from release.yml and is run manually when registry publication is
+# desired.
 name: Publish to BCR
 
 on:
@@ -27,7 +27,12 @@ on:
     secrets:
       BCR_PUBLISH_TOKEN:
         required: true
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: Existing GitHub release tag to publish
+        required: true
+        type: string
 
 # Deny by default at the workflow level (checkov CKV2_GHA_1); the publish job
 # opts into contents:write. Empty (not read-all) so this reusable workflow does
@@ -40,7 +45,7 @@ jobs:
       contents: write
     uses: bazel-contrib/publish-to-bcr/.github/workflows/publish.yaml@v1.5.0
     with:
-      tag_name: ${{ inputs.tag_name || github.ref_name }}
+      tag_name: ${{ inputs.tag_name }}
       registry_fork: mboworks/bazel-central-registry
       # Personal-account PAT: open a draft PR so the author can click "Ready for
       # review" (GitHub forbids reviewing your own PR).

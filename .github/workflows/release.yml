@@ -32,17 +32,6 @@ jobs:
     with:
       # The archive built by .github/workflows/release_prep.sh.
       release_files: carve-*.tar.gz
+      # Validate the published archive before manually promoting this initial
+      # release. BCR publication is deliberately independent.
       prerelease: true
-
-  # Mirror the release to the Bazel Central Registry. See publish.yaml.
-  publish:
-    needs: release
-    # Grant what publish.yaml requests; overrides the workflow-level read-all,
-    # and a called workflow cannot exceed the caller's permissions.
-    permissions:
-      contents: write
-    uses: ./.github/workflows/publish.yaml
-    with:
-      tag_name: ${{ github.ref_name }}
-    secrets:
-      BCR_PUBLISH_TOKEN: ${{ secrets.BCR_PUBLISH_TOKEN }}

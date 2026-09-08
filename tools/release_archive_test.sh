@@ -45,44 +45,15 @@ grep -q '^# include("//bazelmod:dev.MODULE.bazel")' "${root}/MODULE.bazel" || di
 [[ -f ${root}/bazelmod/BUILD.bazel ]] || die "Release archive is missing the bazelmod package."
 [[ -f ${root}/bazelmod/llvm_prebuilt.bzl ]] || die "Release archive is missing the LLVM distribution extension."
 [[ -f ${root}/third_party/llvm/prebuilt.BUILD.bazel ]] || die "Release archive is missing the LLVM distribution BUILD file."
+[[ -f ${root}/examples/bcr/MODULE.bazel ]] || die "Release archive is missing the BCR consumer module."
+grep -q "version = \"${version}\"" "${root}/examples/bcr/MODULE.bazel" ||
+  die "BCR consumer module version does not match VERSION."
 
 for excluded in .bcr .github bazelmod/dev.MODULE.bazel tools; do
   [[ ! -e ${root}/${excluded} ]] || die "Release archive contains excluded path: ${excluded}"
 done
 
-consumer="${work}/consumer"
-mkdir "${consumer}"
-cp "${root}/carve.bazelrc" "${consumer}/carve.bazelrc"
-
-{
-  echo 'module(name = "carve_release_consumer")'
-  echo "bazel_dep(name = \"mboworks_carve\", version = \"${version}\")"
-  echo "local_path_override(module_name = \"mboworks_carve\", path = \"${root}\")"
-  echo 'bazel_dep(name = "toolchains_llvm", version = "1.9.0")'
-  echo 'llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")'
-  echo 'llvm.toolchain('
-  echo '    name = "llvm_toolchain",'
-  echo '    llvm_version = "22.1.8",'
-  echo '    stdlib = {'
-  echo '        "": "builtin-libc++",'
-  echo '        "linux-aarch64": "stdc++",'
-  echo '        "linux-x86_64": "stdc++",'
-  echo '    },'
-  echo ')'
-  echo 'use_repo(llvm, "llvm_toolchain")'
-  echo 'register_toolchains("@llvm_toolchain//:all")'
-} >"${consumer}/MODULE.bazel"
-
-cat >"${consumer}/BUILD.bazel" <<'EOF'
-alias(
-    name = "carve",
-    actual = "@mboworks_carve//carve:carve",
-)
-EOF
-
-echo 'try-import %workspace%/carve.bazelrc' >"${consumer}/.bazelrc"
-
 (
-  cd "${consumer}"
+  cd "${root}/examples/bcr"
   bazel build //:carve "$@"
 )

@@ -41,12 +41,16 @@ ARCHIVE="${PACKAGE_NAME}-${TAG}.tar.gz"
 BAZELMOD_VERSION="$(sed -rne 's,.*version = "([0-9]+([.][0-9]+)+.*)".*,\1,p' <MODULE.bazel | head -n1)"
 # carve uses Keep a Changelog: the first "## [x.y.z]" heading (after "## [Unreleased]").
 CHANGELOG_VERSION="$(sed -rne 's,^## \[([0-9]+([.][0-9]+)+)\].*,\1,p' <CHANGELOG.md | head -n1)"
+BCR_TEST_VERSION="$(sed -rne 's|.*bazel_dep\(name = "mboworks_carve", version = "([0-9]+([.][0-9]+)+)"\).*|\1|p' <examples/bcr/MODULE.bazel | head -n1)"
 
 if [ "${BAZELMOD_VERSION}" != "${TAG}" ]; then
   die "Tag = '${TAG}' does not match version = '${BAZELMOD_VERSION}' in MODULE.bazel."
 fi
 if [ "${CHANGELOG_VERSION}" != "${TAG}" ]; then
   die "Tag = '${TAG}' does not match the latest release version = '${CHANGELOG_VERSION}' in CHANGELOG.md."
+fi
+if [ "${BCR_TEST_VERSION}" != "${TAG}" ]; then
+  die "Tag = '${TAG}' does not match the BCR consumer version = '${BCR_TEST_VERSION}'."
 fi
 
 # Replace the root BUILD.bazel with an empty one for the released module: carve's
@@ -108,7 +112,11 @@ awk -v tag="${TAG}" '
 
 cat <<EOF
 
-## For Bazel MODULE.bazel
+## Bazel module
+
+The attached archive is the complete source release. BCR publication is an
+independent later step. After \`${BAZELMOD_NAME}@${TAG}\` is available from the
+Bazel Central Registry, add:
 
 \`\`\`bzl
 bazel_dep(name = "${BAZELMOD_NAME}", version = "${TAG}")
