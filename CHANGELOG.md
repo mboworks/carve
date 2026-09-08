@@ -6,6 +6,8 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Move release website instructions into a published document and keep the README license summary last.
+
 - Publish configured static release websites with retained versions and tag-specific coverage links.
 - Replace the retired setup-bazelisk action with bazel-contrib/setup-bazel 0.19.0 while retaining
   Carve's explicit bounded build caches.
