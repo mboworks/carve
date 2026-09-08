@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Publish a release to the Bazel Central Registry (BCR). Called by release.yml
-# after a release is cut; can also be run from the Actions UI against a release
-# tag to retry a failed run.
+# Publish a release to the Bazel Central Registry (BCR). This is deliberately
+# independent from release.yml and is run manually when registry publication is
+# desired.
 name: Publish to BCR
 
 on:
@@ -27,6 +27,8 @@ on:
     secrets:
       BCR_PUBLISH_TOKEN:
         required: true
+  # Select the existing release tag in the "Use workflow from" control. Keeping
+  # dispatch inputs empty also satisfies Checkov CKV_GHA_7.
   workflow_dispatch: {}
 
 # Deny by default at the workflow level (checkov CKV2_GHA_1); the publish job

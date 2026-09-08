@@ -31,7 +31,7 @@ git -C "${WORK}" config user.name "Carve release test"
 git -C "${WORK}" config user.email "carve-release-test@example.invalid"
 git -C "${WORK}" config commit.gpgsign false
 
-mkdir -p "${WORK}/.pre-commit" "${WORK}/tools"
+mkdir -p "${WORK}/.pre-commit" "${WORK}/examples/bcr" "${WORK}/tools"
 cp "${ROOT}/.pre-commit/check_version.sh" "${WORK}/.pre-commit/"
 cp "${ROOT}/tools/trigger_release.sh" "${WORK}/tools/"
 cat >"${WORK}/MODULE.bazel" <<'EOF'
@@ -45,6 +45,9 @@ cat >"${WORK}/CHANGELOG.md" <<'EOF'
 ## [0.1.0] - 2026-08-31
 
 - First release.
+EOF
+cat >"${WORK}/examples/bcr/MODULE.bazel" <<'EOF'
+bazel_dep(name = "mboworks_carve", version = "0.1.0")
 EOF
 git -C "${WORK}" add .
 git -C "${WORK}" commit --quiet -m "Prepare release fixture"
@@ -85,5 +88,6 @@ fi
 
 sed -i.bak 's/version = "0.1.0"/version = "0.2.0"/' "${WORK}/MODULE.bazel"
 sed -i.bak 's/## \[0.1.0\]/## [0.2.0]/' "${WORK}/CHANGELOG.md"
-rm "${WORK}/MODULE.bazel.bak" "${WORK}/CHANGELOG.md.bak"
+sed -i.bak 's/version = "0.1.0"/version = "0.2.0"/' "${WORK}/examples/bcr/MODULE.bazel"
+rm "${WORK}/MODULE.bazel.bak" "${WORK}/CHANGELOG.md.bak" "${WORK}/examples/bcr/MODULE.bazel.bak"
 (cd "${WORK}" && .pre-commit/check_version.sh)

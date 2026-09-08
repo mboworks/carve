@@ -59,7 +59,7 @@ gh release view "${VERSION}" >/dev/null 2>&1 && die "Release '${VERSION}' alread
 
 if [[ "${DRY_RUN}" == true ]]; then
   echo "[dry-run] Would create and push signed tag '${VERSION}' at $(git rev-parse HEAD)."
-  echo "[dry-run] GitHub Actions would create a prerelease, then open the BCR publication PR."
+  echo "[dry-run] GitHub Actions would create a prerelease for archive validation."
   exit 0
 fi
 
@@ -71,4 +71,4 @@ git tag -s -a "${VERSION}" \
     grab { print }
   ' CHANGELOG.md)"
 git push origin "refs/tags/${VERSION}"
-echo "Pushed signed release tag '${VERSION}'. GitHub Actions will create the prerelease and BCR PR."
+echo "Pushed signed release tag '${VERSION}'. GitHub Actions will create the prerelease."

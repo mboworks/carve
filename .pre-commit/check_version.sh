@@ -28,9 +28,12 @@ function version_key() {
 
 BAZELMOD_VERSION="$(sed -rne 's,.*version = "([0-9]+([.][0-9]+)+.*)".*,\1,p' <MODULE.bazel | head -n1)"
 CHANGELOG_VERSION="$(sed -rne 's,^## \[([0-9]+([.][0-9]+)+)\].*,\1,p' <CHANGELOG.md | head -n1)"
+BCR_TEST_VERSION="$(sed -rne 's|.*bazel_dep\(name = "mboworks_carve", version = "([0-9]+([.][0-9]+)+)"\).*|\1|p' <examples/bcr/MODULE.bazel | head -n1)"
 
 [[ "${BAZELMOD_VERSION}" == "${CHANGELOG_VERSION}" ]] ||
   die "MODULE.bazel (${BAZELMOD_VERSION}) != CHANGELOG.md (${CHANGELOG_VERSION})."
+[[ "${BAZELMOD_VERSION}" == "${BCR_TEST_VERSION}" ]] ||
+  die "MODULE.bazel (${BAZELMOD_VERSION}) != examples/bcr/MODULE.bazel (${BCR_TEST_VERSION})."
 [[ "${BAZELMOD_VERSION}" =~ ^(0|[1-9][0-9]*)[.](0|[1-9][0-9]*)[.](0|[1-9][0-9]*)$ ]] ||
   die "MODULE.bazel version (${BAZELMOD_VERSION}) must use numeric X.Y.Z format."
 

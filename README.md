@@ -86,8 +86,11 @@ The fragment is part of every source archive. The consumer registers the
 matching toolchain because `toolchains_llvm` 1.9.0 only permits its toolchain
 extension in the root module. Bazel's `include()` likewise cannot load a
 fragment from an external repository, so this stanza cannot live inside Carve.
+The checked-in [`examples/bcr`](examples/bcr) module is the authoritative
+consumer example used by both source-archive CI and the optional BCR
+presubmit.
 
-then add the rule from a `BUILD` file:
+Then add the rule from a `BUILD` file:
 
 ```python
 load("@mboworks_carve//rules:carve.bzl", "carve_refresh")
