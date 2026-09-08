@@ -286,7 +286,7 @@ Net runtime Python: zero. Net developer Python: at most one script run rarely.
 `MODULE.bazel`:
 
 ```python
-module(name = "carve", version = "0.1.0")
+module(name = "mboworks_carve", version = "0.1.1")
 
 bazel_dep(name = "mbo", version = "...")                      # mboworks/mbo. Pulls abseil and friends transitively
 bazel_dep(name = "googletest", version = "1.15.2")

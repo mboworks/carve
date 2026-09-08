@@ -55,15 +55,21 @@ Release tags are immutable, signed, numeric SemVer tags. Create them only from
 a clean, current `main` with the repository release helper. Never move or reuse
 a published tag.
 
-For `0.1.0`:
+For a release:
 
-1. Run `tools/trigger_release.sh --dry-run 0.1.0`, then run it without
+1. Run `tools/trigger_release.sh --dry-run VERSION`, then run it without
    `--dry-run` to create and push the signed tag.
-2. Wait for the Release workflow and inspect the provisional GitHub release,
-   its source archive, release notes, and tag coverage.
-3. Promote the validated prerelease to a stable GitHub release.
-4. Manually dispatch `pages.yml` for tag `0.1.0`; promotion is not an Actions
-   trigger. Verify the Pages root redirects to the versioned `0.1.0` site.
+2. Wait for the Release workflow. It tests the tagged source and packaged
+   consumer, creates a mutable draft, uploads and verifies the archive, then
+   publishes it directly as an immutable stable release.
+3. Inspect the published release, source archive, release notes, and tag
+   coverage.
+4. Manually dispatch `pages.yml` for the tag; release publication is not an
+   Actions trigger. Verify the Pages root redirects to the versioned site.
+
+An immutable release cannot be promoted from prerelease to stable. Assets must
+be attached and verified while the release is a draft; publication is the final
+state transition.
 
 BCR publication is independent of the GitHub release. When desired, configure
 `BCR_PUBLISH_TOKEN` and manually dispatch `publish.yaml` with the existing
