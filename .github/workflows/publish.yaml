@@ -27,12 +27,9 @@ on:
     secrets:
       BCR_PUBLISH_TOKEN:
         required: true
-  workflow_dispatch:
-    inputs:
-      tag_name:
-        description: Existing GitHub release tag to publish
-        required: true
-        type: string
+  # Select the existing release tag in the "Use workflow from" control. Keeping
+  # dispatch inputs empty also satisfies Checkov CKV_GHA_7.
+  workflow_dispatch: {}
 
 # Deny by default at the workflow level (checkov CKV2_GHA_1); the publish job
 # opts into contents:write. Empty (not read-all) so this reusable workflow does
@@ -45,7 +42,7 @@ jobs:
       contents: write
     uses: bazel-contrib/publish-to-bcr/.github/workflows/publish.yaml@v1.5.0
     with:
-      tag_name: ${{ inputs.tag_name }}
+      tag_name: ${{ inputs.tag_name || github.ref_name }}
       registry_fork: mboworks/bazel-central-registry
       # Personal-account PAT: open a draft PR so the author can click "Ready for
       # review" (GitHub forbids reviewing your own PR).

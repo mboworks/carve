@@ -17,12 +17,11 @@ class ReleaseWorkflowTest(unittest.TestCase):
         self.assertNotIn("publish.yaml", workflow)
         self.assertNotIn("BCR_PUBLISH_TOKEN", workflow)
 
-    def test_bcr_publication_is_manual_and_requires_a_tag(self):
+    def test_bcr_publication_is_manual_and_uses_the_selected_ref(self):
         workflow = (ROOT / ".github/workflows/publish.yaml").read_text(encoding="utf-8")
 
-        self.assertIn("workflow_dispatch:", workflow)
-        self.assertIn("tag_name:", workflow)
-        self.assertIn("required: true", workflow)
+        self.assertIn("workflow_dispatch: {}", workflow)
+        self.assertIn("tag_name: ${{ inputs.tag_name || github.ref_name }}", workflow)
 
     def test_bcr_presubmit_uses_the_supported_consumer(self):
         presubmit = (ROOT / ".bcr/presubmit.yml").read_text(encoding="utf-8")

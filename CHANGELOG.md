@@ -23,7 +23,7 @@ follows [SemVer](https://semver.org/).
   index, with atomic writes, shard aggregation, and age-based pruning.
 - Add source-release automation, a tested external-consumer module, BCR
   metadata for optional later publication, and retained versioned release and
-  coverage websites.
+  coverage websites with separately published website documentation.
 
 ### Changed
 
