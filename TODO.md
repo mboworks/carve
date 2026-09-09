@@ -11,18 +11,17 @@ short list of remaining work.
 - [x] Allow repository administrators to create signed release tags without
   weakening the existing update, deletion, signature, or non-fast-forward
   protections.
-- [x] Prepare `0.1.0`: finalize the changelog and verify the module, changelog,
+- [x] Prepare `0.1.1`: finalize the changelog and verify the module, changelog,
   test module, tag, archive, and BCR metadata use the same version.
-- [ ] Create the signed `0.1.0` tag and validate the generated prerelease and
-  source archive.
-- [ ] Promote the validated GitHub prerelease to a stable release.
-- [ ] Dispatch `pages.yml` for `0.1.0` after promotion and verify the root site
+- [ ] Create the signed `0.1.1` tag and validate the generated draft and source
+  archive before the workflow publishes the immutable stable release.
+- [ ] Dispatch `pages.yml` for `0.1.1` after publication and verify the root site
   redirects to the stable release documentation.
 
 ## Deferred enhancements
 
 - [ ] Add a valid `BCR_PUBLISH_TOKEN`, dispatch `publish.yaml`, merge the
-  generated registry pull request, and verify `mboworks_carve@0.1.0`.
+  generated registry pull request, and verify `mboworks_carve@0.1.1`.
 
 - [ ] Make the emitted compilation database relocatable by rewriting it to
   workspace-relative paths and handling Bazel's external-repository links.

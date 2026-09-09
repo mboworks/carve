@@ -15,11 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Invoked by the release workflow
-# (https://github.com/bazel-contrib/.github/blob/master/.github/workflows/release_ruleset.yaml).
-# It builds the source archive that consumers fetch and prints the GitHub release
-# notes (stdout). Nothing here publishes; the workflow only runs it for a pushed
-# numeric-semver tag.
+# Invoked by the release workflow. It builds the source archive that consumers
+# fetch and prints the GitHub release notes (stdout). Nothing here publishes.
 
 set -euo pipefail
 
@@ -37,7 +34,7 @@ function die() {
 
 # Computed vars.
 PREFIX="${PACKAGE_NAME}-${TAG}"
-ARCHIVE="${PACKAGE_NAME}-${TAG}.tar.gz"
+ARCHIVE="${CARVE_RELEASE_OUTPUT_DIR:-.}/${PACKAGE_NAME}-${TAG}.tar.gz"
 BAZELMOD_VERSION="$(sed -rne 's,.*version = "([0-9]+([.][0-9]+)+.*)".*,\1,p' <MODULE.bazel | head -n1)"
 # carve uses Keep a Changelog: the first "## [x.y.z]" heading (after "## [Unreleased]").
 CHANGELOG_VERSION="$(sed -rne 's,^## \[([0-9]+([.][0-9]+)+)\].*,\1,p' <CHANGELOG.md | head -n1)"
@@ -53,20 +50,30 @@ if [ "${BCR_TEST_VERSION}" != "${TAG}" ]; then
   die "Tag = '${TAG}' does not match the BCR consumer version = '${BCR_TEST_VERSION}'."
 fi
 
-# Replace the root BUILD.bazel with an empty one for the released module: carve's
-# own root targets (//:refresh, //:carve, //:refresh_compile_commands) are for
-# development, not for dependents.
+# Prepare release-only files in a temporary directory. The checkout must remain
+# unchanged so a retry produces the same tree and does not accumulate export
+# rules.
+WORK="$(mktemp -d)"
+trap 'rm -rf "${WORK}"' EXIT
+RELEASE_BUILD="${WORK}/BUILD.bazel"
+RELEASE_MODULE="${WORK}/MODULE.bazel"
+RELEASE_ATTRIBUTES="${WORK}/.gitattributes"
+TMP_INDEX="${WORK}/index"
+
+# Replace the root BUILD.bazel with an empty one for the released module:
+# carve's root targets are for development, not dependents.
 {
   cat tools/header.txt
   echo ""
   echo "\"\"\"Empty root BUILD for @${BAZELMOD_NAME}.\"\"\""
-} >BUILD.bazel
+} >"${RELEASE_BUILD}"
 
 # Comment the dev-only include so the released module does not reference the
 # development modules (hedron, dwyu). The bazelmod package remains in the
 # archive because MODULE.bazel uses its toolchains_llvm patch.
-perl -pi -e 's,^include\("//bazelmod:dev\.MODULE\.bazel"\),# include("//bazelmod:dev.MODULE.bazel"),' MODULE.bazel
-grep -qE '^# include\("//bazelmod:dev\.MODULE\.bazel"\)' MODULE.bazel ||
+cp MODULE.bazel "${RELEASE_MODULE}"
+perl -pi -e 's,^include\("//bazelmod:dev\.MODULE\.bazel"\),# include("//bazelmod:dev.MODULE.bazel"),' "${RELEASE_MODULE}"
+grep -qE '^# include\("//bazelmod:dev\.MODULE\.bazel"\)' "${RELEASE_MODULE}" ||
   die "Failed to comment the dev include in MODULE.bazel (did the line change?)."
 
 # Exclude development-only paths from the archive.
@@ -77,6 +84,9 @@ EXCLUDES=(
   "bazelmod/dev.MODULE.bazel"
   "tools"
 )
+if git cat-file -e HEAD:.gitattributes 2>/dev/null; then
+  git show HEAD:.gitattributes >"${RELEASE_ATTRIBUTES}"
+fi
 {
   for exclude in "${EXCLUDES[@]}"; do
     echo "${exclude} export-ignore"
@@ -84,19 +94,21 @@ EXCLUDES=(
       echo "${exclude}/** export-ignore"
     fi
   done
-} >>.gitattributes
+} >>"${RELEASE_ATTRIBUTES}"
 
-# Build the archive from the patched/generated worktree, not the committed "${TAG}"
-# tree: `git archive "${TAG}"` reads the commit and would drop the edits above.
-# Stage the worktree into a THROWAWAY index so the real index/checkout is never
-# touched; export-ignore still applies via the staged .gitattributes (+
-# --worktree-attributes).
-TMP_INDEX="$(mktemp -u)"
+# Build a release tree through a throwaway index. hash-object adds unreachable
+# blobs to the local object store, but neither the worktree nor real index is
+# changed.
 GIT_INDEX_FILE="${TMP_INDEX}" git read-tree HEAD
-GIT_INDEX_FILE="${TMP_INDEX}" git add --all
+for release_file in BUILD.bazel MODULE.bazel .gitattributes; do
+  source_file="${WORK}/${release_file}"
+  blob="$(git hash-object -w "${source_file}")"
+  GIT_INDEX_FILE="${TMP_INDEX}" git update-index --add --cacheinfo "100644,${blob},${release_file}"
+done
 ARCHIVE_TREE="$(GIT_INDEX_FILE="${TMP_INDEX}" git write-tree)"
-rm -f "${TMP_INDEX}"
-git archive --format=tar.gz --prefix="${PREFIX}/" -o "${ARCHIVE}" --add-virtual-file="${PREFIX}/VERSION:${TAG}" --worktree-attributes "${ARCHIVE_TREE}"
+git archive --format=tar --prefix="${PREFIX}/" -o "${WORK}/archive.tar" \
+  --add-virtual-file="${PREFIX}/VERSION:${TAG}" "${ARCHIVE_TREE}"
+gzip -9 -n -c "${WORK}/archive.tar" >"${ARCHIVE}"
 
 # Release notes (stdout).
 echo "# Version ${TAG}"

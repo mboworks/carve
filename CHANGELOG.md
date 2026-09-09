@@ -6,7 +6,7 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
-## [0.1.0] - 2026-09-08
+## [0.1.1] - 2026-09-08
 
 ### Added
 
@@ -35,6 +35,12 @@ follows [SemVer](https://semver.org/).
   keep persisted data deterministic across hosts.
 - Keep first-party warnings fatal while treating external headers and sources
   as code outside Carve's control.
+- Create releases as mutable drafts, verify the attached source archive, and
+  only then publish them directly as immutable stable releases.
+- Build release archives without modifying the checkout and make repeated
+  packaging byte-reproducible.
+- Keep tag coverage CI while avoiding Trunk's unrelated whole-repository mode
+  for commits that already passed the required merge gate.
 
 ### Quality
 
@@ -56,3 +62,9 @@ follows [SemVer](https://semver.org/).
   being relocatable between workspace locations.
 - NVCC and Emscripten command translation and broader external-project
   differential validation remain deferred.
+
+## [0.1.0] - 2026-09-08
+
+The signed tag was created, but its GitHub release was not published because
+the original workflow uploaded assets after publishing an immutable release.
+Version 0.1.1 supersedes this unpublished release.

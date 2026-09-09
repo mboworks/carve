@@ -169,18 +169,17 @@ action cache on `command_file`). **M5 complete.**
 ### M6 - 0.1 release + distribution
 `.bcr/` metadata, release automation, prebuilt binaries for common platforms (design §7); decide Windows in-or-out.
 
-- ✅ Release scaffolding (source-only, mirrors the helly25 house pattern): `.bcr/`
-  metadata + `presubmit.yml`; `.github/workflows/release.yml` (numeric-semver tag
-  -> `bazel-contrib` release_ruleset) + `publish.yaml` (BCR mirror) +
-  `release_prep.sh` (validates tag == MODULE.bazel == CHANGELOG version, emits an
-  empty root BUILD, comments the dev `include`, excludes dev paths, builds the
-  source tarball, prints Keep-a-Changelog notes). Nothing publishes until a tag is
-  pushed. **Prebuilt binaries are out of scope (source-only); see design §7.**
+- ✅ Release scaffolding (source-only): `.bcr/` metadata + `presubmit.yml`;
+  `.github/workflows/release.yml` publishes numeric SemVer tags through a
+  verified draft. `publish.yaml` keeps BCR publication separate, while
+  `release_prep.sh` builds a reproducible archive without changing the checkout.
 - 🟡 Cut the actual release: `MODULE.bazel`, changelog, archive consumer, and
-  BCR test module are prepared for `0.1.0`. Push the signed tag, validate the
-  GitHub prerelease and source archive, promote it to stable, then dispatch the
-  Pages workflow so the root site follows the new stable release. BCR
-  publication is an independent, deferred manual workflow.
+  BCR test module are prepared for `0.1.1`. Push the signed tag; the release
+  workflow validates tagged source and the packaged consumer, attaches and
+  verifies the archive on a mutable draft, then publishes it directly as an
+  immutable stable release. Dispatch the Pages workflow so the root site
+  follows the new release. BCR publication remains an independent, deferred
+  manual workflow.
 - ✅ **Consumability gap:** resolved with a dependency-safe module extension
   for the prebuilt LLVM distribution. Consumers no longer compile `@llvm-project` or
   need Carve's former C++17 `per_file_copt` workaround. Carve links only the

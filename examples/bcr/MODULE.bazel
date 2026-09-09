@@ -15,7 +15,7 @@
 
 module(name = "carve_bcr_consumer")
 
-bazel_dep(name = "mboworks_carve", version = "0.1.0")
+bazel_dep(name = "mboworks_carve", version = "0.1.1")
 local_path_override(
     module_name = "mboworks_carve",
     path = "../..",

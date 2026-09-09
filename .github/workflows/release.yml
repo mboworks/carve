@@ -17,21 +17,58 @@ name: Release
 on:
   push:
     tags:
-      # Numeric semver only (e.g. 0.1.0); stricter than "*.*.*" (which also
-      # matches "v1.2.x"). Pushing such a tag is the only trigger - nothing here
-      # publishes on a normal push.
+      # Numeric semver only (e.g. 0.1.1). Pushing such a tag is the only
+      # trigger; nothing here publishes on a normal push.
       - "[0-9]+.[0-9]+.[0-9]+"
 
 permissions: read-all
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   release:
-    uses: bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v7
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
-    with:
-      # The archive built by .github/workflows/release_prep.sh.
-      release_files: carve-*.tar.gz
-      # Validate the published archive before manually promoting this initial
-      # release. BCR publication is deliberately independent.
-      prerelease: true
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: bazel-contrib/setup-bazel@0.19.0
+      - name: Test tagged source
+        run: bazel test //...
+      - name: Build release archive and notes
+        run: .github/workflows/release_prep.sh >release_notes.txt
+      - name: Test release archive
+        run: tools/release_archive_test.sh "carve-${TAG}.tar.gz"
+      - name: Create mutable draft
+        run: |
+          existing="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/releases" \
+            --jq ".[] | select(.tag_name == \"${TAG}\") | [.id, .draft] | @tsv")"
+          if [[ -n "${existing}" ]]; then
+            read -r release_id draft <<<"${existing}"
+            if [[ "${draft}" != "true" ]]; then
+              echo "::error::A published release already exists for ${TAG}"
+              exit 1
+            fi
+            gh api --method DELETE "repos/${GITHUB_REPOSITORY}/releases/${release_id}"
+          fi
+          gh release create "${TAG}" --draft --title "${TAG}" --notes-file release_notes.txt
+      - name: Upload release archive
+        run: gh release upload "${TAG}" "carve-${TAG}.tar.gz"
+      - name: Verify uploaded archive
+        run: |
+          release_id="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/releases" \
+            --jq ".[] | select(.tag_name == \"${TAG}\" and .draft) | .id")"
+          [[ -n "${release_id}" ]]
+          local_digest="sha256:$(sha256sum "carve-${TAG}.tar.gz" | cut -d' ' -f1)"
+          asset="$(gh api "repos/${GITHUB_REPOSITORY}/releases/${release_id}/assets" \
+            --jq ".[] | select(.name == \"carve-${TAG}.tar.gz\") | [.state, .digest] | @tsv")"
+          [[ "${asset}" == $'uploaded\t'"${local_digest}" ]]
+      - name: Publish immutable stable release
+        run: gh release edit "${TAG}" --draft=false --prerelease=false --latest

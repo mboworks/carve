@@ -54,7 +54,7 @@ In a consumer workspace, depend on carve in `MODULE.bazel` (once it is published
 to the Bazel Central Registry):
 
 ```python
-bazel_dep(name = "mboworks_carve", version = "0.1.0")
+bazel_dep(name = "mboworks_carve", version = "0.1.1")
 
 # The official LLVM static archives contain LLVM bitcode, so select the
 # matching compiler as well as its C++ standard library.
