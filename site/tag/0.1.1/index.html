@@ -1,0 +1,105 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>README.md - carve 0.1.1</title><style>
+:root { color-scheme: light dark; font: 17px/1.6 system-ui, sans-serif; }
+body { max-width: 76rem; margin: auto; padding: 2rem; }
+a { color: light-dark(#075da8, #8cc8ff); }
+nav { display: flex; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid #888; }
+pre { padding: 1rem; overflow: auto; background: light-dark(#f3f5f7, #20252b); }
+code { font-size: .9em; } img { max-width: 100%; }
+table { display: block; overflow: auto; border-collapse: collapse; }
+th, td { border: 1px solid #888; padding: .4rem .7rem; }
+blockquote { border-left: 4px solid #888; margin-left: 0; padding-left: 1rem; }
+</style><body><nav><a href="/carve/site/tag/0.1.1/">Home</a><a href="/carve/site/tag/0.1.1/documents.html">Documentation</a><a href="https://github.com/mboworks/carve/releases/tag/0.1.1">Release &amp; downloads</a><a href="https://github.com/mboworks/carve/tree/b5f5de10c366d141bd8ef53319ada000c031a7fb">Source</a><a href="/carve/coverage/tag/0.1.1/">Coverage</a></nav><p>carve 0.1.1</p><main><h1 dir="auto" id="carve">carve</h1>
+<p dir="auto"><a href="https://mboworks.github.io/carve/" rel="nofollow">Release website</a></p>
+<p dir="auto">Carve <code class="notranslate">compile_commands.json</code> out of Bazel build graphs for clangd-style<br>
+tooling, licensed under <a href="https://github.com/mboworks/carve/blob/b5f5de10c366d141bd8ef53319ada000c031a7fb/LICENSE">Apache-2.0</a>. Carve is a clean-slate C++23<br>
+replacement for the<br>
+<a href="https://github.com/helly25/bazel-compile-commands-extractor">maintained <code class="notranslate">helly25</code> fork of Hedron's bazel-compile-commands-extractor</a>.<br>
+(Note that the original Hedron repository is no longer maintained.)</p>
+<p dir="auto"><a href="https://github.com/mboworks/carve/actions/workflows/main.yml"><img src="assets/ce733292a922c08274cf5a2096f8fa4cf01023bfa51a36ef6beecaaef371a9d9.svg" alt="Test" style="max-width: 100%;"></a><br>
+<a href="/carve/coverage/tag/0.1.1/" rel="nofollow">Coverage report</a></p>
+<h2 dir="auto" id="status">Status</h2>
+<p dir="auto">Working, pre-release. All three layers are implemented and tested - Layer A<br>
+(<code class="notranslate">carve refresh</code>), Layer B (<code class="notranslate">bazel run //:refresh</code>), and Layer C (the<br>
+<code class="notranslate">cc_carve_aspect</code> aspect emitting per-action shards) - along with the <code class="notranslate">refresh</code>,<br>
+<code class="notranslate">aggregate</code>, <code class="notranslate">shard</code>, and <code class="notranslate">prune</code> subcommands. Not yet published to the Bazel<br>
+Central Registry; the release tooling is in place. See<br>
+<a href="CARVE_DESIGN.html">CARVE_DESIGN.md</a> for the architecture and<br>
+<a href="docs/IMPLEMENTATION_PLAN.html">docs/IMPLEMENTATION_PLAN.md</a> for milestone status.</p>
+<h2 dir="auto" id="what-it-does">What it does</h2>
+<ol dir="auto">
+<li>Walks Bazel's action graph via <code class="notranslate">bazel aquery</code>.</li>
+<li>Filters to C/C++/Objective-C/CUDA compile actions.</li>
+<li>Resolves each action's header set in-process via clang's<br>
+<code class="notranslate">DependencyScanningTool</code>.</li>
+<li>De-Bazels each compile command so clangd can introspect it without<br>
+Bazel-specific environment.</li>
+<li>Writes an atomic <code class="notranslate">compile_commands.json</code> plus a persistent sidecar cache<br>
+that skips re-scanning unchanged actions on re-refresh.</li>
+</ol>
+<p dir="auto">A working CDB does not require a full build; clangd resolves most headers<br>
+itself. Generated headers, however, must exist on disk for the scan to resolve<br>
+them - codegen-heavy targets may need a build first. Sub-second incremental<br>
+refresh on large monorepos is a Layer C (aspect) property: Layers A/B re-run<br>
+<code class="notranslate">bazel aquery</code> each time and so pay the graph-query cost regardless of edit<br>
+size. See <a href="CARVE_DESIGN.html">CARVE_DESIGN.md</a> section 3.1.</p>
+<h2 dir="auto" id="usage">Usage</h2>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate"><span class="pl-c"><span class="pl-c">#</span> Refresh the whole repo's compilation database (writes compile_commands.json to</span>
+<span class="pl-c"><span class="pl-c">#</span> the workspace root). This is the carve_refresh rule (Layer B).</span>
+bazel run //:refresh
+
+<span class="pl-c"><span class="pl-c">#</span> Or drive the binary directly (Layer A), choosing targets/output on the CLI.</span>
+bazel run //:carve -- refresh --targets=//foo/... --output=compile_commands.json</pre></div>
+<p dir="auto">In a consumer workspace, depend on carve in <code class="notranslate">MODULE.bazel</code> (once it is published<br>
+to the Bazel Central Registry):</p>
+<div class="highlight highlight-source-python" dir="auto"><pre class="notranslate"><span class="pl-en">bazel_dep</span>(<span class="pl-s1">name</span> <span class="pl-c1">=</span> <span class="pl-s">"mboworks_carve"</span>, <span class="pl-s1">version</span> <span class="pl-c1">=</span> <span class="pl-s">"0.1.1"</span>)
+
+<span class="pl-c"># The official LLVM static archives contain LLVM bitcode, so select the</span>
+<span class="pl-c"># matching compiler as well as its C++ standard library.</span>
+<span class="pl-en">bazel_dep</span>(<span class="pl-s1">name</span> <span class="pl-c1">=</span> <span class="pl-s">"toolchains_llvm"</span>, <span class="pl-s1">version</span> <span class="pl-c1">=</span> <span class="pl-s">"1.9.0"</span>)
+<span class="pl-s1">llvm</span> <span class="pl-c1">=</span> <span class="pl-en">use_extension</span>(<span class="pl-s">"@toolchains_llvm//toolchain/extensions:llvm.bzl"</span>, <span class="pl-s">"llvm"</span>)
+<span class="pl-s1">llvm</span>.<span class="pl-c1">toolchain</span>(
+    <span class="pl-s1">name</span> <span class="pl-c1">=</span> <span class="pl-s">"llvm_toolchain"</span>,
+    <span class="pl-s1">llvm_version</span> <span class="pl-c1">=</span> <span class="pl-s">"22.1.8"</span>,
+    <span class="pl-s1">stdlib</span> <span class="pl-c1">=</span> {
+        <span class="pl-s">""</span>: <span class="pl-s">"builtin-libc++"</span>,
+        <span class="pl-s">"linux-aarch64"</span>: <span class="pl-s">"stdc++"</span>,
+        <span class="pl-s">"linux-x86_64"</span>: <span class="pl-s">"stdc++"</span>,
+    },
+)
+<span class="pl-en">use_repo</span>(<span class="pl-s1">llvm</span>, <span class="pl-s">"llvm_toolchain"</span>)
+<span class="pl-en">register_toolchains</span>(<span class="pl-s">"@llvm_toolchain//:all"</span>)</pre></div>
+<p dir="auto">Carve links LLVM's prebuilt dependency-scanning libraries. Copy<br>
+<a href="https://github.com/mboworks/carve/blob/b5f5de10c366d141bd8ef53319ada000c031a7fb/carve.bazelrc"><code class="notranslate">carve.bazelrc</code></a> into the consumer workspace and import it from<br>
+the workspace <code class="notranslate">.bazelrc</code> so Carve is compiled as C++23 with its required LLVM<br>
+link settings and warning policy:</p>
+<pre lang="text" class="notranslate"><code class="notranslate">try-import %workspace%/carve.bazelrc
+</code></pre>
+<p dir="auto">The fragment is part of every source archive. The consumer registers the<br>
+matching toolchain because <code class="notranslate">toolchains_llvm</code> 1.9.0 only permits its toolchain<br>
+extension in the root module. Bazel's <code class="notranslate">include()</code> likewise cannot load a<br>
+fragment from an external repository, so this stanza cannot live inside Carve.<br>
+The checked-in <a href="https://github.com/mboworks/carve/tree/b5f5de10c366d141bd8ef53319ada000c031a7fb/examples/bcr"><code class="notranslate">examples/bcr</code></a> module is the authoritative<br>
+consumer example used by both source-archive CI and the optional BCR<br>
+presubmit.</p>
+<p dir="auto">Then add the rule from a <code class="notranslate">BUILD</code> file:</p>
+<div class="highlight highlight-source-python" dir="auto"><pre class="notranslate"><span class="pl-en">load</span>(<span class="pl-s">"@mboworks_carve//rules:carve.bzl"</span>, <span class="pl-s">"carve_refresh"</span>)
+
+<span class="pl-en">carve_refresh</span>(<span class="pl-s1">name</span> <span class="pl-c1">=</span> <span class="pl-s">"refresh"</span>, <span class="pl-s1">targets</span> <span class="pl-c1">=</span> [<span class="pl-s">"//..."</span>])</pre></div>
+<p dir="auto"><code class="notranslate">carve_refresh</code> is a <strong><code class="notranslate">bazel run</code></strong> target, not a build artifact: carve invokes<br>
+<code class="notranslate">bazel aquery</code>, and spawning bazel inside a build action is the nested-bazel<br>
+trap. For huge repos there is also Layer C - <code class="notranslate">cc_carve_aspect</code> +<br>
+<code class="notranslate">carve_aspect_refresh</code> (<code class="notranslate">rules/cc_carve_aspect.bzl</code>, <code class="notranslate">rules/carve.bzl</code>) schedule<br>
+one individually-cacheable shard per compile action and aggregate them.</p>
+<h2 dir="auto" id="build-requirements">Build requirements</h2>
+<ul dir="auto">
+<li>Bazel 9.1+</li>
+<li>Clang 22.x (LLVM 22.1.8); root development uses<br>
+<a href="https://github.com/bazel-contrib/toolchains_llvm">toolchains_llvm</a> 1.9.0,<br>
+while <code class="notranslate">scan_deps</code> downloads and links the matching static Clang/LLVM archives</li>
+<li>A consumer toolchain using LLVM 22.1.8 with libstdc++ on Linux or libc++ on<br>
+macOS, matching the official LLVM distributions</li>
+<li>Apple Silicon / x86_64 Linux supported; Windows planned</li>
+</ul>
+<h2 dir="auto" id="license">License</h2>
+<p dir="auto">Copyright M. Boerger, the MBO Works authors. Licensed under the Apache License 2.0; see<br>
+<a href="https://github.com/mboworks/carve/blob/b5f5de10c366d141bd8ef53319ada000c031a7fb/LICENSE">LICENSE</a> for details.</p></main><footer>Release snapshot · b5f5de10c366d141bd8ef53319ada000c031a7fb</footer></body></html>

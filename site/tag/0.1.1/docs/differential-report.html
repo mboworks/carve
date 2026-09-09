@@ -1,0 +1,106 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>docs/differential-report.md - carve 0.1.1</title><style>
+:root { color-scheme: light dark; font: 17px/1.6 system-ui, sans-serif; }
+body { max-width: 76rem; margin: auto; padding: 2rem; }
+a { color: light-dark(#075da8, #8cc8ff); }
+nav { display: flex; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid #888; }
+pre { padding: 1rem; overflow: auto; background: light-dark(#f3f5f7, #20252b); }
+code { font-size: .9em; } img { max-width: 100%; }
+table { display: block; overflow: auto; border-collapse: collapse; }
+th, td { border: 1px solid #888; padding: .4rem .7rem; }
+blockquote { border-left: 4px solid #888; margin-left: 0; padding-left: 1rem; }
+</style><body><nav><a href="/carve/site/tag/0.1.1/">Home</a><a href="/carve/site/tag/0.1.1/documents.html">Documentation</a><a href="https://github.com/mboworks/carve/releases/tag/0.1.1">Release &amp; downloads</a><a href="https://github.com/mboworks/carve/tree/b5f5de10c366d141bd8ef53319ada000c031a7fb">Source</a><a href="/carve/coverage/tag/0.1.1/">Coverage</a></nav><p>carve 0.1.1</p><main>
+<h1 dir="auto" id="differential-validation-m3">Differential validation (M3)</h1>
+<p dir="auto">This is the M3 correctness gate (CARVE_DESIGN.md §8, §9.4): validate that the<br>
+compilation database carve produces is consumable by clangd and that carve's<br>
+output differs from the reference extractor (Hedron) only in ways we can<br>
+explain. It pairs with the reusable harness <code class="notranslate">tools/cdb_diff.py</code>.</p>
+<p dir="auto">Last run: 2026-06-24, <code class="notranslate">//carve/...</code> on this repo (22 compile actions),<br>
+macOS arm64, LLVM 22.1.7 (the then-current hermetic toolchain).</p>
+<h2 dir="auto" id="1-clangd-consumes-carves-cdb">1. clangd consumes carve's CDB</h2>
+<p dir="auto"><code class="notranslate">carve refresh --targets=//carve/...</code> was run, then <code class="notranslate">clangd --check</code> was pointed<br>
+at the produced <code class="notranslate">compile_commands.json</code> for <code class="notranslate">carve/cdb/cdb.cc</code>:</p>
+<pre class="notranslate"><code class="notranslate">clangd --check=&lt;execroot&gt;/carve/cdb/cdb.cc --compile-commands-dir=&lt;out&gt;
+=&gt; Loaded compilation database ... Building preamble ... Building AST ...
+   Indexing AST ... All checks completed, 8 errors
+</code></pre>
+<ul dir="auto">
+<li>The preamble, AST, and index all build with <strong>zero compilation diagnostics</strong>.</li>
+<li>The "8 errors" are clangd <code class="notranslate">--check</code>'s per-token <em>tweak</em> probes<br>
+(<code class="notranslate">ExtractFunction ==&gt; FAIL: Cannot extract break/continue ...</code>), not problems<br>
+with the source or the command - they fire at every <code class="notranslate">break</code>/<code class="notranslate">continue</code> token<br>
+regardless of the CDB.</li>
+</ul>
+<p dir="auto"><strong>Finding - use a toolchain-matched clangd.</strong> clangd injects a <code class="notranslate">-resource-dir</code><br>
+and resolves the sysroot from the compiler named in the command. With a clangd<br>
+that matches the build toolchain (clang 22.1.7 in this historical run), it uses<br>
+the matching clang builtins + standard library named<br>
+in the command and parses cleanly. A <em>mismatched</em> system clangd (e.g. Apple<br>
+clang 21 + the macOS SDK libc++) substitutes its own resource-dir and SDK, which<br>
+can surface spurious diagnostics. Editors should point at the toolchain's clangd<br>
+(carve's <code class="notranslate">.clangd</code> / IDE config), not a system one.</p>
+<h2 dir="auto" id="2-generated-headers-and-the-missing-header-guard-observed">2. Generated headers and the missing-header guard (observed)</h2>
+<p dir="auto">On a clean tree, <code class="notranslate">carve refresh //carve/...</code> reported:</p>
+<pre class="notranslate"><code class="notranslate">carve: wrote 22 entries (22 scanned, 0 reused)
+carve: warning: 10 action(s) have unresolved headers (unbuilt generated headers?); re-scanned next refresh
+</code></pre>
+<p dir="auto">The 10 unresolved actions are the ones whose sources <code class="notranslate">#include</code> Bazel-generated<br>
+proto headers (<code class="notranslate">carve/sidecar/carve.pb.h</code>, the vendored <code class="notranslate">analysis_v2.pb.h</code>) that<br>
+do not exist on disk until built. This is exactly the CARVE_DESIGN §4.2 failure<br>
+mode: the CDB entries are still emitted (clangd works), but those records are<br>
+left unstamped so a later refresh re-scans them once the headers are generated.<br>
+Building first (<code class="notranslate">bazel build //carve/...</code>) and re-refreshing resolves them. This<br>
+is a property of any scan-deps extractor, not a carve regression.</p>
+<h2 dir="auto" id="3-carve-vs-hedron---explained-differences">3. carve vs Hedron - explained differences</h2>
+<p dir="auto">carve is a clean-slate replacement for Hedron's<br>
+<code class="notranslate">bazel-compile-commands-extractor</code>; it deliberately diverges in several places.<br>
+The harness (<code class="notranslate">tools/cdb_diff.py</code>) keys entries by workspace-relative source and<br>
+compares normalized flag sets (ignoring volatile output/dep/seed tokens); the<br>
+<em>structural</em> differences below are by design, not diffs the harness should flag:</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>Aspect</th>
+<th>carve</th>
+<th>Hedron</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Header discovery</td>
+<td>in-process clang <code class="notranslate">DependencyScanningTool</code> (scan-deps)</td>
+<td>forks <code class="notranslate">clang -M</code> / parses <code class="notranslate">/showIncludes</code> per source</td>
+</tr>
+<tr>
+<td>Incrementality</td>
+<td>binary-proto sidecar keyed by aquery <code class="notranslate">action_key</code>, command+mtime staleness, project-scoped merge</td>
+<td>re-extracts; caches action keys in <code class="notranslate">bazel-out</code></td>
+</tr>
+<tr>
+<td><code class="notranslate">file</code>/<code class="notranslate">directory</code></td>
+<td>absolute against the execroot; argv stays exec-relative</td>
+<td>workspace-relative paths via <code class="notranslate">bazel-out</code>/<code class="notranslate">external</code> symlinks</td>
+</tr>
+<tr>
+<td>Header index</td>
+<td>persisted header -&gt; owning-action index for targeted invalidation</td>
+<td>none</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p dir="auto">The clangd-facing argv transforms are the <strong>same intent</strong> and should diff empty<br>
+on shared flags once both are de-Bazeled: strip <code class="notranslate">-fno-canonical-system-headers</code><br>
+(clangd#1004) and <code class="notranslate">-gcc-toolchain</code> (clangd#1248), drop a leading <code class="notranslate">ccache</code><br>
+wrapper, drop MSVC <code class="notranslate">/showIncludes</code>, and resolve Apple <code class="notranslate">wrapped_clang</code><br>
+<code class="notranslate">__BAZEL_XCODE_*</code> placeholders (carve <code class="notranslate">command</code> module; CARVE_DESIGN §4.3).</p>
+<h2 dir="auto" id="4-running-a-live-diff">4. Running a live diff</h2>
+<p dir="auto"><code class="notranslate">tools/cdb_diff.py</code> compares any two compilation databases:</p>
+<pre class="notranslate"><code class="notranslate">tools/cdb_diff.py &lt;carve&gt;/compile_commands.json &lt;reference&gt;/compile_commands.json
+</code></pre>
+<p dir="auto">It reports sources present in only one CDB and, for shared sources, the<br>
+normalized flag differences (volatile <code class="notranslate">-o</code> / <code class="notranslate">-MF</code> / <code class="notranslate">-frandom-seed=</code> / compile-dir<br>
+tokens are ignored so a real flag delta stands out). A built-in <code class="notranslate">--selftest</code><br>
+covers the keying and normalization and runs in CI.</p>
+<p dir="auto">Producing the reference (Hedron) CDB requires wiring Hedron into a workspace and<br>
+running <code class="notranslate">@hedron_compile_commands//:refresh_all</code>; that is intentionally <strong>not</strong><br>
+added to carve (the tool it replaces). The harness is ready to consume a Hedron<br>
+CDB generated in any consumer workspace.</p></main><footer>Release snapshot · b5f5de10c366d141bd8ef53319ada000c031a7fb</footer></body></html>

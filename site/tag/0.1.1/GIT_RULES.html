@@ -1,0 +1,73 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>GIT_RULES.md - carve 0.1.1</title><style>
+:root { color-scheme: light dark; font: 17px/1.6 system-ui, sans-serif; }
+body { max-width: 76rem; margin: auto; padding: 2rem; }
+a { color: light-dark(#075da8, #8cc8ff); }
+nav { display: flex; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid #888; }
+pre { padding: 1rem; overflow: auto; background: light-dark(#f3f5f7, #20252b); }
+code { font-size: .9em; } img { max-width: 100%; }
+table { display: block; overflow: auto; border-collapse: collapse; }
+th, td { border: 1px solid #888; padding: .4rem .7rem; }
+blockquote { border-left: 4px solid #888; margin-left: 0; padding-left: 1rem; }
+</style><body><nav><a href="/carve/site/tag/0.1.1/">Home</a><a href="/carve/site/tag/0.1.1/documents.html">Documentation</a><a href="https://github.com/mboworks/carve/releases/tag/0.1.1">Release &amp; downloads</a><a href="https://github.com/mboworks/carve/tree/b5f5de10c366d141bd8ef53319ada000c031a7fb">Source</a><a href="/carve/coverage/tag/0.1.1/">Coverage</a></nav><p>carve 0.1.1</p><main><h1 dir="auto" id="git-and-pull-request-rules">Git and pull-request rules</h1>
+<p dir="auto">These rules apply to humans and automation changing branches, pull requests,<br>
+CI, or releases in this repository. Repository protections are constraints,<br>
+not obstacles to bypass.</p>
+<h2 dir="auto" id="synchronization">Synchronization</h2>
+<p dir="auto">Before starting or resuming pull-request work:</p>
+<ol dir="auto">
+<li>Fetch <code class="notranslate">main</code> and the remote pull-request head.</li>
+<li>Inspect GitHub's current head, base, mergeability, and required checks.</li>
+<li>Bring the branch current with <code class="notranslate">main</code> before final validation.</li>
+<li>Push the synchronization immediately, then validate the pushed head.</li>
+</ol>
+<p dir="auto">Local validation is final evidence only when it covers the current pushed head<br>
+and current base. A later rebase, merge, conflict resolution, or edit invalidates<br>
+the affected result.</p>
+<h2 dir="auto" id="readiness-and-merging">Readiness and merging</h2>
+<p dir="auto">A pull request is ready when it is approved, mergeable, current, and every<br>
+required check has succeeded. When instructed to merge a ready pull request,<br>
+merge that head without rebasing, retargeting, or otherwise invalidating its<br>
+successful checks.</p>
+<p dir="auto">Never substitute checks from another pull request or commit, even if their Git<br>
+trees happen to match. Treat GitHub as the source of truth for pull-request<br>
+state and refresh it after every push, merge, retarget, or completed CI run.</p>
+<h2 dir="auto" id="stacked-changes">Stacked changes</h2>
+<ul dir="auto">
+<li>State hard dependencies explicitly in the child pull request.</li>
+<li>Merge a ready base before its sole child; after GitHub retargets the child,<br>
+require the new checks against <code class="notranslate">main</code>.</li>
+<li>Independent changes should use sibling branches from <code class="notranslate">main</code>, so their CI can<br>
+run in parallel and their reviews remain separable.</li>
+<li>When several changes overlap or alter shared CI/build policy, re-evaluate<br>
+their ordering after each merge and resynchronize only branches whose heads<br>
+actually need to change.</li>
+</ul>
+<h2 dir="auto" id="conflicts-and-failures">Conflicts and failures</h2>
+<p dir="auto">Resolve conflicts on the pull request that is not ready, preserve compatible<br>
+changes from both sides, push the resolution, and rerun validation. Do not alter<br>
+a ready pull request merely to make another branch easier to merge.</p>
+<p dir="auto">For a failed check, inspect the failing log and reproduce the narrow failure<br>
+where practical. Fix the cause in a fresh signed-off commit; do not amend a<br>
+pushed commit or bypass the required check.</p>
+<h2 dir="auto" id="releases">Releases</h2>
+<p dir="auto">Release tags are immutable, signed, numeric SemVer tags. Create them only from<br>
+a clean, current <code class="notranslate">main</code> with the repository release helper. Never move or reuse<br>
+a published tag.</p>
+<p dir="auto">For a release:</p>
+<ol dir="auto">
+<li>Run <code class="notranslate">tools/trigger_release.sh --dry-run VERSION</code>, then run it without<br>
+<code class="notranslate">--dry-run</code> to create and push the signed tag.</li>
+<li>Wait for the Release workflow. It tests the tagged source and packaged<br>
+consumer, creates a mutable draft, uploads and verifies the archive, then<br>
+publishes it directly as an immutable stable release.</li>
+<li>Inspect the published release, source archive, release notes, and tag<br>
+coverage.</li>
+<li>Manually dispatch <code class="notranslate">pages.yml</code> for the tag; release publication is not an<br>
+Actions trigger. Verify the Pages root redirects to the versioned site.</li>
+</ol>
+<p dir="auto">An immutable release cannot be promoted from prerelease to stable. Assets must<br>
+be attached and verified while the release is a draft; publication is the final<br>
+state transition.</p>
+<p dir="auto">BCR publication is independent of the GitHub release. When desired, configure<br>
+<code class="notranslate">BCR_PUBLISH_TOKEN</code> and manually dispatch <code class="notranslate">publish.yaml</code> with the existing<br>
+release tag. Never recreate or move the tag for registry publication.</p></main><footer>Release snapshot · b5f5de10c366d141bd8ef53319ada000c031a7fb</footer></body></html>

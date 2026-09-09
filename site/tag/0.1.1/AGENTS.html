@@ -1,0 +1,157 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>AGENTS.md - carve 0.1.1</title><style>
+:root { color-scheme: light dark; font: 17px/1.6 system-ui, sans-serif; }
+body { max-width: 76rem; margin: auto; padding: 2rem; }
+a { color: light-dark(#075da8, #8cc8ff); }
+nav { display: flex; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid #888; }
+pre { padding: 1rem; overflow: auto; background: light-dark(#f3f5f7, #20252b); }
+code { font-size: .9em; } img { max-width: 100%; }
+table { display: block; overflow: auto; border-collapse: collapse; }
+th, td { border: 1px solid #888; padding: .4rem .7rem; }
+blockquote { border-left: 4px solid #888; margin-left: 0; padding-left: 1rem; }
+</style><body><nav><a href="/carve/site/tag/0.1.1/">Home</a><a href="/carve/site/tag/0.1.1/documents.html">Documentation</a><a href="https://github.com/mboworks/carve/releases/tag/0.1.1">Release &amp; downloads</a><a href="https://github.com/mboworks/carve/tree/b5f5de10c366d141bd8ef53319ada000c031a7fb">Source</a><a href="/carve/coverage/tag/0.1.1/">Coverage</a></nav><p>carve 0.1.1</p><main><h1 dir="auto" id="agentsmd">AGENTS.md</h1>
+<p dir="auto">Conventions for AI coding agents (and humans) working on <code class="notranslate">mboworks/carve</code>. This<br>
+file is the canonical source; tool-specific entry points such as<br>
+<a href="CLAUDE.html">CLAUDE.md</a> should reference it rather than duplicate.</p>
+<p dir="auto">For architecture, layering, and the build-out plan, see<br>
+<a href="CARVE_DESIGN.html">CARVE_DESIGN.md</a>.</p>
+<h2 dir="auto" id="file-headers">File headers</h2>
+<p dir="auto">Every Bazel, Starlark, C++, proto, and shell file in the repo starts with:</p>
+<pre class="notranslate"><code class="notranslate"># SPDX-FileCopyrightText: Copyright (c) M. Boerger, the MBO Works authors
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+</code></pre>
+<p dir="auto">For C++ / proto / other <code class="notranslate">//</code>-comment languages, use <code class="notranslate">//</code> instead of <code class="notranslate">#</code>.</p>
+<p dir="auto">Markdown, JSON, and other formats that do not support comments are exempt.</p>
+<h2 dir="auto" id="library-priority">Library priority</h2>
+<p dir="auto">When picking where a capability lives, prefer in this order:</p>
+<ol dir="auto">
+<li><strong>Standard C++23</strong> if usable out of the box.</li>
+<li><strong>Abseil</strong> if usable out of the box.</li>
+<li><strong><a href="https://github.com/mboworks/mbo">mboworks/mbo</a></strong> as a wrapper or extension<br>
+when std or Abseil need smoothing for our use.</li>
+</ol>
+<p dir="auto">Anything mbo lacks that we need gets added upstream there, not locally in<br>
+<code class="notranslate">carve</code>. New utility helpers default to a contribution to mbo unless they are<br>
+unambiguously specific to compile-commands extraction.</p>
+<p dir="auto"><strong>No Boost.</strong> Anywhere.</p>
+<h2 dir="auto" id="code-provenance">Code provenance</h2>
+<p dir="auto">Carve is a clean-slate rewrite. Do not copy code from<br>
+<code class="notranslate">bazel-compile-commands-extractor</code> or other compile-commands tools. Inventories<br>
+of platform quirks and rederivation notes are fine; specific code expressions<br>
+are not. See section 4.3 of <a href="CARVE_DESIGN.html">CARVE_DESIGN.md</a> for the primary<br>
+sources to rederive from.</p>
+<h2 dir="auto" id="c">C++</h2>
+<p dir="auto">Code-style and structural rules (layout, namespaces, header guards, target<br>
+naming, <code class="notranslate">deps</code> vs <code class="notranslate">implementation_deps</code>) live in <a href="RULES.html">RULES.md</a>. Summary:</p>
+<ul dir="auto">
+<li>C++23, clang 20.1+ (pinned at LLVM 22.1.8 via <code class="notranslate">toolchains_llvm</code> 1.9.0).</li>
+<li>Style: Google C++ with deviations in <a href="https://github.com/mboworks/carve/blob/b5f5de10c366d141bd8ef53319ada000c031a7fb/.clang-format">.clang-format</a>.</li>
+<li>Lints: <a href="https://github.com/mboworks/carve/blob/b5f5de10c366d141bd8ef53319ada000c031a7fb/.clang-tidy">.clang-tidy</a>, <code class="notranslate">WarningsAsErrors: true</code>.</li>
+<li>No exceptions (<code class="notranslate">-fno-exceptions</code> is set in <code class="notranslate">.bazelrc</code>); use <code class="notranslate">absl::Status</code> /<br>
+<code class="notranslate">absl::StatusOr</code> / <code class="notranslate">std::expected</code> for errors.</li>
+<li>Layout: one module per <code class="notranslate">carve/&lt;module&gt;/</code> package, <code class="notranslate">namespace carve::&lt;module&gt;</code>,<br>
+<code class="notranslate">&lt;module&gt;_cc</code> library + colocated <code class="notranslate">&lt;module&gt;_test</code> (<code class="notranslate">&lt;unit&gt;_test.cc</code>).</li>
+</ul>
+<h2 dir="auto" id="testing-discipline">Testing discipline</h2>
+<p dir="auto">Write relevant tests at <strong>all</strong> levels - unit, golden (per de-Bazeling quirk),<br>
+integration (synthetic workspaces under <code class="notranslate">testdata/</code>), and the differential<br>
+harness against the existing tool. See <a href="CARVE_DESIGN.html">CARVE_DESIGN.md</a><br>
+section 9 for the layout.</p>
+<p dir="auto">Do not treat ad-hoc, one-shot verification (running <code class="notranslate">carve</code> by hand, a throwaway<br>
+script, a manual diff) as a substitute for tests, and do not run such a check<br>
+and then move on. For any change, make a deliberate choice up front:</p>
+<ol dir="auto">
+<li><strong>Write the real test(s) outright</strong> when the behavior is specifiable now, or</li>
+<li><strong>Use the one-shot experiment as planning input</strong> - capture what it told you<br>
+(inputs, expected output, edge cases) and turn it into a committed test<br>
+before the change is considered done.</li>
+</ol>
+<p dir="auto">A change is not complete until the behavior it introduces or fixes is covered by<br>
+a committed test at the appropriate level(s). One-shot exploration informs the<br>
+test plan; it never replaces it.</p>
+<p dir="auto">There is no exemption category. "It's just a refactor / a one-liner / hard to<br>
+test" is not a reason to skip - it is a reason to pick the right level (a<br>
+behavior-preserving change is covered by the tests that already pin that<br>
+behavior; if none exist, that gap is part of the change). If a behavior<br>
+genuinely cannot be tested, say so explicitly in the PR and explain why; do not<br>
+silently ship it untested.</p>
+<h2 dir="auto" id="python">Python</h2>
+<p dir="auto">Minimize. The runtime tool is C++. Python is allowed for developer-only<br>
+helpers (e.g. flag table regeneration) and only on Python 3.13+.</p>
+<h2 dir="auto" id="protobuf">Protobuf</h2>
+<p dir="auto">Edition 2024 (<code class="notranslate">edition = "2024";</code>) for new <code class="notranslate">.proto</code> files. Use<br>
+<code class="notranslate">features.field_presence = EXPLICIT</code> only where set-vs-empty actually matters.</p>
+<h2 dir="auto" id="build">Build</h2>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate">bazel build //...                  <span class="pl-c"><span class="pl-c">#</span> default toolchain</span>
+bazel build //... --config=clang   <span class="pl-c"><span class="pl-c">#</span> prebuilt clang via toolchains_llvm</span>
+bazel <span class="pl-c1">test</span> //... --config=clang --config=asan  <span class="pl-c"><span class="pl-c">#</span> ASan (combine with --config=ubsan)</span>
+bazel <span class="pl-c1">test</span> //... --config=clang --config=msan  <span class="pl-c"><span class="pl-c">#</span> MSan (Linux x86-64 only)</span>
+bazel <span class="pl-c1">test</span> //... --config=clang --config=tsan  <span class="pl-c"><span class="pl-c">#</span> TSan</span></pre></div>
+<p dir="auto">Run <code class="notranslate">pre-commit run -a</code> for format and repository policy checks. CI also runs<br>
+Trunk's independent configuration/security scan; Trunk does not own Git hooks<br>
+or run clang-tidy.</p>
+<h2 dir="auto" id="commits">Commits</h2>
+<ul dir="auto">
+<li>All commits signed off (DCO): <code class="notranslate">git commit -s</code>.</li>
+<li>Commit message style: short imperative subject (under 70 chars), optional<br>
+body with the why.</li>
+<li>One logical change per commit. Mixing refactors with feature work is<br>
+discouraged.</li>
+<li>Do not amend pushed commits; create a fresh commit instead.</li>
+<li>Follow <a href="GIT_RULES.html">GIT_RULES.md</a> for synchronization, stacked changes,<br>
+readiness, and merge operations.</li>
+</ul>
+<h2 dir="auto" id="pull-requests">Pull requests</h2>
+<ul dir="auto">
+<li>Branches off <code class="notranslate">main</code>. PRs target <code class="notranslate">main</code>.</li>
+<li>Description explains the why; the diff explains the what.</li>
+<li>Agent-authored descriptions begin with a short <code class="notranslate">## AG;DR</code> summary, followed<br>
+by the detailed rationale, change list, and verification evidence.</li>
+<li>All CI green before merge.</li>
+<li>Squash-merge by default; preserve commit history only for substantial,<br>
+well-organized series.</li>
+</ul>
+<h2 dir="auto" id="filing-changes-as-an-agent">Filing changes as an agent</h2>
+<p dir="auto">If you are an AI agent making changes:</p>
+<ol dir="auto">
+<li>Read <a href="CARVE_DESIGN.html">CARVE_DESIGN.md</a> and this file before writing code - and<br>
+<a href="RULES.html">RULES.md</a> plus <a href="STYLE_CPP.html">STYLE_CPP.md</a> before writing or changing<br>
+C++ (structure + the detailed style: matchers, <code class="notranslate">// NL</code>, idioms).</li>
+<li>State the change you intend to make in plain language before editing.</li>
+<li>Run <code class="notranslate">bazel build //...</code> and <code class="notranslate">bazel test //...</code> locally before declaring a<br>
+change complete. If tests cannot be run in your environment, say so.</li>
+<li>Do not introduce new dependencies without explicit human approval.</li>
+<li>Do not silently update version pins in <code class="notranslate">MODULE.bazel</code>.</li>
+<li>Prefer additive changes. Refactors that touch many files should be split.</li>
+<li>Make conservative edits. Prefer <code class="notranslate">Edit</code> over <code class="notranslate">Write</code> for surgical changes;<br>
+reserve <code class="notranslate">Write</code> for full rewrites and brand-new files. When iterating on a<br>
+feature, edit the relevant existing section in place rather than appending a<br>
+new one at the end. Do not create files, add dependencies, or add<br>
+abstractions or speculative features the design does not call for.</li>
+<li>Surface conflicts. When <a href="CARVE_DESIGN.html">CARVE_DESIGN.md</a> (or another design<br>
+doc) and the code disagree, surface the conflict in your response rather than<br>
+silently choosing one.</li>
+</ol>
+<h2 dir="auto" id="documents-to-keep-in-sync">Documents to keep in sync</h2>
+<ul dir="auto">
+<li><a href="CARVE_DESIGN.html">CARVE_DESIGN.md</a>: architecture. Update when design changes.</li>
+<li><a href="docs/IMPLEMENTATION_PLAN.html">docs/IMPLEMENTATION_PLAN.md</a>: status + ordered remaining work. Update as milestones land.</li>
+<li><a href="RULES.html">RULES.md</a>: code-style and structural rules. Update when conventions change.</li>
+<li><a href="STYLE_CPP.html">STYLE_CPP.md</a>: detailed C++ style (shared MBO Works conventions with examples); the companion RULES.md points to.</li>
+<li><a href="STYLE_SH.html">STYLE_SH.md</a>: shell conventions for developer and CI scripts.</li>
+<li><a href="GIT_RULES.html">GIT_RULES.md</a>: branch, pull-request, and merge orchestration.</li>
+<li><a href="index.html">README.md</a>: user-facing intro. Update on user-visible changes.</li>
+<li><a href="CHANGELOG.html">CHANGELOG.md</a>: every PR adds a line under <code class="notranslate">[Unreleased]</code>.</li>
+<li><a href="CONTRIBUTING.html">CONTRIBUTING.md</a>: human onboarding. Should stay short.</li>
+</ul></main><footer>Release snapshot · b5f5de10c366d141bd8ef53319ada000c031a7fb</footer></body></html>

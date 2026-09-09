@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>docs/test-plan.md - carve 0.1.1</title><style>
+:root { color-scheme: light dark; font: 17px/1.6 system-ui, sans-serif; }
+body { max-width: 76rem; margin: auto; padding: 2rem; }
+a { color: light-dark(#075da8, #8cc8ff); }
+nav { display: flex; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid #888; }
+pre { padding: 1rem; overflow: auto; background: light-dark(#f3f5f7, #20252b); }
+code { font-size: .9em; } img { max-width: 100%; }
+table { display: block; overflow: auto; border-collapse: collapse; }
+th, td { border: 1px solid #888; padding: .4rem .7rem; }
+blockquote { border-left: 4px solid #888; margin-left: 0; padding-left: 1rem; }
+</style><body><nav><a href="/carve/site/tag/0.1.1/">Home</a><a href="/carve/site/tag/0.1.1/documents.html">Documentation</a><a href="https://github.com/mboworks/carve/releases/tag/0.1.1">Release &amp; downloads</a><a href="https://github.com/mboworks/carve/tree/b5f5de10c366d141bd8ef53319ada000c031a7fb">Source</a><a href="/carve/coverage/tag/0.1.1/">Coverage</a></nav><p>carve 0.1.1</p><main><h1 dir="auto" id="test-plan-ledger">Test plan ledger</h1>
+<p dir="auto">Tracks behavior verified manually (one-shot) but not yet covered by a committed<br>
+test. Per <a href="../AGENTS.html#testing-discipline">AGENTS.md</a>, an entry here is a debt:<br>
+it names the test that must replace the manual check. An empty ledger is the<br>
+goal - a growing one is a smell.</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>Behavior verified by hand</th>
+<th>How verified</th>
+<th>Test that must replace it</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>(empty - every previously-dogfooded behavior is now covered by a committed test)</em></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p dir="auto">Resolved:</p>
+<ul dir="auto">
+<li><code class="notranslate">carve</code> exit-code mapping (missing/unknown subcommand → 2, failed refresh → 1)<br>
+is covered by <code class="notranslate">//carve/e2e:end_to_end_test</code>.</li>
+<li><code class="notranslate">carve refresh --aquery_proto=FILE</code> producing a CDB is covered by the same<br>
+end-to-end test.</li>
+<li><code class="notranslate">carve refresh --targets=…</code> (in-process <code class="notranslate">bazel aquery</code> plus the<br>
+<code class="notranslate">bazel info execution_root</code> directory default) is covered hermetically by<br>
+<code class="notranslate">//carve/e2e:end_to_end_test</code> using a fake <code class="notranslate">bazel</code> stub.</li>
+</ul></main><footer>Release snapshot · b5f5de10c366d141bd8ef53319ada000c031a7fb</footer></body></html>

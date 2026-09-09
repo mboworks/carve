@@ -1,0 +1,593 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>CARVE_DESIGN.md - carve 0.1.1</title><style>
+:root { color-scheme: light dark; font: 17px/1.6 system-ui, sans-serif; }
+body { max-width: 76rem; margin: auto; padding: 2rem; }
+a { color: light-dark(#075da8, #8cc8ff); }
+nav { display: flex; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid #888; }
+pre { padding: 1rem; overflow: auto; background: light-dark(#f3f5f7, #20252b); }
+code { font-size: .9em; } img { max-width: 100%; }
+table { display: block; overflow: auto; border-collapse: collapse; }
+th, td { border: 1px solid #888; padding: .4rem .7rem; }
+blockquote { border-left: 4px solid #888; margin-left: 0; padding-left: 1rem; }
+</style><body><nav><a href="/carve/site/tag/0.1.1/">Home</a><a href="/carve/site/tag/0.1.1/documents.html">Documentation</a><a href="https://github.com/mboworks/carve/releases/tag/0.1.1">Release &amp; downloads</a><a href="https://github.com/mboworks/carve/tree/b5f5de10c366d141bd8ef53319ada000c031a7fb">Source</a><a href="/carve/coverage/tag/0.1.1/">Coverage</a></nav><p>carve 0.1.1</p><main><h1 dir="auto" id="clean-slate-rewrite">Clean-Slate Rewrite</h1>
+<p dir="auto">Design for replacing this tool with a from-scratch implementation under permissive licensing. The alternative path - extending the current Python codebase incrementally - was documented separately in the originating fork's <code class="notranslate">INCREMENTAL_DESIGN.md</code> and is not carried into this clean-slate repo. This document assumes the rewrite path was chosen and focuses on what to build.</p>
+<h2 dir="auto" id="1-goals">1. Goals</h2>
+<ol dir="auto">
+<li>Produce a <code class="notranslate">compile_commands.json</code> for clangd from a Bazel build graph, correctly de-Bazeled so clangd can introspect it without Bazel-specific environment.</li>
+<li>Incremental refresh by default: edit one source, only that action's entry regenerates.</li>
+<li>Native support for multiple projects writing into a shared CDB without clobbering each other.</li>
+<li>Refresh latency on the order of seconds for typical edits on large monorepos. <strong>Caveat:</strong> Layers A/B re-run <code class="notranslate">bazel aquery</code> on every refresh and therefore pay the graph-analysis cost regardless of edit size; the sidecar only saves re-scanning unchanged actions, not the query. Sub-second incremental refresh on huge repos is a Layer C property (per-action Bazel action-cache invalidation), not a Layer A promise. See section 3.1.</li>
+<li>Independent of the existing Hedron/helly25 codebase. No code derivation. Inventory of platform quirks is rederived from Bazel and clang source plus public issue history.</li>
+<li>Permissive license (Apache-2.0 or MIT) chosen at project inception.</li>
+</ol>
+<h2 dir="auto" id="2-hard-constraints">2. Hard constraints</h2>
+<ul dir="auto">
+<li><strong>Python 3.13.</strong> Used only where Bazel forces it (test scripts, possibly bazel-genrule glue). Strong preference: zero Python in the main tool.</li>
+<li><strong>Bazel 9.1.</strong> Bzlmod default. Modern <code class="notranslate">rules_cc</code>.</li>
+<li><strong>C++23</strong>, <strong>Clang 20.1+</strong> as the build toolchain. C++23 features are in scope (<code class="notranslate">std::expected</code>, deducing-this, ranges enhancements, <code class="notranslate">std::print</code>/<code class="notranslate">std::format</code>).</li>
+<li><strong>GTest</strong> for unit tests.</li>
+<li><strong>Abseil</strong> for utilities (<code class="notranslate">absl::StatusOr</code>, <code class="notranslate">absl::flat_hash_*</code>, <code class="notranslate">absl::log</code>, <code class="notranslate">absl::Flags</code>, <code class="notranslate">absl::strings</code>).</li>
+<li><strong>mbo</strong> (<a href="https://github.com/mboworks/mbo">mboworks/mbo</a>) as the project-owned extension layer above Abseil. Brings the Google-internal utilities Abseil did not open-source plus useful additions we control. Bzlmod-ready. Supports clang compilation through <code class="notranslate">bazel-contrib/toolchain_llvm</code>, which matches our toolchain choice.</li>
+<li><strong>No Boost.</strong> Anywhere.</li>
+<li><strong>No code copied from the existing codebase.</strong> Insights and the quirk inventory are fine; specific expressions are not.</li>
+</ul>
+<h3 dir="auto" id="21-library-priority">2.1 Library priority</h3>
+<p dir="auto">When picking where a capability lives, prefer in this order:</p>
+<ol dir="auto">
+<li><strong>Standard C++23</strong>, if usable out of the box.</li>
+<li><strong>Abseil</strong>, if usable out of the box.</li>
+<li><strong>mbo</strong>, as a wrapper or extension when std or Abseil need smoothing for our use. Anything mbo lacks that we need we add upstream there, not locally in <code class="notranslate">carve</code>. This keeps the dependency surface controllable: we own the wrapper layer.</li>
+</ol>
+<p dir="auto"><code class="notranslate">carve</code> itself should rarely define general-purpose utilities. New utility helpers default to a contribution to mbo unless they are unambiguously specific to compile-commands extraction.</p>
+<h2 dir="auto" id="3-architecture-overview">3. Architecture overview</h2>
+<p dir="auto">Three composable layers, shipped in order. Each is independently useful; later layers add incrementality and remote-cache friendliness.</p>
+<pre class="notranslate"><code class="notranslate">+-------------------+        +-------------------+        +-------------------+
+| Layer A           |  --&gt;   | Layer B           |  --&gt;   | Layer C           |
+| Single-shot tool  |        | Bazel rule wraps  |        | Aspect produces   |
+| bazel run         |        | tool as a build   |        | per-action shards |
+|                   |        | action            |        | aggregator merges |
++-------------------+        +-------------------+        +-------------------+
+</code></pre>
+<ul dir="auto">
+<li><strong>Layer A.</strong> A C++ binary, <code class="notranslate">carve</code>, runnable as <code class="notranslate">bazel run @carve//:refresh</code>. Internally: <code class="notranslate">bazel aquery</code> once, in-process scan-deps for header extraction, persistent sidecar cache, atomic CDB write.</li>
+<li><strong>Layer B.</strong> A Bazel rule <code class="notranslate">cc_carve</code> that runs <code class="notranslate">carve</code> as a build action. CDB becomes <code class="notranslate">bazel build //:compile_commands</code> instead of <code class="notranslate">bazel run</code>. Matches the project's normal build muscle memory.</li>
+<li><strong>Layer C.</strong> An aspect that registers per-action shard-producing actions. Shards are individually cacheable (locally and remotely). Aggregator merges them. Best for huge repos and shared remote caches.</li>
+</ul>
+<p dir="auto">Critical property: every layer above shares the same data model and persisted formats. Adding a layer does not invalidate caches from lower layers.</p>
+<h3 dir="auto" id="31-where-the-latency-actually-goes">3.1 Where the latency actually goes</h3>
+<p dir="auto">Be honest about the cost model, because it drives the layering:</p>
+<ul dir="auto">
+<li><strong><code class="notranslate">bazel aquery</code> runs on every Layer A/B refresh.</strong> It re-runs analysis of the requested pattern. On a large monorepo this is tens of seconds to minutes and is <em>independent of how small the edit was</em>. This is the dominant cost of a refresh and the sidecar does not reduce it.</li>
+<li><strong>The sidecar reduces scan-deps work, not aquery work.</strong> Its payoff is skipping header re-scans for actions whose command did not change. Valuable, but it does not deliver "seconds after a one-line edit" on its own.</li>
+<li><strong>Only Layer C escapes the full-graph query.</strong> The aspect schedules per-action shard producers that Bazel's action cache invalidates individually, so an edit reruns work proportional to what changed. This is the path to the goal-4 latency on huge repos.</li>
+</ul>
+<p dir="auto">Practical consequence: the headline incrementality story is a Layer C deliverable. Layers A/B are "correct, shared-CDB-capable, and skip redundant scanning" - not "sub-second." Marketing and README copy should reflect this.</p>
+<h2 dir="auto" id="4-component-breakdown">4. Component breakdown</h2>
+<h3 dir="auto" id="41-carve-c-binary">4.1 <code class="notranslate">carve</code> (C++ binary)</h3>
+<p dir="auto">The core tool. Single statically-linked binary. Subcommands:</p>
+<pre class="notranslate"><code class="notranslate">carve refresh   [--output=PATH] [--project-id=ID] [--targets=PAT]   # Layer A entry point
+carve aggregate [--shards=DIR] [--output=PATH] [--project-id=ID]    # Layer C entry point
+carve shard     --action-key=KEY --command=FILE --source=PATH       # Layer C per-action invocation
+carve prune     [--age=N]                                           # Sidecar GC
+</code></pre>
+<p dir="auto">Internal modules:</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>Module</th>
+<th>Responsibility</th>
+<th>Notable deps</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">aquery</code></td>
+<td>Spawns <code class="notranslate">bazel aquery --output=proto</code> (binary), parses via linked <code class="notranslate">analysis_v2.proto</code></td>
+<td>mbo subprocess helper (or std)</td>
+</tr>
+<tr>
+<td><code class="notranslate">scan_deps</code></td>
+<td>In-process header dependency scan via <code class="notranslate">clang::tooling::dependencies::DependencyScanningTool</code></td>
+<td>clangDependencyScanning</td>
+</tr>
+<tr>
+<td><code class="notranslate">command</code></td>
+<td>Argv normalization and de-Bazeling patches (the quirk inventory)</td>
+<td><code class="notranslate">absl::strings</code>, mbo path utils</td>
+</tr>
+<tr>
+<td><code class="notranslate">sidecar</code></td>
+<td>Persistent action-keyed cache and bi-directional header index</td>
+<td>protobuf, mbo atomic-write</td>
+</tr>
+<tr>
+<td><code class="notranslate">cdb</code></td>
+<td>Atomic JSON output, merge semantics</td>
+<td>mbo atomic-write</td>
+</tr>
+<tr>
+<td><code class="notranslate">cli</code></td>
+<td><code class="notranslate">absl::Flags</code>-driven subcommand dispatch</td>
+<td><code class="notranslate">absl::Flags</code></td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p dir="auto">Each module is a self-contained Bazel package following the MBO Works house layout<br>
+(see <a href="RULES.html">RULES.md</a>): <code class="notranslate">carve/&lt;module&gt;/</code> with <code class="notranslate">namespace carve::&lt;module&gt;</code>,<br>
+a <code class="notranslate">&lt;module&gt;_cc</code> library, and a colocated <code class="notranslate">&lt;module&gt;_test</code>. The binary entry point<br>
+is <code class="notranslate">//carve:carve</code> (with a <code class="notranslate">//:refresh</code> alias for the documented <code class="notranslate">bazel run</code>).</p>
+<p dir="auto">Per the library priority (section 2.1), where mbo already covers a need we use it; where it does not, we contribute the missing piece to mbo rather than rolling a local helper inside <code class="notranslate">carve</code>. Examples of expected contributions (subject to whatever mbo already ships):</p>
+<ul dir="auto">
+<li>Subprocess wrapper with separate stdout/stderr capture, env override, and a configurable timeout.</li>
+<li>Atomic file write (write-temp-rename) usable for both proto-binary and JSON outputs.</li>
+<li>Workspace-root discovery and <code class="notranslate">BUILD_WORKSPACE_DIRECTORY</code> resolution.</li>
+<li>Cross-platform symlink/junction handling (matters for the <code class="notranslate">//external</code> choreography).</li>
+</ul>
+<h3 dir="auto" id="42-scan-deps-integration">4.2 Scan-deps integration</h3>
+<p dir="auto">Use <code class="notranslate">clang::tooling::dependencies::DependencyScanningService</code> and <code class="notranslate">DependencyScanningTool</code> from <code class="notranslate">clangDependencyScanning</code>. Key properties:</p>
+<ul dir="auto">
+<li><strong>In-process.</strong> Zero subprocess overhead per action.</li>
+<li><strong>Shared <code class="notranslate">DependencyScanningWorker</code> per thread.</strong> Filesystem state cached across actions.</li>
+<li><strong>Module-aware.</strong> If the project uses clang modules later, scan-deps already understands them.</li>
+<li><strong>Returns canonical <code class="notranslate">-MD</code>-style dependencies.</strong> Same shape as the current preprocessor output, so the rest of the pipeline does not change with this swap.</li>
+</ul>
+<p dir="auto">Expected speedup over forking <code class="notranslate">clang -M</code> per action: 5x to 10x on large repos based on public benchmarks of <code class="notranslate">clang-scan-deps</code>.</p>
+<h4 dir="auto" id="linkage-reality-resolved">Linkage reality (resolved)</h4>
+<p dir="auto"><code class="notranslate">toolchains_llvm</code> provides Carve's root-development compilation toolchain.<br>
+Carve's dependency-safe module extension downloads the matching full LLVM<br>
+distribution and supplies a thin wrapper over its headers and static archives. Linking<br>
+<code class="notranslate">DependencyScanningTool</code> required choosing one of:</p>
+<ol dir="auto">
+<li><strong>Build llvm-project from source under Bazel.</strong> Hermetic and correct, but a large/slow build that strains the "5-minute clone-to-working" goal in section 7.</li>
+<li><strong>Hermetic prebuilt LLVM libs</strong> (a repo rule exposing <code class="notranslate">cc_library</code> targets for the needed Clang/LLVM static libs). Adds a dependency we must name and pin, but inherits whatever STL the prebuilt was built with - on Linux that is libstdc++, which a libc++ tool cannot link against.</li>
+<li><strong>Local-install bridge</strong> (<code class="notranslate">bazel-llvm-bridge</code>, <code class="notranslate">@local_llvm//:llvm_headers</code>). Non-hermetic; breaks "works immediately after clone." Acceptable only as a dev fallback.</li>
+</ol>
+<p dir="auto"><strong>Decision (implemented).</strong> Option 2 via<br>
+<a href="https://github.com/bazel-contrib/toolchains_llvm">bazel-contrib/toolchains_llvm</a><br>
+1.9.0 for root development, plus the official LLVM 22.1.8 distributions fetched<br>
+directly by Carve's module extension.<br>
+<code class="notranslate">//third_party/llvm:clang_dependency_scanning</code> wraps <code class="notranslate">clang_headers</code> and the<br>
+static archive closure recorded by the distribution's Clang and LLVM CMake<br>
+metadata. This removes both recurring LLVM compilation and runtime LLVM shared<br>
+library dependencies.</p>
+<p dir="auto"><strong>C++ ABI matching.</strong> The official Linux static archives are built for<br>
+libstdc++, so the Linux toolchain selects static libstdc++. The official macOS<br>
+archives use libc++, matched by the SDK libc++ selected by the toolchain. The<br>
+compiler, headers, archives, and standard-library selection therefore come from<br>
+one pinned toolchain definition without a Clang/LLVM shared-library boundary.</p>
+<h4 dir="auto" id="decoupling-scan-deps-is-not-required-for-a-working-cdb">Decoupling: scan-deps is not required for a working CDB</h4>
+<p dir="auto">clangd derives a translation unit's headers itself from the source + flags; <code class="notranslate">compile_commands.json</code> has one entry per source file, not per header. Scan-deps buys exactly two things: (a) the header→action index for <em>incremental</em> invalidation (section 4.4), and (b) optional header-entry emission so a header opens standalone. Neither is needed to emit a functional CDB.</p>
+<p dir="auto">Therefore Layer A can ship <strong>without</strong> in-process scan-deps - emit the CDB directly from aquery (the approach <code class="notranslate">kiron1/bazel-compile-commands</code> takes) - and add scan-deps purely for incrementality once the linkage spike succeeds. This decouples first user value from the project's biggest unknown and is the recommended sequencing.</p>
+<p dir="auto">Failure mode to handle: generated headers that have not been built. Scan-deps reports them as missing; we mirror the current tool's behavior of caching only when no headers are missing (see upstream <a href="https://github.com/hedronvision/bazel-compile-commands-extractor/blob/main/refresh.template.py">refresh.template.py</a> for the rationale - rederive, do not copy). User-facing implication to state honestly: for codegen-heavy repos a build (or at least header generation) must precede a <em>complete</em> scan; "no full build required" is a clangd property, not a guarantee that every generated header resolves on first refresh.</p>
+<h3 dir="auto" id="43-de-bazeling-patches-the-quirk-inventory">4.3 De-Bazeling patches (the quirk inventory)</h3>
+<p dir="auto">The rewrite must rederive these. The current Python script is a useful checklist; the patch logic itself is rederived from primary sources.</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>Quirk</th>
+<th>Primary source for rederivation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Apple <code class="notranslate">wrapped_clang</code>, <code class="notranslate">__BAZEL_XCODE_*</code> substitutions</td>
+<td>Bazel <code class="notranslate">tools/osx/crosstool/wrapped_clang.cc</code></td>
+</tr>
+<tr>
+<td>Emscripten driver indirection</td>
+<td>emscripten <code class="notranslate">emcc</code> source, EM_COMPILER_WRAPPER hook</td>
+</tr>
+<tr>
+<td>NVCC to clang flag translation</td>
+<td>NVCC compiler driver docs, clang driver source</td>
+</tr>
+<tr>
+<td>MSVC <code class="notranslate">/showIncludes</code> locale strings</td>
+<td>Ninja issue 613, public MSVC documentation</td>
+</tr>
+<tr>
+<td>ccache symlink resolution</td>
+<td>ccache docs</td>
+</tr>
+<tr>
+<td>Windows command-line length workaround</td>
+<td>MSDN command-line limits</td>
+</tr>
+<tr>
+<td><code class="notranslate">//external</code> symlink, execroot trap</td>
+<td>Bazel <code class="notranslate">output_directories</code> docs</td>
+</tr>
+<tr>
+<td>Execroot / absolute-path canonicalization (rewrite per-host <code class="notranslate">bazel-out</code>/cache paths to workspace-relative)</td>
+<td>Bazel <code class="notranslate">output_directories</code> docs; required for the cross-host determinism property (section 9)</td>
+</tr>
+<tr>
+<td><code class="notranslate">parse_headers</code> action filtering</td>
+<td>Bazel cc rules source</td>
+</tr>
+<tr>
+<td><code class="notranslate">compiler_param_file</code> feature disable</td>
+<td>Bazel cc features source</td>
+</tr>
+<tr>
+<td><code class="notranslate">layering_check</code> feature disable</td>
+<td>Bazel cc features source</td>
+</tr>
+<tr>
+<td><code class="notranslate">-fno-canonical-system-headers</code> strip</td>
+<td>Clang driver source, <a href="https://github.com/clangd/clangd/issues/1004" data-hovercard-type="issue" data-hovercard-url="/clangd/clangd/issues/1004/hovercard">clangd#1004</a></td>
+</tr>
+<tr>
+<td><code class="notranslate">-gcc-toolchain</code> strip</td>
+<td><a href="https://github.com/clangd/clangd/issues/1248" data-hovercard-type="issue" data-hovercard-url="/clangd/clangd/issues/1248/hovercard">clangd#1248</a></td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p dir="auto">This is roughly the full inventory. Each is a day or two of work, standalone-testable.</p>
+<h3 dir="auto" id="44-sidecar-storage">4.4 Sidecar storage</h3>
+<p dir="auto">Two persistent files, in a single directory next to the CDB (default <code class="notranslate">.carve-cache/</code>):</p>
+<pre class="notranslate"><code class="notranslate">entries-by-actionkey.binpb   # Binary proto: ActionRecord[]
+headers-index.binpb          # Binary proto: HeaderIndex
+</code></pre>
+<p dir="auto">Schema, defined in <code class="notranslate">carve.proto</code>. We use <strong>Protobuf Edition 2024</strong> (current as of project start in 2026, GA since protoc 27.0 with later releases adding 2024-specific features). Edition 2024 gives us:</p>
+<ul dir="auto">
+<li>Default <code class="notranslate">string_type = VIEW</code>, so generated accessors return <code class="notranslate">absl::string_view</code>. Pairs naturally with C++23 + Abseil and removes per-call <code class="notranslate">std::string</code> allocations.</li>
+<li>Explicit field-presence opt-in via <code class="notranslate">features.field_presence</code> where we want it, default-implicit elsewhere.</li>
+<li><code class="notranslate">import option</code> syntax if we ever need custom options without pulling in other symbols.</li>
+<li>Symbol visibility keywords (<code class="notranslate">export</code>, <code class="notranslate">local</code>) for clean module boundaries if the schema grows.</li>
+</ul>
+<div class="highlight highlight-source-proto" dir="auto"><pre class="notranslate">edition = "2024";
+<span class="pl-k">package</span> <span class="pl-s">carve</span>;
+
+<span class="pl-k">message</span> <span class="pl-en">ActionRecord</span> {
+  <span class="pl-k">string</span> <span class="pl-smi">action_key</span> <span class="pl-k">=</span> <span class="pl-c1">1</span>;
+  <span class="pl-k">repeated</span> <span class="pl-k">string</span> <span class="pl-smi">sources</span> <span class="pl-k">=</span> <span class="pl-c1">2</span>;
+  <span class="pl-k">repeated</span> <span class="pl-k">string</span> <span class="pl-smi">headers</span> <span class="pl-k">=</span> <span class="pl-c1">3</span>;
+  <span class="pl-k">repeated</span> <span class="pl-k">string</span> <span class="pl-smi">command</span> <span class="pl-k">=</span> <span class="pl-c1">4</span>;
+  <span class="pl-k">string</span> <span class="pl-smi">project_id</span> <span class="pl-k">=</span> <span class="pl-c1">5</span> [<span class="pl-c1">features.field_presence</span> = <span class="pl-c1">EXPLICIT</span>];   <span class="pl-c">// distinguish unset vs empty</span>
+  <span class="pl-k">enum</span> <span class="pl-en">SourceKind</span> {
+    <span class="pl-smi">SOURCE_KIND_UNSPECIFIED</span> <span class="pl-k">=</span> <span class="pl-c1">0</span>;
+    <span class="pl-smi">PREPROCESSOR</span> <span class="pl-k">=</span> <span class="pl-c1">1</span>;           <span class="pl-c">// scan-deps result</span>
+    <span class="pl-smi">ASPECT_DECLARED</span> <span class="pl-k">=</span> <span class="pl-c1">2</span>;        <span class="pl-c">// future: from CcInfo</span>
+    <span class="pl-smi">ASPECT_M</span> <span class="pl-k">=</span> <span class="pl-c1">3</span>;               <span class="pl-c">// future: from aspect-scheduled -M</span>
+  }
+  <span class="pl-k">SourceKind</span> <span class="pl-smi">source_kind</span> <span class="pl-k">=</span> <span class="pl-c1">6</span>;
+  <span class="pl-k">int64</span> <span class="pl-smi">written_at</span> <span class="pl-k">=</span> <span class="pl-c1">7</span>;         <span class="pl-c">// unix seconds; for GC</span>
+}
+
+<span class="pl-k">message</span> <span class="pl-en">HeaderOwners</span> {
+  <span class="pl-k">string</span> <span class="pl-smi">header_path</span> <span class="pl-k">=</span> <span class="pl-c1">1</span>;
+  <span class="pl-k">repeated</span> <span class="pl-k">string</span> <span class="pl-smi">action_keys</span> <span class="pl-k">=</span> <span class="pl-c1">2</span>;   <span class="pl-c">// sorted; first is canonical owner</span>
+}
+
+<span class="pl-k">message</span> <span class="pl-en">HeaderIndex</span> {
+  <span class="pl-k">repeated</span> <span class="pl-k">HeaderOwners</span> <span class="pl-smi">owners</span> <span class="pl-k">=</span> <span class="pl-c1">1</span>;
+  <span class="pl-k">uint32</span> <span class="pl-smi">schema_version</span> <span class="pl-k">=</span> <span class="pl-c1">2</span>;
+}</pre></div>
+<p dir="auto">Binary proto for speed and schema discipline. <code class="notranslate">schema_version</code> lets future tool upgrades detect and rebuild stale sidecars. Editions also lets us upgrade to Edition 2026 (which enforces naming style by default) by changing one line; no schema migration if we name things conventionally from the start.</p>
+<p dir="auto"><strong><code class="notranslate">action_key</code> stability caveat.</strong> The sidecar is keyed on aquery's <code class="notranslate">action_key</code>, which is stable run-to-run on a fixed Bazel version + configuration but <em>churns</em> across Bazel upgrades, toolchain changes, or <code class="notranslate">--config</code> changes. When the key space shifts, the diff in section 4.5 sees the entire own-project row set as <code class="notranslate">removed</code>+new and forces a full re-scan. <code class="notranslate">schema_version</code> covers <em>tool</em>-driven invalidation, not action-key churn. This is acceptable (correctness is preserved; only one slow refresh results) but must be documented so users are not surprised that switching <code class="notranslate">--config</code> triggers a full rebuild.</p>
+<p dir="auto">Fallback path: if a particular protoc release is fussy about Edition 2024 features, downgrade to <code class="notranslate">edition = "2023";</code> and lose only the <code class="notranslate">VIEW</code> default and a few cosmetic features. We do not need to fall back to <code class="notranslate">syntax = "proto3";</code>.</p>
+<h3 dir="auto" id="45-merge-semantics">4.5 Merge semantics</h3>
+<p dir="auto">Each <code class="notranslate">carve refresh</code> invocation owns exactly the rows whose <code class="notranslate">project_id</code> matches. On refresh:</p>
+<ol dir="auto">
+<li>Load current sidecar.</li>
+<li>Run aquery, get action set <code class="notranslate">A_now</code>.</li>
+<li>Partition own rows into <code class="notranslate">unchanged</code> (action_key in <code class="notranslate">A_now</code> with same content), <code class="notranslate">changed</code> (action_key in <code class="notranslate">A_now</code>, content differs), <code class="notranslate">removed</code> (action_key not in <code class="notranslate">A_now</code>).</li>
+<li>For <code class="notranslate">changed</code> and new actions in <code class="notranslate">A_now</code>: run scan-deps, build new records.</li>
+<li>For each affected header, update <code class="notranslate">HeaderOwners</code>. Canonical owner is lex-min of remaining action keys. This guarantees byte-stable header entries when the owner persists.</li>
+<li>Other projects' rows are untouched.</li>
+<li>Serialize sidecar atomically (write to <code class="notranslate">.tmp</code>, rename).</li>
+<li>Emit CDB from full sidecar (all projects), atomically.</li>
+</ol>
+<p dir="auto">This makes the cross-project combined CDB a property of the data model, not a feature toggle.</p>
+<h3 dir="auto" id="46-bazel-rule-cc_carve">4.6 Bazel rule (<code class="notranslate">cc_carve</code>)</h3>
+<p dir="auto">Layer B. Defined in <code class="notranslate">cc_carve.bzl</code>:</p>
+<div class="highlight highlight-source-python" dir="auto"><pre class="notranslate"><span class="pl-en">cc_carve</span>(
+    <span class="pl-s1">name</span> <span class="pl-c1">=</span> <span class="pl-s">"compile_commands"</span>,
+    <span class="pl-s1">targets</span> <span class="pl-c1">=</span> [<span class="pl-s">"//..."</span>],
+    <span class="pl-s1">project_id</span> <span class="pl-c1">=</span> <span class="pl-s">"main"</span>,                 <span class="pl-c"># optional; defaults to workspace hash</span>
+    <span class="pl-s1">exclude_headers</span> <span class="pl-c1">=</span> <span class="pl-s">"external"</span>,        <span class="pl-c"># "all" | "external" | None</span>
+    <span class="pl-s1">exclude_external_sources</span> <span class="pl-c1">=</span> <span class="pl-c1">False</span>,
+)</pre></div>
+<p dir="auto">Implementation runs <code class="notranslate">carve refresh</code> as a build action. Inputs: target labels (passed as args, not deps, because deps would force analysis of the whole world). Output: <code class="notranslate">compile_commands.json</code> plus the sidecar directory as declared outputs.</p>
+<p dir="auto">User runs <code class="notranslate">bazel build //:compile_commands</code>. Output appears under <code class="notranslate">bazel-bin/</code>, with a convenience symlink to the workspace root.</p>
+<h3 dir="auto" id="47-aspect-layer-c">4.7 Aspect (Layer C)</h3>
+<p dir="auto">Defined in <code class="notranslate">cc_carve_aspect.bzl</code>:</p>
+<ul dir="auto">
+<li><code class="notranslate">attr_aspects = ["deps", "data", "implementation_deps", "interface_deps", ...]</code> to propagate across the cc graph.</li>
+<li>For each visited target with <code class="notranslate">CcInfo</code>, register one action per compile action that runs <code class="notranslate">carve shard --action-key=... --command-file=... --source=...</code>.</li>
+<li>Output group <code class="notranslate">carve_shards</code> contains the per-action shard files.</li>
+</ul>
+<p dir="auto">Aggregator (<code class="notranslate">carve aggregate</code>) reads the shards as inputs to a separate top-level action, merges into CDB and sidecar. Bazel's action cache handles per-shard invalidation; aggregator only rebuilds when the set of shards or their contents changes.</p>
+<p dir="auto">Layer C is opt-in: <code class="notranslate">cc_carve(..., use_aspect = True)</code>. Layer A/B remain the default until C is proven on production repos.</p>
+<p dir="auto"><strong>Implemented (M5).</strong> A few specifics differ from the sketch above:</p>
+<ul dir="auto">
+<li>The aspect reads each compile action's command straight from <code class="notranslate">action.argv</code>, which Bazel returns fully expanded (param files already inlined, no <code class="notranslate">@file</code>). This is faithful to the real build and needs no <code class="notranslate">cc_common</code> command-line reconstruction. The shard's <code class="notranslate">command_file</code> is that argv in Bazel's multiline param-file format (one token per line), not a serialized proto.</li>
+<li>A shard's content is a function of its compile command alone, so each shard action's <em>only</em> input is its <code class="notranslate">command_file</code>. Bazel re-runs an individual shard exactly when that command changes (a new flag/define/dep); editing source or header <em>content</em> leaves the command - and the database entry - unchanged, so nothing re-shards (clangd re-reads the changed files itself). Consequently shards are <strong>not</strong> header-scanned: the lean <code class="notranslate">carve_shard</code> tool links no scanner at all - the database does not use headers, and scanning every TU inside a build action would be costly. Recording headers in shards (for a shard-built <code class="notranslate">HeaderIndex</code>, the <code class="notranslate">ASPECT_M</code> source kind) is a future enhancement.</li>
+<li>Aggregation runs as a <code class="notranslate">bazel run</code> step (<code class="notranslate">carve_aspect_refresh</code>), not a build action: the database's <code class="notranslate">directory</code> must be the persistent execroot (<code class="notranslate">bazel info execution_root</code>), which a sandboxed action cannot know. The outer build produces the shards (cacheable); the run step merges them.</li>
+<li>Layer C runs <strong>lean, LLVM-free tools</strong>: the aspect's per-action exec tool is <code class="notranslate">//carve:carve_shard</code> and the run step's merge tool is <code class="notranslate">//carve:carve_aggregate</code>. Neither links <code class="notranslate">scan_deps</code> or the prebuilt LLVM libraries - sharding only records the command, and aggregation only merges proto records, so no compiler is needed. Using the full <code class="notranslate">carve</code> would unnecessarily link the LLVM distribution into both exec and target configurations; the lean binaries build in seconds, which is why the whole Layer C path is exercised by an <code class="notranslate">aspect_shards_build_test</code> in CI rather than only on demand.</li>
+<li>The opt-in is a dedicated <code class="notranslate">carve_aspect_refresh</code> rule rather than a <code class="notranslate">use_aspect</code> flag on <code class="notranslate">cc_carve</code>. Its <code class="notranslate">targets</code> are real label deps (the aspect must analyze them), trading whole-graph analysis for per-action build-cache incrementality. The aspect scopes to first-party targets by default (<code class="notranslate">exclude_external_sources</code>, an aspect parameter; set <code class="notranslate">False</code> to shard the full transitive graph): external libraries need no database entries of their own, since clangd resolves their headers through the <code class="notranslate">-I</code> flags on first-party entries.</li>
+</ul>
+<h3 dir="auto" id="48-python-footprint">4.8 Python footprint</h3>
+<p dir="auto">Per the constraint, kept as close to zero as possible:</p>
+<ul dir="auto">
+<li><code class="notranslate">BUILD.bazel</code> and <code class="notranslate">.bzl</code> files: Starlark, not Python.</li>
+<li>Tests: GTest binaries in C++. No <code class="notranslate">py_test</code>.</li>
+<li>Vendored toolchain configuration: declarative <code class="notranslate">MODULE.bazel</code>, no scripts.</li>
+<li>Possible exception: a one-shot regeneration script for the NVCC flag table (a <code class="notranslate">nvcc_clang_diff.py</code>-style developer utility, to be added when the NVCC quirk lands). Could be rewritten in C++ but Python is genuinely faster to iterate on for that specific tool. Acceptable to keep as developer-only utility.</li>
+</ul>
+<p dir="auto">Net runtime Python: zero. Net developer Python: at most one script run rarely.</p>
+<h2 dir="auto" id="5-build-and-dependency-tree">5. Build and dependency tree</h2>
+<p dir="auto"><code class="notranslate">MODULE.bazel</code>:</p>
+<div class="highlight highlight-source-python" dir="auto"><pre class="notranslate"><span class="pl-en">module</span>(<span class="pl-s1">name</span> <span class="pl-c1">=</span> <span class="pl-s">"mboworks_carve"</span>, <span class="pl-s1">version</span> <span class="pl-c1">=</span> <span class="pl-s">"0.1.1"</span>)
+
+<span class="pl-en">bazel_dep</span>(<span class="pl-s1">name</span> <span class="pl-c1">=</span> <span class="pl-s">"mbo"</span>, <span class="pl-s1">version</span> <span class="pl-c1">=</span> <span class="pl-s">"..."</span>)                      <span class="pl-c"># mboworks/mbo. Pulls abseil and friends transitively</span>
+<span class="pl-en">bazel_dep</span>(<span class="pl-s1">name</span> <span class="pl-c1">=</span> <span class="pl-s">"googletest"</span>, <span class="pl-s1">version</span> <span class="pl-c1">=</span> <span class="pl-s">"1.15.2"</span>)
+<span class="pl-en">bazel_dep</span>(<span class="pl-s1">name</span> <span class="pl-c1">=</span> <span class="pl-s">"protobuf"</span>, <span class="pl-s1">version</span> <span class="pl-c1">=</span> <span class="pl-s">"29.0"</span>)
+<span class="pl-en">bazel_dep</span>(<span class="pl-s1">name</span> <span class="pl-c1">=</span> <span class="pl-s">"rules_cc"</span>, <span class="pl-s1">version</span> <span class="pl-c1">=</span> <span class="pl-s">"0.0.17"</span>)
+<span class="pl-en">bazel_dep</span>(<span class="pl-s1">name</span> <span class="pl-c1">=</span> <span class="pl-s">"rules_proto"</span>, <span class="pl-s1">version</span> <span class="pl-c1">=</span> <span class="pl-s">"7.0.2"</span>)
+<span class="pl-en">bazel_dep</span>(<span class="pl-s1">name</span> <span class="pl-c1">=</span> <span class="pl-s">"zstd"</span>, <span class="pl-s1">version</span> <span class="pl-c1">=</span> <span class="pl-s">"1.5.7.bcr.1"</span>)
+
+<span class="pl-c"># Prebuilt clang toolchain and matching static Clang/LLVM archives.</span>
+<span class="pl-en">bazel_dep</span>(<span class="pl-s1">name</span> <span class="pl-c1">=</span> <span class="pl-s">"toolchains_llvm"</span>, <span class="pl-s1">version</span> <span class="pl-c1">=</span> <span class="pl-s">"1.9.0"</span>)
+<span class="pl-s1">llvm</span> <span class="pl-c1">=</span> <span class="pl-en">use_extension</span>(<span class="pl-s">"@toolchains_llvm//toolchain/extensions:llvm.bzl"</span>, <span class="pl-s">"llvm"</span>)
+<span class="pl-s1">llvm</span>.<span class="pl-c1">toolchain</span>(<span class="pl-s1">name</span> <span class="pl-c1">=</span> <span class="pl-s">"llvm_toolchain"</span>, <span class="pl-s1">llvm_version</span> <span class="pl-c1">=</span> <span class="pl-s">"22.1.8"</span>)
+<span class="pl-en">use_repo</span>(<span class="pl-s1">llvm</span>, <span class="pl-s">"llvm_toolchain"</span>, <span class="pl-s">"llvm_toolchain_llvm"</span>)
+<span class="pl-en">register_toolchains</span>(<span class="pl-s">"@llvm_toolchain//:all"</span>)</pre></div>
+<p dir="auto">mbo brings Abseil transitively, so we do not list Abseil separately. If a future mbo release stops re-exporting Abseil, add a direct <code class="notranslate">bazel_dep</code> then. Versions above are placeholders pinned at project bootstrap; lock to current-at-start releases.</p>
+<p dir="auto">C++ build:</p>
+<ul dir="auto">
+<li><code class="notranslate">cc_binary</code> target <code class="notranslate">//carve:carve</code> (with a <code class="notranslate">//:refresh</code> alias for <code class="notranslate">bazel run</code>).</li>
+<li>Per-module <code class="notranslate">cc_library</code> targets <code class="notranslate">//carve/&lt;module&gt;:&lt;module&gt;_cc</code>, using<br>
+<code class="notranslate">implementation_deps</code> vs <code class="notranslate">deps</code> per the house convention (see <a href="RULES.html">RULES.md</a>).</li>
+<li>Clang and LLVM component libraries are linked statically from the prebuilt<br>
+distribution.</li>
+<li>Compiled with <code class="notranslate">-std=c++23</code>, <code class="notranslate">-Wall -Wextra -Werror</code>, <code class="notranslate">-Wpedantic</code> under<br>
+<code class="notranslate">toolchains_llvm</code>; Linux uses static libstdc++, while macOS uses the SDK's<br>
+libc++.</li>
+<li>Sanitizer presets: <code class="notranslate">--config=asan</code>, <code class="notranslate">--config=tsan</code>, <code class="notranslate">--config=ubsan</code> for tests.</li>
+</ul>
+<p dir="auto">Test layout:</p>
+<ul dir="auto">
+<li>Per-module GTest <code class="notranslate">//carve/&lt;module&gt;:&lt;module&gt;_test</code>, <code class="notranslate">size = "small"</code>, colocated<br>
+with the unit as <code class="notranslate">&lt;module&gt;_test.cc</code>.</li>
+<li><code class="notranslate">//carve/e2e:end_to_end_test</code> integration tests that drive <code class="notranslate">carve</code> against synthetic Bazel workspaces in <code class="notranslate">testdata/</code>.</li>
+<li>Quirk-specific golden tests: one input action, one expected output entry, per platform patch.</li>
+</ul>
+<h2 dir="auto" id="6-cli-surface">6. CLI surface</h2>
+<p dir="auto">Driven by <code class="notranslate">absl::Flags</code>. Subcommand pattern:</p>
+<pre class="notranslate"><code class="notranslate">carve refresh [flags] [-- bazel-flags]
+  --output=PATH                CDB path. Default: compile_commands.json at workspace root
+  --project-id=ID              Override default (workspace path hash)
+  --targets=PATTERN            Target pattern, repeatable. Default: //...
+  --exclude-headers=MODE       all | external | none
+  --exclude-external-sources   Bool
+  --jobs=N                     Scan-deps parallelism. Default: hardware concurrency
+  --bazel=PATH                 Path to bazel binary. Default: $PATH lookup
+  -- ...                       Bazel flags forwarded to aquery
+
+carve aggregate [flags]
+  --shards=DIR                 Shard input directory (Layer C)
+  --output=PATH
+  --project-id=ID
+
+carve shard [flags]
+  --action-key=KEY
+  --command-file=PATH          Argv as protobuf
+  --source=PATH
+  --out=PATH                   Shard output (ActionRecord protobuf)
+
+carve prune [flags]
+  --age=DAYS                   Drop rows older than this with no recent refresh
+  --project-id=ID              Restrict to a project
+</code></pre>
+<p dir="auto">All flags <code class="notranslate">absl::Flags</code>. Help auto-generated. No hand-rolled arg parsing.</p>
+<h2 dir="auto" id="7-distribution-and-bootstrap">7. Distribution and bootstrap</h2>
+<p dir="auto">Two delivery modes:</p>
+<ol dir="auto">
+<li><strong>As a bzlmod dependency.</strong> Consumers add <code class="notranslate">bazel_dep(name = "mboworks_carve")</code> and load <code class="notranslate">carve_refresh</code> / <code class="notranslate">carve_aspect_refresh</code> from <code class="notranslate">@mboworks_carve//rules:carve.bzl</code>. First use builds carve itself with the consumer's toolchain but downloads LLVM as a prebuilt distribution. Carve links its static Clang/LLVM component archives; consumers do not compile llvm-project or configure a Carve-specific toolchain.</li>
+<li><strong>As prebuilt binaries.</strong> Released for common platforms (darwin-arm64, darwin-x86_64, linux-x86_64, linux-arm64, windows-x86_64) via GitHub Releases. <code class="notranslate">cc_carve</code> rule downloads the appropriate binary for the host. Avoids the from-source build entirely for users on supported platforms.</li>
+</ol>
+<p dir="auto">Mode 2 matters for the editor-tooling use case: contributors want compile_commands.json working immediately after clone, not after a 5-minute LLVM toolchain build.</p>
+<h2 dir="auto" id="8-coexistence-with-the-current-tool">8. Coexistence with the current tool</h2>
+<p dir="auto">Until the rewrite reaches parity:</p>
+<ul dir="auto">
+<li>Live in a different repo / module name (<code class="notranslate">carve</code> vs <code class="notranslate">hedron_compile_commands</code>).</li>
+<li>Different output path default if needed, though <code class="notranslate">compile_commands.json</code> is the only sensible default.</li>
+<li>Document a migration path in README: drop one macro call, add the other.</li>
+<li>Validation harness: run both tools against a corpus of projects (this repo's <code class="notranslate">print_args.cpp</code>, public Bazel-using OSS repos), diff the CDBs, investigate every meaningful difference. Goal: at parity, identical entries up to ordering, modulo documented intentional differences.</li>
+</ul>
+<p dir="auto">Do not deprecate or break the existing path until validation passes on the corpus.</p>
+<h2 dir="auto" id="9-testing-strategy">9. Testing strategy</h2>
+<p dir="auto">Tests are written at every ring below, not just the unit level. One-shot manual<br>
+verification (running <code class="notranslate">carve</code> by hand, a throwaway diff) is allowed only as<br>
+<em>planning input</em>: it informs which committed test to write, and the change is<br>
+not done until that test exists. See the testing-discipline section in<br>
+<a href="AGENTS.html">AGENTS.md</a>.</p>
+<p dir="auto">Concentric rings:</p>
+<ol dir="auto">
+<li><strong>Unit tests.</strong> Per module. Heavy on the command-patching logic since that is where regressions hide.</li>
+<li><strong>Golden tests.</strong> Action input plus expected entry output. One golden per quirk in the inventory. Stored as protobuf text-format for diffability.</li>
+<li><strong>Integration tests.</strong> Synthetic Bazel workspaces under <code class="notranslate">testdata/</code>. Drive <code class="notranslate">carve refresh</code>, snapshot the resulting CDB, diff against golden CDB. Cover:
+<ul dir="auto">
+<li>Plain C++ library + binary</li>
+<li>Generated headers (via <code class="notranslate">genrule</code>)</li>
+<li>External dependency (via <code class="notranslate">bazel_dep</code>)</li>
+<li>Apple-platform cross-compile (skipped on non-Apple)</li>
+<li>Windows MSVC (skipped on non-Windows)</li>
+<li>NVCC (skipped if no CUDA toolkit)</li>
+</ul>
+</li>
+<li><strong>Differential tests.</strong> Run rewrite and existing tool against the same workspace; diff output. Acceptable as a one-off validation harness, not in CI.</li>
+<li><strong>Property tests.</strong> Idempotency (refresh twice in a row produces identical sidecar and CDB), determinism (refresh under stable input produces identical output across runs and across hosts of the same platform). <strong>Note:</strong> cross-host determinism holds <em>only after</em> execroot/absolute-path canonicalization (section 4.3) - raw aquery command lines embed per-host cache paths (<code class="notranslate">/home/&lt;user&gt;/.cache/bazel/...</code>) and are not byte-identical across machines. The property test must run on canonicalized output, and the canonicalization patch is a prerequisite, not an optional quirk.</li>
+</ol>
+<h3 dir="auto" id="91-assertion-strategy-match-the-model-not-the-serialization">9.1 Assertion strategy: match the model, not the serialization</h3>
+<p dir="auto">Assert on the structured data, never on a serialized blob:</p>
+<ul dir="auto">
+<li><strong>Proto data (sidecar records; any future proto model).</strong> Use mboworks/proto<br>
+matchers (<code class="notranslate">@mboworks_proto//mbo/proto:matchers_cc</code>, namespace <code class="notranslate">mbo::proto</code>) -<br>
+<code class="notranslate">EqualsProto</code>, <code class="notranslate">Partially(EqualsProto(...))</code>, <code class="notranslate">WhenDeserialized</code>,<br>
+<code class="notranslate">IgnoringRepeatedFieldOrdering</code> - never <code class="notranslate">Eq(msg.SerializeAsString())</code>. They give<br>
+field-level diffs on failure and accept text-proto literals for expectations.<br>
+Plain C++ structs (e.g. <code class="notranslate">cdb::CompileCommand</code>) use stock gmock <code class="notranslate">ElementsAre</code>/<br>
+<code class="notranslate">Field</code> for the same reason - assert fields, not strings.</li>
+<li><strong><code class="notranslate">compile_commands.json</code> is output, not a test surface.</strong> It is the <em>only</em><br>
+interface clangd consumes (no proto channel), and <code class="notranslate">cdb::ToJson</code> is<br>
+byte-deterministic by design. So the serializer's exact bytes are pinned with<br>
+exact-string golden tests (ring 2), and byte-stable e2e/idempotency (ring 5)<br>
+diff the whole file - neither needs a JSON matcher.</li>
+<li><strong>Semantic JSON comparison is a differential-only need (ring 4).</strong> Diffing<br>
+carve's CDB against a <em>different</em> producer (Hedron) means key/array order and<br>
+whitespace differ. Get that comparison by parsing the JSON back into the proto<br>
+model and reusing the proto matchers (<code class="notranslate">IgnoringRepeatedFieldOrdering</code> /<br>
+<code class="notranslate">Partially</code>), or with off-the-shelf <code class="notranslate">jq -S</code> / <code class="notranslate">jd</code> in the one-off harness -<br>
+never a carve-local JSON comparator. A JSON-native matcher, if ever needed,<br>
+belongs in mbo (its <code class="notranslate">mbo/json</code> would need a parser first; today it only<br>
+builds/serializes).</li>
+</ul>
+<h2 dir="auto" id="10-open-questions">10. Open questions</h2>
+<ul dir="auto">
+<li><strong>Aquery proto vendoring (decided, not open).</strong> <code class="notranslate">analysis_v2.proto</code> is not published as a bzlmod module; it lives in <code class="notranslate">bazelbuild/bazel/src/main/protobuf</code> and its <code class="notranslate">import "build.proto"</code> pulls in a further chain (<code class="notranslate">stardoc_output.proto</code>, ...). carve consumes only the aquery action graph, never cquery, so we vendor a <strong>trimmed, self-contained</strong> copy at <code class="notranslate">carve/third_party/bazel/analysis_v2.proto</code>: the <code class="notranslate">ConfiguredTarget</code>/<code class="notranslate">CqueryResult</code> messages and the <code class="notranslate">build.proto</code> import they need are removed, every other message is byte-for-byte upstream. This avoids vendoring the whole proto chain. <strong>Version-couple the vendored copy to our Bazel pin</strong> (note the v1→v2 id type change, <code class="notranslate">string</code>→<code class="notranslate">uint64</code>, gated by <code class="notranslate">--incompatible_proto_output_v2</code>) and re-vendor on every Bazel bump - a recurring maintenance task, not a one-time setup.</li>
+<li><strong>DependencyScanningService linkage (resolved).</strong> See section 4.2 "Linkage reality": carve links matching static Clang and LLVM component archives from its dependency-safe distribution repository, with platform-specific standard-library ABI matching.</li>
+<li><strong>Modules support timing.</strong> Phase the modules-aware path in later. Scan-deps already handles modules; we just need a flag to expose it. Defer until a real consumer asks.</li>
+<li><strong>Remote execution.</strong> Layer C with remote cache is the long-tail goal. Layer A on a developer laptop is the immediate goal. Make sure Layer A does not preclude Layer C in the schema.</li>
+<li><strong>Symlink handling.</strong> The current tool's <code class="notranslate">//external</code> link choreography (see upstream <a href="https://github.com/hedronvision/bazel-compile-commands-extractor/blob/main/refresh.template.py">refresh.template.py</a>, the external-symlink section) is subtle. Rederive carefully on Windows where junctions differ from symlinks. Candidate for an mbo utility if not already present.</li>
+<li><strong>mbo surface gaps.</strong> Inventory what we need against what mbo ships at project start. Anything missing becomes an mbo PR before the corresponding <code class="notranslate">carve</code> code lands. Avoid the failure mode of "we wrote local helpers because mbo did not have it yet" calcifying into duplicate utility code.</li>
+<li><strong>Multi-version Bazel support.</strong> Aim at Bazel 9.1 minimum; check whether earlier versions are worth supporting. Probably not in the first release.</li>
+</ul>
+<h2 dir="auto" id="11-phasing">11. Phasing</h2>
+<blockquote>
+<p dir="auto">Current status and the up-to-date, dependency-ordered task breakdown live in<br>
+<a href="docs/IMPLEMENTATION_PLAN.html">docs/IMPLEMENTATION_PLAN.md</a>. The month-by-month<br>
+sketch below is the original design-time roadmap, kept for context.</p>
+</blockquote>
+<p dir="auto">Concrete sequence for the first six months:</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>Month</th>
+<th>Milestone</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Repo bootstrap, MODULE.bazel, toolchain pin, hello-world <code class="notranslate">carve</code> binary, GTest wired up. <strong>LLVM-libs linkage spike</strong> (section 4.2): prove <code class="notranslate">DependencyScanningTool</code> links into a <code class="notranslate">cc_binary</code>. <em>Resolved via prebuilt <code class="notranslate">toolchains_llvm</code> static component archives.</em> This gates months 3–4.</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code class="notranslate">aquery</code> module + vendored proto parsing; basic <code class="notranslate">command</code> module with first three quirks (incl. execroot canonicalization); CDB writer. <strong>Layer A emits a working CDB straight from aquery, no scan-deps yet.</strong> Stand up a crude differential harness against Hedron on this repo.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Sidecar persistence, action-keyed diff, scan-deps integration (single-threaded) - assuming the month-1 spike succeeded; otherwise carry the no-scan-deps Layer A and reschedule.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Full quirk inventory ported, scan-deps parallelized, merge mode, Layer A feature-complete</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code class="notranslate">cc_carve</code> rule (Layer B), integration test corpus, differential test harness hardened</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Public 0.1 release; begin Layer C prototype</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p dir="auto">This is aggressive but plausible if the implementer is focused. Real schedules slip; the layering ensures each month produces a shippable improvement. The deliberate move here is putting the riskiest dependency (LLVM linkage) and the most valuable validation artifact (differential harness) at the <em>front</em>, so a bad surprise lands in month 1–2 rather than month 3–5.</p>
+<h2 dir="auto" id="12-out-of-scope">12. Out of scope</h2>
+<p dir="auto">To prevent scope creep:</p>
+<ul dir="auto">
+<li>Generating <code class="notranslate">.clangd</code> config alongside the CDB. Users own their <code class="notranslate">.clangd</code>.</li>
+<li>Integration with non-clang tooling that wants a CDB (rtags, cquery). Standard JSON output; downstream tools work or they do not.</li>
+<li>Cross-platform binary caching across projects. That is Bazel's remote cache concern.</li>
+<li>A GUI. No.</li>
+<li>Supporting build systems other than Bazel. Different project.</li>
+</ul>
+<h2 dir="auto" id="13-license">13. License</h2>
+<p dir="auto">Apache-2.0. Selected for: permissive use, explicit patent grant, broad enterprise acceptance, compatibility with most consumers including the existing Hedron tool's downstream consumers who might want to switch.</p>
+<p dir="auto">Decision before code is written. Every file gets the SPDX identifier from commit zero.</p>
+<h2 dir="auto" id="14-related-projects">14. Related projects</h2>
+<p dir="auto">The landscape carve enters. Useful for cross-referencing approaches, learning from past designs, and understanding where carve fits.</p>
+<p dir="auto">A few entries worth singling out before the full list:</p>
+<ul dir="auto">
+<li><strong><a href="https://github.com/kiron1/bazel-compile-commands">kiron1/bazel-compile-commands</a></strong> is the closest architectural precedent to carve: a Rust CLI parsing <code class="notranslate">bazel aquery</code> output. Same idea, different language, no in-process scan-deps. Worth reading before we start coding.</li>
+<li><strong><a href="https://github.com/Arech/yacce">Arech/yacce</a></strong> is the strace-based alternative path. Comparison point for "what if we did not use aquery at all."</li>
+<li><strong><a href="https://github.com/mikael-s-persson/bazel_cc_meta">mikael-s-persson/bazel_cc_meta</a></strong> is aspect-based and adds header/dep analysis on top. Closest to the Layer C aspect path we describe in section 4.7.</li>
+<li>The fork ecosystem around Hedron (helly25, modular, chandlerc, swift-nav, zaucy, tinted-software) confirms that upstream cadence is the dominant pain point. Carve does not try to be a fork; it is a clean replacement.</li>
+</ul>
+<h3 dir="auto" id="141-bazel-specific-compile_commandsjson-generators">14.1 Bazel-specific compile_commands.json generators</h3>
+<ul dir="auto">
+<li><strong>bazel-compile-commands-extractor</strong> (<a href="https://github.com/hedronvision/bazel-compile-commands-extractor">hedronvision/bazel-compile-commands-extractor</a>) - MIT-like (NOASSERTION on GitHub; see LICENSE). Aquery-based generator; de-facto standard for Bazel + clangd, no full build required. Status: active.</li>
+<li><strong>bazel-compilation-database</strong> (<a href="https://github.com/grailbio/bazel-compilation-database">grailbio/bazel-compilation-database</a>) - Apache-2.0. Aspect-based generator; original popular implementation, now in maintenance mode. Status: archived.</li>
+<li><strong>bazel-compile-commands</strong> (<a href="https://github.com/kiron1/bazel-compile-commands">kiron1/bazel-compile-commands</a>) - unknown (NOASSERTION). Rust CLI that parses <code class="notranslate">bazel aquery</code> output to emit compile_commands.json without modifying the workspace. Status: active.</li>
+<li><strong>bazel_cc_meta</strong> (<a href="https://github.com/mikael-s-persson/bazel_cc_meta">mikael-s-persson/bazel_cc_meta</a>) - Apache-2.0. Aspect-based tool that also analyzes header exports and missing/unused dependencies. Status: active.</li>
+<li><strong>bazel-clangd-helper</strong> (<a href="https://github.com/figurerobotics/bazel-clangd-helper">figurerobotics/bazel-clangd-helper</a>) - Apache-2.0. Aspect-based generator focused on a Bzlmod-friendly setup. Status: active.</li>
+<li><strong>yacce</strong> (<a href="https://github.com/Arech/yacce">Arech/yacce</a>) - MIT. strace-based interception wrapper that extracts compile_commands.json from any local Bazel (or other) build precisely. Status: active.</li>
+<li><strong>compdb-bazel</strong> (<a href="https://github.com/thoren-d/compdb-bazel">thoren-d/compdb-bazel</a>) - unknown. Small aquery-based Python script focused on Windows / clang-cl Bazel C++ targets. Status: dormant.</li>
+<li><strong>Bazel_and_CompileCommands</strong> (<a href="https://github.com/vincent-picaud/Bazel_and_CompileCommands">vincent-picaud/Bazel_and_CompileCommands</a>) - unknown. Setup script using Bazel's experimental action_listener plus a Python script to produce compile_commands.json. Status: dormant.</li>
+<li><strong>bazel-compilation-db</strong> (<a href="https://github.com/tolikzinovyev/bazel-compilation-db">tolikzinovyev/bazel-compilation-db</a>) - unknown. Adaptation of Kythe's extractor approach. Status: archived.</li>
+<li><strong>bazel-compdb</strong> (<a href="https://github.com/ramblehead/bazel-compdb">ramblehead/bazel-compdb</a>) - unknown. Small set of Bazel rules for generating compile_commands.json. Status: dormant.</li>
+<li><strong>bazel-compilation-database</strong> (<a href="https://github.com/xulongwu4/bazel-compilation-database">xulongwu4/bazel-compilation-database</a>) - Apache-2.0. Independent maintained re-implementation of the grailbio aspect-based generator. Status: active.</li>
+<li><strong>bazel_compilation_database</strong> (<a href="https://github.com/cherrry/bazel_compilation_database">cherrry/bazel_compilation_database</a>) - Apache-2.0. Fork of the grailbio generator with local customizations. Status: dormant.</li>
+<li><strong>bazel_compile_commands</strong> (<a href="https://github.com/cdump/bazel_compile_commands">cdump/bazel_compile_commands</a>) - Apache-2.0. extra_action / action_listener-based generator (legacy approach). Status: dormant.</li>
+<li><strong>bazel_compilation_database</strong> (<a href="https://github.com/curiousleo/bazel_compilation_database">curiousleo/bazel_compilation_database</a>) - unknown. Early generator for YouCompleteMe semantic completion against Bazel C++. Status: dormant.</li>
+</ul>
+<h3 dir="auto" id="142-notable-forks-of-hedronvisionbazel-compile-commands-extractor">14.2 Notable forks of hedronvision/bazel-compile-commands-extractor</h3>
+<ul dir="auto">
+<li><strong>helly25/bazel-compile-commands-extractor</strong> (<a href="https://github.com/helly25/bazel-compile-commands-extractor">helly25/bazel-compile-commands-extractor</a>) - same license as upstream (NOASSERTION). Restricted-maintenance fork (this repo) carrying focused fixes and design docs while upstream is slow-moving. Status: active.</li>
+<li><strong>modular/bazel-compile-commands-extractor</strong> (<a href="https://github.com/modular/bazel-compile-commands-extractor">modular/bazel-compile-commands-extractor</a>) - inherits upstream license. Modular's downstream fork tracking changes needed for their toolchain. Status: active.</li>
+<li><strong>chandlerc/bazel-compile-commands</strong> (<a href="https://github.com/chandlerc/bazel-compile-commands">chandlerc/bazel-compile-commands</a>) - inherits upstream license. Chandler Carruth's personal fork (Carbon/LLVM-adjacent experiments). Status: active.</li>
+<li><strong>swift-nav/bazel-compile-commands-extractor</strong> (<a href="https://github.com/swift-nav/bazel-compile-commands-extractor">swift-nav/bazel-compile-commands-extractor</a>) - inherits upstream license. Swift Navigation's downstream fork. Status: active.</li>
+<li><strong>zaucy/bazel-compile-commands-extractor</strong> (<a href="https://github.com/zaucy/bazel-compile-commands-extractor">zaucy/bazel-compile-commands-extractor</a>) - inherits upstream license. Independent contributor's fork with patches not yet merged upstream. Status: active.</li>
+<li><strong>tinted-software/bazel-compile-commands-extractor</strong> (<a href="https://github.com/tinted-software/bazel-compile-commands-extractor">tinted-software/bazel-compile-commands-extractor</a>) - inherits upstream license. Org-level fork with internal patches. Status: active.</li>
+</ul>
+<h3 dir="auto" id="143-compile-commands-generators-for-other-build-systems">14.3 Compile commands generators for other build systems</h3>
+<ul dir="auto">
+<li><strong>CMake (CMAKE_EXPORT_COMPILE_COMMANDS)</strong> (<a href="https://github.com/Kitware/CMake">Kitware/CMake</a>) - BSD-3-Clause. Built-in compile_commands.json emission for the Makefile and Ninja generators. Status: active.</li>
+<li><strong>Ninja (<code class="notranslate">ninja -t compdb</code>)</strong> (<a href="https://github.com/ninja-build/ninja">ninja-build/ninja</a>) - Apache-2.0. Built-in compdb tool that converts the Ninja build graph into compile_commands.json. Status: active.</li>
+<li><strong>Bear</strong> (<a href="https://github.com/rizsotto/Bear">rizsotto/Bear</a>) - GPL-3.0. LD_PRELOAD / wrapper-based interceptor that produces compile_commands.json from arbitrary builds. Status: active.</li>
+<li><strong>Meson</strong> (<a href="https://github.com/mesonbuild/meson">mesonbuild/meson</a>) - Apache-2.0. Build system that emits compile_commands.json automatically into the build directory. Status: active.</li>
+<li><strong>compiledb</strong> (<a href="https://github.com/nickdiego/compiledb">nickdiego/compiledb</a>) - GPL-3.0. Python tool that parses <code class="notranslate">make -n</code> dry-run output into compile_commands.json without LD_PRELOAD. Status: dormant.</li>
+<li><strong>scan-build / intercept-build</strong> (<a href="https://github.com/rizsotto/scan-build">rizsotto/scan-build</a>) - LLVM/MIT-like. Sibling of Bear bundled with Clang Static Analyzer's scan-build. Status: active.</li>
+</ul>
+<h3 dir="auto" id="144-clangllvm-tooling-that-consumes-compile_commandsjson">14.4 Clang/LLVM tooling that consumes compile_commands.json</h3>
+<ul dir="auto">
+<li><strong>clangd</strong> (<a href="https://github.com/llvm/llvm-project">llvm/llvm-project</a>) - Apache-2.0 with LLVM Exception. C/C++ language server; primary consumer of compile_commands.json. Status: active.</li>
+<li><strong>clang-tidy</strong> (<a href="https://github.com/llvm/llvm-project">llvm/llvm-project</a>) - Apache-2.0 with LLVM Exception. LibTooling-based linter / static analyzer driven by compile_commands.json. Status: active.</li>
+<li><strong>clang-scan-deps</strong> (<a href="https://github.com/llvm/llvm-project">llvm/llvm-project</a>) - Apache-2.0 with LLVM Exception. Dependency scanner (header + C++20 module deps) that reads compile_commands.json. Status: active.</li>
+<li><strong>clang-format</strong> (<a href="https://github.com/llvm/llvm-project">llvm/llvm-project</a>) - Apache-2.0 with LLVM Exception. Formatter; can use a compilation database in some integrations. Status: active.</li>
+<li><strong>ccls</strong> (<a href="https://github.com/MaskRay/ccls">MaskRay/ccls</a>) - Apache-2.0. Alternative C/C++ language server consuming compile_commands.json. Status: active.</li>
+<li><strong>CodeChecker</strong> (<a href="https://github.com/Ericsson/codechecker">Ericsson/codechecker</a>) - Apache-2.0. Static analysis driver (Clang SA, clang-tidy, Cppcheck) that takes compile_commands.json as input. Status: active.</li>
+<li><strong>include-what-you-use</strong> (<a href="https://github.com/include-what-you-use/include-what-you-use">include-what-you-use/include-what-you-use</a>) - NCSA. Clang-based include analyzer; <code class="notranslate">iwyu_tool.py</code> consumes compile_commands.json. Status: active.</li>
+<li><strong>rtags</strong> (<a href="https://github.com/Andersbakken/rtags">Andersbakken/rtags</a>) - GPL-3.0. Clang-based C/C++ tagger/indexer that ingests a compilation database. Status: active.</li>
+<li><strong>Sourcetrail</strong> (<a href="https://github.com/CoatiSoftware/Sourcetrail">CoatiSoftware/Sourcetrail</a>) - GPL-3.0. Code visualization/exploration tool that imported compile_commands.json. Status: archived (project closed 2021).</li>
+</ul>
+<h3 dir="auto" id="145-bazel-clangd-integration-approaches-not-using-compile_commandsjson">14.5 Bazel-clangd integration approaches NOT using compile_commands.json</h3>
+<ul dir="auto">
+<li><strong>clangd <code class="notranslate">.clangd</code> / <code class="notranslate">compile_flags.txt</code> config</strong> (<a href="https://clangd.llvm.org/config" rel="nofollow">clangd docs</a>) - Apache-2.0. clangd's native YAML/flags config; can substitute for a CDB in simple projects but lacks the file list needed for background indexing. Status: active.</li>
+<li><strong>IntelliJ / CLion Bazel plugin</strong> (<a href="https://github.com/bazelbuild/intellij">bazelbuild/intellij</a>) - Apache-2.0. JetBrains-side path that builds its own C++ workspace model from Bazel aspects rather than going through compile_commands.json. Status: active.</li>
+<li><strong>Tulsi</strong> (<a href="https://github.com/bazelbuild/tulsi">bazelbuild/tulsi</a>) - Apache-2.0. Original Xcode project generator for Bazel; superseded by rules_xcodeproj. Status: archived.</li>
+<li><strong>rules_xcodeproj</strong> (<a href="https://github.com/MobileNativeFoundation/rules_xcodeproj">MobileNativeFoundation/rules_xcodeproj</a>) - MIT. Generates Xcode projects from Bazel targets, supplying Xcode's own indexing pipeline instead of a CDB. Status: active.</li>
+<li><strong>vscode-bazel</strong> (<a href="https://github.com/bazel-contrib/vscode-bazel">bazel-contrib/vscode-bazel</a>) - Apache-2.0. VS Code Bazel extension providing Starlark LSP, buildifier, target navigation; does not itself produce a CDB for C++. Status: active.</li>
+<li><strong>bazel-eclipse / bazel-vscode-java</strong> (<a href="https://github.com/salesforce/bazel-eclipse">salesforce/bazel-eclipse</a>) - Apache-2.0. Eclipse JDT-LS-based Bazel integration for Java; non-CDB IDE path. Status: active.</li>
+</ul>
+<h3 dir="auto" id="146-adjacent-indexing--code-search-systems">14.6 Adjacent indexing / code-search systems</h3>
+<ul dir="auto">
+<li><strong>Kythe</strong> (<a href="https://github.com/kythe/kythe">kythe/kythe</a>) - Apache-2.0. Google's language-agnostic code-indexing ecosystem with its own Bazel extractor. Status: active.</li>
+<li><strong>Glean</strong> (<a href="https://github.com/facebookincubator/Glean">facebookincubator/Glean</a>) - MIT-like. Meta's facts-about-code indexing system, consuming SCIP/LSIF and language-specific indexers. Status: active.</li>
+<li><strong>SCIP</strong> (<a href="https://github.com/sourcegraph/scip">sourcegraph/scip</a>) - Apache-2.0. Sourcegraph's successor to LSIF; modern code-graph indexing format. Status: active.</li>
+<li><strong>Sourcegraph</strong> (<a href="https://github.com/sourcegraph/sourcegraph-public-snapshot">sourcegraph/sourcegraph-public-snapshot</a>) - NOASSERTION (mixed). Code search/intelligence platform that ingests SCIP/LSIF indexes. Status: archived (public snapshot).</li>
+<li><strong>SciTools Understand</strong> (proprietary; <a href="https://scitools.com/" rel="nofollow">scitools.com</a>) - commercial. Long-running closed-source code comprehension / static analysis IDE. Status: active.</li>
+</ul>
+<h3 dir="auto" id="147-higher-level-editor-integrations-that-depend-on-a-cdb">14.7 Higher-level editor integrations that depend on a CDB</h3>
+<ul dir="auto">
+<li><strong>vscode-clangd</strong> (<a href="https://github.com/clangd/vscode-clangd">clangd/vscode-clangd</a>) - MIT. Official VS Code extension wrapping the clangd language server; the most common consumer of Bazel-produced compile_commands.json. Status: active.</li>
+<li><strong>vscode-cpptools</strong> (<a href="https://github.com/microsoft/vscode-cpptools">microsoft/vscode-cpptools</a>) - Microsoft proprietary. VS Code's Microsoft C/C++ extension; can use compile_commands.json as a configuration provider. Status: active.</li>
+<li><strong>nvim-lspconfig</strong> (<a href="https://github.com/neovim/nvim-lspconfig">neovim/nvim-lspconfig</a>) - Apache-2.0. Neovim's canonical LSP configurations including clangd/ccls. Status: active.</li>
+<li><strong>lsp-mode</strong> (<a href="https://github.com/emacs-lsp/lsp-mode">emacs-lsp/lsp-mode</a>) - GPL-3.0. Emacs LSP client that drives clangd/ccls against compile_commands.json. Status: active.</li>
+<li><strong>YouCompleteMe</strong> (<a href="https://github.com/ycm-core/YouCompleteMe">ycm-core/YouCompleteMe</a>) - GPL-3.0. Vim semantic completion engine; uses compile_commands.json for C-family languages. Status: active.</li>
+<li><strong>CodeChecker VS Code plugin</strong> (<a href="https://github.com/Ericsson/CodecheckerVSCodePlugin">Ericsson/CodecheckerVSCodePlugin</a>) - Apache-2.0. VS Code UI for CodeChecker static analysis runs driven by compile_commands.json. Status: active.</li>
+<li><strong>vscode-iwyu</strong> (<a href="https://github.com/helly25/vscode-iwyu">helly25/vscode-iwyu</a>) - Apache-2.0. VS Code extension running include-what-you-use over compile_commands.json. Sibling project under helly25. Status: active.</li>
+</ul></main><footer>Release snapshot · b5f5de10c366d141bd8ef53319ada000c031a7fb</footer></body></html>

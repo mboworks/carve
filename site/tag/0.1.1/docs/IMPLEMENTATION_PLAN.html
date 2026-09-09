@@ -1,0 +1,290 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>docs/IMPLEMENTATION_PLAN.md - carve 0.1.1</title><style>
+:root { color-scheme: light dark; font: 17px/1.6 system-ui, sans-serif; }
+body { max-width: 76rem; margin: auto; padding: 2rem; }
+a { color: light-dark(#075da8, #8cc8ff); }
+nav { display: flex; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid #888; }
+pre { padding: 1rem; overflow: auto; background: light-dark(#f3f5f7, #20252b); }
+code { font-size: .9em; } img { max-width: 100%; }
+table { display: block; overflow: auto; border-collapse: collapse; }
+th, td { border: 1px solid #888; padding: .4rem .7rem; }
+blockquote { border-left: 4px solid #888; margin-left: 0; padding-left: 1rem; }
+</style><body><nav><a href="/carve/site/tag/0.1.1/">Home</a><a href="/carve/site/tag/0.1.1/documents.html">Documentation</a><a href="https://github.com/mboworks/carve/releases/tag/0.1.1">Release &amp; downloads</a><a href="https://github.com/mboworks/carve/tree/b5f5de10c366d141bd8ef53319ada000c031a7fb">Source</a><a href="/carve/coverage/tag/0.1.1/">Coverage</a></nav><p>carve 0.1.1</p><main><h1 dir="auto" id="implementation-plan">Implementation Plan</h1>
+<p dir="auto">Living plan for building out <code class="notranslate">carve</code>. <a href="../CARVE_DESIGN.html">CARVE_DESIGN.md</a> is the<br>
+architecture (the <em>what</em> and <em>why</em>); this document tracks <em>status</em> and the<br>
+<em>ordered remaining work</em> (the <em>when</em> and <em>in what order</em>). It supersedes the<br>
+month-by-month sketch in CARVE_DESIGN.md §11. Update it as milestones land; keep<br>
+it honest.</p>
+<p dir="auto">Last reviewed: 2026-06-24.</p>
+<h2 dir="auto" id="status-snapshot">Status snapshot</h2>
+<p dir="auto">Legend: ✅ done &amp; tested · 🟡 partial · ⬜ not started.</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>Capability</th>
+<th>State</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">io</code> (atomic write, read)</td>
+<td>✅</td>
+<td></td>
+</tr>
+<tr>
+<td><code class="notranslate">process</code> (subprocess capture)</td>
+<td>✅</td>
+<td>POSIX; Windows later</td>
+</tr>
+<tr>
+<td><code class="notranslate">cdb</code> (model + JSON + atomic write)</td>
+<td>✅</td>
+<td>deterministic output</td>
+</tr>
+<tr>
+<td><code class="notranslate">command</code> (de-Bazel argv)</td>
+<td>🟡</td>
+<td>M2 quirks landed; nvcc/emscripten/cross-host canonicalization left</td>
+</tr>
+<tr>
+<td><code class="notranslate">aquery</code> (proto parse, param-file expand, path resolve)</td>
+<td>✅</td>
+<td>vendored trimmed <code class="notranslate">analysis_v2.proto</code></td>
+</tr>
+<tr>
+<td><code class="notranslate">sidecar</code> (schema, Load/Save, diff, project-scoped merge)</td>
+<td>✅</td>
+<td><code class="notranslate">HeaderIndex</code> built &amp; persisted; <code class="notranslate">written_at</code> stamped</td>
+</tr>
+<tr>
+<td><code class="notranslate">refresh</code> (in-process aquery, execroot, merge, multi-project)</td>
+<td>✅</td>
+<td>M1 done: scan-deps, incremental, staleness, header index, <code class="notranslate">--jobs</code></td>
+</tr>
+<tr>
+<td><code class="notranslate">scan_deps</code> (clang <code class="notranslate">DependencyScanningTool</code>)</td>
+<td>✅</td>
+<td>wired into <code class="notranslate">refresh</code>; gated linux+macos</td>
+</tr>
+<tr>
+<td><code class="notranslate">cli</code> + <code class="notranslate">//carve:carve</code></td>
+<td>✅</td>
+<td>all four subcommands wired: <code class="notranslate">refresh</code> + <code class="notranslate">prune</code> + <code class="notranslate">aggregate</code> + <code class="notranslate">shard</code></td>
+</tr>
+<tr>
+<td>e2e harness, CI, pre-commit, toolchains_llvm, proto matchers</td>
+<td>✅</td>
+<td>ASan/LSan/UBSan, TSan, and Linux MSan coverage for LLVM-free targets</td>
+</tr>
+<tr>
+<td>Layer B (<code class="notranslate">carve_refresh</code> rule)</td>
+<td>✅</td>
+<td><code class="notranslate">bazel run //:refresh</code>; run-based (nested-bazel resolved)</td>
+</tr>
+<tr>
+<td>Layer C (aspect + shards)</td>
+<td>✅</td>
+<td><code class="notranslate">cc_carve_aspect</code> + <code class="notranslate">carve_aspect_refresh</code> + <code class="notranslate">shard</code> + <code class="notranslate">aggregate</code>; per-action cacheable shards</td>
+</tr>
+<tr>
+<td>Differential harness vs Hedron / clangd validation</td>
+<td>✅</td>
+<td><code class="notranslate">tools/cdb_diff.py</code> + <code class="notranslate">docs/differential-report.md</code> (M3)</td>
+</tr>
+<tr>
+<td>Distribution (<code class="notranslate">.bcr/</code>, prebuilt binaries, release)</td>
+<td>🟡</td>
+<td>release scaffolding landed (<code class="notranslate">.bcr/</code> + release/publish workflows, source-only); not yet published</td>
+</tr>
+<tr>
+<td>Windows</td>
+<td>⬜</td>
+<td></td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p dir="auto">Bottom line: <strong>Layer A produces a correct-shaped CDB with header coverage and<br>
+incremental refresh.</strong> scan-deps is wired into <code class="notranslate">refresh</code>; unchanged actions<br>
+reuse cached headers; editing a header re-scans only its owning actions;<br>
+unresolved (unbuilt generated) headers are not cached and are retried;<br>
+<code class="notranslate">written_at</code> and the persisted <code class="notranslate">HeaderIndex</code> are in place; scanning is<br>
+parallelized (<code class="notranslate">--jobs</code>). <strong>M1–M5 are complete</strong>, plus the <code class="notranslate">prune</code>, <code class="notranslate">aggregate</code>,<br>
+and <code class="notranslate">shard</code> subcommands - all four CLI subcommands are wired and tested. All three<br>
+layers work: <code class="notranslate">refresh</code> (A), <code class="notranslate">carve_refresh</code> (B, <code class="notranslate">bazel run //:refresh</code>), and the<br>
+Layer C aspect (<code class="notranslate">cc_carve_aspect</code> + <code class="notranslate">carve_aspect_refresh</code>) that emits one<br>
+cacheable shard per compile action and aggregates them. <strong>Next: M6 (release +<br>
+distribution) - the last milestone.</strong></p>
+<h2 dir="auto" id="milestones-dependency-ordered">Milestones (dependency-ordered)</h2>
+<h3 dir="auto" id="m1---wire-scan-deps-into-refresh-the-keystone">M1 - Wire scan-deps into <code class="notranslate">refresh</code> (the keystone)</h3>
+<p dir="auto">Realizes incremental refresh and header coverage; everything downstream assumes it.</p>
+<ul dir="auto">
+<li>✅ For each compile action, call <code class="notranslate">scan_deps::ScanDependencies(argv, execroot)</code>; store results in <code class="notranslate">ActionRecord.headers</code>. (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="4724097087" data-permission-text="Title is private" data-url="https://github.com/mboworks/carve/issues/9" data-hovercard-type="pull_request" data-hovercard-url="/mboworks/carve/pull/9/hovercard" href="https://github.com/mboworks/carve/pull/9">#9</a>)</li>
+<li>✅ Reuse on unchanged actions: <code class="notranslate">MergeRecords</code> keeps cached headers, and <code class="notranslate">refresh</code> re-scans only added/changed actions (<code class="notranslate">HasMatchingRecord</code>). (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="4728198950" data-permission-text="Title is private" data-url="https://github.com/mboworks/carve/issues/10" data-hovercard-type="pull_request" data-hovercard-url="/mboworks/carve/pull/10/hovercard" href="https://github.com/mboworks/carve/pull/10">#10</a>)</li>
+<li>✅ Set <code class="notranslate">ActionRecord.written_at</code> via an injected clock (deterministic in tests) - unblocks <code class="notranslate">prune</code>. (<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="4728240834" data-permission-text="Title is private" data-url="https://github.com/mboworks/carve/issues/11" data-hovercard-type="pull_request" data-hovercard-url="/mboworks/carve/pull/11/hovercard" href="https://github.com/mboworks/carve/pull/11">#11</a>)</li>
+<li>✅ Build and persist the <code class="notranslate">HeaderIndex</code> (header → owning <code class="notranslate">action_key</code>s, canonical owner = lex-min) next to the sidecar so an edited header maps to the action(s) to re-scan (design §4.4–§4.5).</li>
+<li>✅ Header-staleness invalidation: on refresh, an action whose cached header (or source) changed on disk (mtime past <code class="notranslate">written_at</code>) is re-scanned even though its command is unchanged, via <code class="notranslate">FindReusableRecord</code> + a <code class="notranslate">rescanned</code> set passed to <code class="notranslate">MergeRecords</code>. One-second granularity.</li>
+<li>✅ Missing generated headers: a failed scan leaves the record unstamped so the next refresh re-scans it (cache only a complete scan, design §4.2); <code class="notranslate">RunRefresh</code> returns <code class="notranslate">RefreshStats</code> and the binary surfaces an unresolved-headers count.</li>
+<li>✅ Parallelize scanning across actions (<code class="notranslate">--jobs</code>, default hardware concurrency): an <code class="notranslate">absl::Mutex</code>-guarded worker pool (fully thread-safety-annotated, enforced by <code class="notranslate">-Wthread-safety</code>). The scan decision stays serial so the sidecar is deterministic. Runtime TSan CI covers the LLVM-free targets; LLVM-linking targets remain excluded from sanitizer builds because they consume prebuilt archives.</li>
+<li>✅ <strong>Platform/optionality decision - resolved (option b).</strong> <code class="notranslate">scan_deps</code> is gated linux+macos and injected into <code class="notranslate">refresh</code> as a <code class="notranslate">HeaderScanner</code>, so the core CDB still builds everywhere and header-scanning is the enhancement; the gate propagates to the <code class="notranslate">carve</code> binary and e2e test.</li>
+</ul>
+<p dir="auto">Acceptance: <code class="notranslate">carve refresh</code> on this repo populates <code class="notranslate">headers</code>; editing a header invalidates only owning actions; refresh stays idempotent; unit + e2e tests cover header population, reuse, and missing-header caching.</p>
+<h3 dir="auto" id="m2---complete-the-de-bazel-quirk-inventory-carve_design-43">M2 - Complete the de-Bazel quirk inventory (CARVE_DESIGN §4.3)</h3>
+<p dir="auto">Independent of M1; can run in parallel. One golden test per quirk (design §9.2).</p>
+<p dir="auto">Done (golden-tested in <code class="notranslate">carve/command</code>, wired through <code class="notranslate">refresh</code>):</p>
+<ul dir="auto">
+<li>
+<p dir="auto">✅ <code class="notranslate">-fno-canonical-system-headers</code> strip (clangd#1004) and <code class="notranslate">-gcc-toolchain</code> strip (clangd#1248).</p>
+</li>
+<li>
+<p dir="auto">✅ ccache wrapper: drop a leading <code class="notranslate">ccache</code> so argv[0] is the real compiler.</p>
+</li>
+<li>
+<p dir="auto">✅ MSVC <code class="notranslate">/showIncludes</code>[<code class="notranslate">:user</code>] strip; <code class="notranslate">-fmodules-cache-path=bazel-out/...</code> strip.</p>
+</li>
+<li>
+<p dir="auto">✅ Apple <code class="notranslate">wrapped_clang</code> + <code class="notranslate">__BAZEL_XCODE_*</code>: <code class="notranslate">command::ResolveXcodePlaceholders</code> substitutes the developer-dir/SDK paths; <code class="notranslate">refresh</code> invokes an injected <code class="notranslate">XcodeResolver</code> (the binary resolves via <code class="notranslate">xcode-select</code>/<code class="notranslate">xcrun</code> on macOS) only when a command carries a placeholder.</p>
+</li>
+<li>
+<p dir="auto">✅ <code class="notranslate">parse_headers</code> actions are filtered implicitly: their "source" is a header, so <code class="notranslate">FindSource</code> finds no TU and the action is skipped.</p>
+</li>
+<li>
+<p dir="auto">✅ <strong>Execroot/absolute-path canonicalization of the persisted sidecar (the<br>
+cross-host determinism property, §9).</strong> scan-deps resolves generated and external<br>
+headers to absolute, per-host cache paths (<code class="notranslate">.../execroot/_main/...</code>);<br>
+<code class="notranslate">command::RelativizeToExecroot</code> rewrites them execroot-relative at storage<br>
+(<code class="notranslate">refresh::ScanHeaders</code>, <code class="notranslate">shard::BuildShard</code>), and <code class="notranslate">CachedScanIsStale</code> resolves<br>
+them back against the execroot to stat. The sidecar and header index now hold<br>
+<strong>zero</strong> absolute paths (verified end-to-end on this repo: ~15k → 0) - so they are<br>
+byte-identical across machines and remote-cache-shareable. The CDB <code class="notranslate">file</code> is also<br>
+emitted execroot-relative (clangd resolves it against <code class="notranslate">directory</code>=execroot, the<br>
+same path as before). A property test asserts the sidecar has no absolute paths.</p>
+</li>
+</ul>
+<p dir="auto">Remaining (deferred - niche toolchains or a design-level property; best validated against M3's corpus):</p>
+<ul dir="auto">
+<li>⬜ Full <em>CDB</em> workspace-relative rewriting (<code class="notranslate">directory</code>=workspace root + the<br>
+<code class="notranslate">//external</code> symlink choreography, §10) so the emitted database is itself<br>
+relocatable. The CDB stays execroot-rooted until then (clangd consumes it<br>
+correctly); this is the separate, larger change. Windows junctions are out of scope.</li>
+<li>⬜ NVCC→clang flag translation (CUDA); Emscripten driver indirection; Windows command-line-length param-file specifics (carve already expands <code class="notranslate">@param</code> files via aquery <code class="notranslate">--include_param_files</code>).</li>
+</ul>
+<p dir="auto">Acceptance: golden test per quirk; platform-specific ones skipped where the toolchain is absent.</p>
+<h3 dir="auto" id="m3---differential-harness--clangd-validation-">M3 - Differential harness + clangd validation ✅</h3>
+<p dir="auto">Correctness gate before building Layer B/C on top.</p>
+<ul dir="auto">
+<li>✅ <code class="notranslate">tools/cdb_diff.py</code>: a normalizing CDB differ (keys by workspace-relative source, ignores volatile output/dep/seed tokens), with a <code class="notranslate">--selftest</code> in CI. Diffs carve's CDB against any reference (e.g. a Hedron CDB).</li>
+<li>✅ clangd verified working on carve itself: <code class="notranslate">clangd --check</code> builds the preamble/AST/index with zero compilation diagnostics using a toolchain-matched clang 22 (<code class="notranslate">docs/differential-report.md</code>).</li>
+<li>✅ carve-vs-Hedron differences explained in the report (scan-deps vs <code class="notranslate">clang -M</code>, sidecar incrementality, header index, execroot-absolute vs workspace-relative paths). A live Hedron diff just needs a Hedron CDB pointed at <code class="notranslate">cdb_diff.py</code>; Hedron is intentionally not wired into carve (the tool it replaces) - a corpus run over external repos remains as optional follow-up.</li>
+</ul>
+<h3 dir="auto" id="m4---layer-b-carve_refresh-rule-">M4 - Layer B: <code class="notranslate">carve_refresh</code> rule ✅</h3>
+<p dir="auto"><code class="notranslate">bazel run //:refresh</code> as the CDB entry point (design §4.6).</p>
+<ul dir="auto">
+<li>✅ <strong>Nested-bazel concern resolved: a <code class="notranslate">bazel run</code> target, not a build action.</strong> carve invokes <code class="notranslate">bazel aquery</code>/<code class="notranslate">bazel info</code>; spawning bazel inside a build action is the nested-bazel trap (lock/server contention, sandboxing). <code class="notranslate">carve_refresh</code> (<code class="notranslate">rules/carve.bzl</code>) generates a runfiles-aware launcher that runs the carve binary <em>after</em> the outer build and writes the CDB to <code class="notranslate">$BUILD_WORKSPACE_DIRECTORY</code>.</li>
+<li>✅ Dogfooded: <code class="notranslate">bazel run //:refresh</code> writes the repo's <code class="notranslate">compile_commands.json</code> (22 entries). Analysis-tested (<code class="notranslate">rules/carve_test.bzl</code>): the target is runnable and carries the carve binary in its runfiles (no nested bazel in the test).</li>
+</ul>
+<p dir="auto">(The design's literal <code class="notranslate">bazel build //:compile_commands</code> shape is not viable for the reason above; the README/usage now shows <code class="notranslate">bazel run //:refresh</code>.)</p>
+<h3 dir="auto" id="m5---layer-c-aspect--shards">M5 - Layer C: aspect + shards</h3>
+<p dir="auto">Per-action, individually-cacheable shards for huge repos (design §4.7).</p>
+<ul dir="auto">
+<li>✅ <code class="notranslate">aggregate</code> subcommand (<code class="notranslate">carve/aggregate</code>): the offline merge half - unions<br>
+independently-produced sidecars (de-dup by (project_id, action_key), keep<br>
+most-recently-written, deterministic order) and emits one CDB without running<br>
+<code class="notranslate">bazel aquery</code>. Shares <code class="notranslate">refresh::EntriesFromRecords</code>.</li>
+<li>✅ <code class="notranslate">shard</code> subcommand (<code class="notranslate">carve/shard</code>): the per-action invocation the aspect<br>
+schedules - <code class="notranslate">carve shard --action_key=… --command_file=… --source=… --out=…</code><br>
+de-Bazels the command, resolves Xcode placeholders, scans headers (failed scan<br>
+→ unstamped, re-scanned later), and writes a one-record shard whose shape<br>
+matches <code class="notranslate">refresh</code>. Verified end-to-end: <code class="notranslate">shard</code> → <code class="notranslate">aggregate</code> → valid CDB.</li>
+<li>✅ The emitting aspect (<code class="notranslate">rules/cc_carve_aspect.bzl</code>): <code class="notranslate">cc_carve_aspect</code> walks<br>
+the cc graph and schedules one cacheable <code class="notranslate">carve_shard</code> build action per compile<br>
+action, reading the fully-expanded command from <code class="notranslate">action.argv</code> (no <code class="notranslate">@param-file</code><br>
+indirection - Bazel expands it). Shards land in the <code class="notranslate">carve_shards</code> output group.<br>
+<code class="notranslate">carve_aspect_refresh</code> (<code class="notranslate">rules/carve.bzl</code>) is the <code class="notranslate">bazel run</code> driver: it builds<br>
+the shards, then aggregates them against the real execroot.</li>
+<li>✅ Per-action invalidation via Bazel: a shard's content is a function of its<br>
+compile command, so the shard action's only input is its <code class="notranslate">command_file</code>. Bazel<br>
+re-runs only the shards whose command changed; content edits don't re-shard<br>
+(the entry is unchanged). Shards are not header-scanned - the lean <code class="notranslate">carve_shard</code><br>
+tool links no scanner; the database does not use headers and Bazel owns<br>
+invalidation. Validated in CI by an analysis test (the wiring) and a <code class="notranslate">build_test</code><br>
+that builds the whole Layer C path with the lean tools (no LLVM build).</li>
+</ul>
+<p dir="auto">Acceptance: aspect emits shards (done); <code class="notranslate">carve aggregate</code> merges them (done);<br>
+a compile-command change re-shards only the affected action (done - via Bazel's<br>
+action cache on <code class="notranslate">command_file</code>). <strong>M5 complete.</strong></p>
+<ul dir="auto">
+<li>
+<p dir="auto">✅ <strong>Lean, LLVM-free Layer C tools:</strong> the aspect's per-action exec tool is the<br>
+scan-free <code class="notranslate">//carve:carve_shard</code>, and <code class="notranslate">carve_aspect_refresh</code>'s merge tool is<br>
+<code class="notranslate">//carve:carve_aggregate</code>. Neither links <code class="notranslate">scan_deps</code>/LLVM - sharding records the<br>
+command, aggregation merges protos, and neither needs a compiler. Building the<br>
+whole Layer C path is now LLVM-free (≈seconds, not the tens-of-minutes exec-config<br>
+LLVM build the full <code class="notranslate">carve</code> required), so the <code class="notranslate">build_test</code> rejoined CI.</p>
+</li>
+<li>
+<p dir="auto">✅ <strong>First-party scoping (<code class="notranslate">exclude_external_sources</code>):</strong> the aspect shards only<br>
+main-repo compile actions by default, skipping external-repo targets (clangd<br>
+resolves their headers via first-party entries' <code class="notranslate">-I</code> flags, so they need no<br>
+entries). It is an aspect parameter on <code class="notranslate">carve_aspect_refresh</code>, default <code class="notranslate">True</code>;<br>
+set <code class="notranslate">False</code> to shard the whole transitive graph.</p>
+</li>
+<li>
+<p dir="auto">✅ <strong>Layer C header recording (<code class="notranslate">ASPECT_M</code>):</strong> opt-in <code class="notranslate">record_headers</code> aspect<br>
+parameter, default off so shards stay build-free. When set, each shard consumes<br>
+its compile action's own <code class="notranslate">-MF .../x.d</code> dependency file -- robust reuse of the<br>
+make-format <code class="notranslate">-M</code> output Bazel already generates for include validation (re-running<br>
+the <em>wrapped</em> compiler standalone with <code class="notranslate">-M</code> proved unreliable, so we reuse the<br>
+real depfile) -- and <code class="notranslate">carve_shard</code> parses it (lean, no LLVM, via the lifted<br>
+<code class="notranslate">command::ParseMakeDependencies</code>), storing the exact <code class="notranslate">#include</code> set<br>
+execroot-relative as <code class="notranslate">source_kind = ASPECT_M</code>. Enabling it couples sharding to<br>
+building each TU (the <code class="notranslate">.d</code> is a compile byproduct). Validated end-to-end against<br>
+an external consumer.</p>
+</li>
+<li>
+<p dir="auto">✅ <strong><code class="notranslate">aggregate</code> builds + persists a <code class="notranslate">HeaderIndex</code>:</strong> after merging the shard<br>
+records, <code class="notranslate">aggregate</code> builds the header -&gt; owning-<code class="notranslate">action_key</code> index from their<br>
+recorded <code class="notranslate">headers</code> (reusing the shared <code class="notranslate">sidecar::BuildHeaderIndex</code>, no logic<br>
+duplicated) and writes it to <code class="notranslate">headers-index.binpb</code> next to the output database -<br>
+the same filename and placement <code class="notranslate">refresh</code> uses beside its sidecar. A header owned<br>
+by several actions lists all owners (lex-min canonical owner first); the<br>
+empty-headers case (<code class="notranslate">record_headers</code> off) still writes the index, matching<br>
+refresh. This closes Layer C's header-index parity with <code class="notranslate">refresh</code>.</p>
+</li>
+</ul>
+<h3 dir="auto" id="m6---01-release--distribution">M6 - 0.1 release + distribution</h3>
+<p dir="auto"><code class="notranslate">.bcr/</code> metadata, release automation, prebuilt binaries for common platforms (design §7); decide Windows in-or-out.</p>
+<ul dir="auto">
+<li>✅ Release scaffolding (source-only): <code class="notranslate">.bcr/</code> metadata + <code class="notranslate">presubmit.yml</code>;<br>
+<code class="notranslate">.github/workflows/release.yml</code> publishes numeric SemVer tags through a<br>
+verified draft. <code class="notranslate">publish.yaml</code> keeps BCR publication separate, while<br>
+<code class="notranslate">release_prep.sh</code> builds a reproducible archive without changing the checkout.</li>
+<li>🟡 Cut the actual release: <code class="notranslate">MODULE.bazel</code>, changelog, archive consumer, and<br>
+BCR test module are prepared for <code class="notranslate">0.1.1</code>. Push the signed tag; the release<br>
+workflow validates tagged source and the packaged consumer, attaches and<br>
+verifies the archive on a mutable draft, then publishes it directly as an<br>
+immutable stable release. Dispatch the Pages workflow so the root site<br>
+follows the new release. BCR publication remains an independent, deferred<br>
+manual workflow.</li>
+<li>✅ <strong>Consumability gap:</strong> resolved with a dependency-safe module extension<br>
+for the prebuilt LLVM distribution. Consumers no longer compile <code class="notranslate">@llvm-project</code> or<br>
+need Carve's former C++17 <code class="notranslate">per_file_copt</code> workaround. Carve links only the<br>
+required static Clang/LLVM component archives from that distribution.</li>
+<li>⬜ <strong>Prebuilt-distribution coverage (deferred):</strong> Windows and macOS x86_64<br>
+remain limited by upstream LLVM archive availability. Add those platforms<br>
+when official matching compiler and development-library distributions exist.</li>
+</ul>
+<p dir="auto">Acceptance: a bzlmod consumer can <code class="notranslate">bazel_dep(name = "mboworks_carve")</code> and get a working CDB; tagged release.</p>
+<h2 dir="auto" id="cross-cutting--parallelizable">Cross-cutting / parallelizable</h2>
+<ul dir="auto">
+<li>✅ <code class="notranslate">prune</code> subcommand (<code class="notranslate">carve/prune</code>): GC sidecar rows whose <code class="notranslate">written_at</code> is older than <code class="notranslate">--prune_after_days</code>; unstamped rows kept. <code class="notranslate">carve prune --sidecar=... --prune_after_days=30</code>.</li>
+<li>✅ <code class="notranslate">aggregate</code> subcommand (<code class="notranslate">carve/aggregate</code>): merges independently-produced<br>
+sidecars into one CDB offline. ✅ <code class="notranslate">shard</code> subcommand (<code class="notranslate">carve/shard</code>): builds one<br>
+per-action shard. ✅ <code class="notranslate">cc_carve_aspect</code> + <code class="notranslate">carve_aspect_refresh</code> (Layer C): the<br>
+aspect schedules <code class="notranslate">shard</code> per compile action and aggregates the shards.</li>
+<li>Parallel scan-deps (<code class="notranslate">--jobs</code>) - fold into M1.</li>
+<li>Property tests: ✅ cross-host determinism - <code class="notranslate">refresh_test</code> asserts the sidecar holds no absolute paths after a refresh whose scanner returns execroot-absolute headers (M2 canonicalization). ✅ idempotency - <code class="notranslate">refresh_test</code> asserts that refreshing twice over identical inputs (fixed clock, deterministic scanner) yields a byte-identical sidecar.</li>
+<li>Keep <a href="test-plan.html">docs/test-plan.md</a> at zero open debts.</li>
+<li>Latency reality: Layers A/B re-run <code class="notranslate">bazel aquery</code> every refresh (design §3.1); sub-second incrementality on huge repos is a Layer C (M5) property - don't over-promise before then.</li>
+</ul>
+<h2 dir="auto" id="sequencing-rationale">Sequencing rationale</h2>
+<p dir="auto">M1 first - it converts the working skeleton into the actual product (incrementality + headers). M2 runs alongside (independent). M3 validates correctness before B/C are layered on. M4 → M5 (B before C, per the design's layering). Release (M6) last. Riskiest dependency (LLVM linkage) and toolchain are already done.</p></main><footer>Release snapshot · b5f5de10c366d141bd8ef53319ada000c031a7fb</footer></body></html>

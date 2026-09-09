@@ -1,0 +1,117 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>RULES.md - carve 0.1.1</title><style>
+:root { color-scheme: light dark; font: 17px/1.6 system-ui, sans-serif; }
+body { max-width: 76rem; margin: auto; padding: 2rem; }
+a { color: light-dark(#075da8, #8cc8ff); }
+nav { display: flex; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid #888; }
+pre { padding: 1rem; overflow: auto; background: light-dark(#f3f5f7, #20252b); }
+code { font-size: .9em; } img { max-width: 100%; }
+table { display: block; overflow: auto; border-collapse: collapse; }
+th, td { border: 1px solid #888; padding: .4rem .7rem; }
+blockquote { border-left: 4px solid #888; margin-left: 0; padding-left: 1rem; }
+</style><body><nav><a href="/carve/site/tag/0.1.1/">Home</a><a href="/carve/site/tag/0.1.1/documents.html">Documentation</a><a href="https://github.com/mboworks/carve/releases/tag/0.1.1">Release &amp; downloads</a><a href="https://github.com/mboworks/carve/tree/b5f5de10c366d141bd8ef53319ada000c031a7fb">Source</a><a href="/carve/coverage/tag/0.1.1/">Coverage</a></nav><p>carve 0.1.1</p><main><h1 dir="auto" id="rulesmd">RULES.md</h1>
+<p dir="auto">Code-style and structural rules for <code class="notranslate">mboworks/carve</code>. These mirror the MBO Works<br>
+house style (see sibling repos <a href="https://github.com/mboworks/mbo">mbo</a> and<br>
+<a href="https://github.com/mboworks/bzl">bzl</a>).</p>
+<p dir="auto"><a href="STYLE_CPP.html">STYLE_CPP.md</a> is the detailed C++ style companion - the shared<br>
+MBO Works C++ conventions with rationale and examples (idioms, error handling,<br>
+output/<code class="notranslate">AbslStringify</code>, concurrency, protobuf, GoogleTest). This file is the<br>
+concise carve-specific rule set and structural conventions; STYLE_CPP.md expands<br>
+the C++ parts. Where they overlap they agree; STYLE_CPP.md has the detail.</p>
+<p dir="auto"><a href="AGENTS.html">AGENTS.md</a> remains canonical for <em>process and agent</em> conventions<br>
+(commits, PRs, testing discipline, library priority) and references this file<br>
+for <em>code style</em>. <a href="CARVE_DESIGN.html">CARVE_DESIGN.md</a> is canonical for<br>
+architecture. Where this file and the design disagree, the design wins and this<br>
+file is corrected.</p>
+<h2 dir="auto" id="licensing-and-headers">Licensing and headers</h2>
+<ul dir="auto">
+<li>Apache-2.0. Every Bazel, Starlark, C++, proto, and shell file starts with the<br>
+SPDX header block (see <a href="AGENTS.html#file-headers">AGENTS.md</a>). Markdown, JSON,<br>
+and other comment-less formats are exempt.</li>
+<li>Unix text files: UTF-8, LF line endings, final newline, no trailing<br>
+whitespace.</li>
+</ul>
+<h2 dir="auto" id="c">C++</h2>
+<ul dir="auto">
+<li>C++23, clang 20.1+ (pinned at LLVM 22.1.8 via <code class="notranslate">toolchains_llvm</code> 1.9.0).</li>
+<li>Style: Google C++ with the deviations in <a href="https://github.com/mboworks/carve/blob/b5f5de10c366d141bd8ef53319ada000c031a7fb/.clang-format">.clang-format</a>;<br>
+formatting is enforced, not negotiated.</li>
+<li>Compiler warnings for first-party C and C++ sources are enabled with <code class="notranslate">-Wall</code>,<br>
+<code class="notranslate">-Wextra</code>, and <code class="notranslate">-Wpedantic</code> and treated as errors in target and host/tool<br>
+configurations. Diagnostics from external headers and sources are suppressed;<br>
+the shared MBO Works carve-outs cover external macros whose diagnostics are<br>
+attributed to their first-party expansion site and deliberate partial<br>
+designated initialization.</li>
+<li>Lints: <a href="https://github.com/mboworks/carve/blob/b5f5de10c366d141bd8ef53319ada000c031a7fb/.clang-tidy">.clang-tidy</a> with <code class="notranslate">WarningsAsErrors: true</code>.</li>
+<li>No exceptions (<code class="notranslate">-fno-exceptions</code>); errors flow through <code class="notranslate">absl::Status</code>,<br>
+<code class="notranslate">absl::StatusOr</code>, or <code class="notranslate">std::expected</code>.</li>
+</ul>
+<h3 dir="auto" id="layout-and-naming">Layout and naming</h3>
+<ul dir="auto">
+<li><strong>One module per directory:</strong> <code class="notranslate">carve/&lt;module&gt;/</code>, self-contained.</li>
+<li><strong>Namespaces:</strong> <code class="notranslate">carve::&lt;module&gt;</code>. Internal-only code lives in<br>
+<code class="notranslate">carve::&lt;module&gt;::&lt;module&gt;_internal</code> - never a bare <code class="notranslate">internal</code> namespace.<br>
+Implementation detail may use a nested <code class="notranslate">detail</code> namespace.</li>
+<li><strong>Header guards:</strong> <code class="notranslate">CARVE_&lt;PATH&gt;_&lt;FILE&gt;_</code> (path + filename, upper-snake,<br>
+non-alphanumerics to <code class="notranslate">_</code>, trailing <code class="notranslate">_</code>). Example:<br>
+<code class="notranslate">CARVE_COMMAND_DEBAZEL_H_</code>.</li>
+<li><strong>Macros:</strong> prefix <code class="notranslate">CARVE_</code>. <strong>Flags:</strong> <code class="notranslate">--carve_&lt;module&gt;_*</code>.</li>
+<li><strong>Includes:</strong> project headers (quoted, full repo-relative path) before<br>
+external; keep IWYU pragmas in headers (<code class="notranslate">// IWYU pragma: keep</code>).</li>
+<li><strong>Files:</strong> <code class="notranslate">&lt;unit&gt;.h</code> / <code class="notranslate">&lt;unit&gt;.cc</code>, test colocated as <code class="notranslate">&lt;unit&gt;_test.cc</code>.</li>
+</ul>
+<h3 dir="auto" id="bazel-targets">Bazel targets</h3>
+<ul dir="auto">
+<li><code class="notranslate">cc_library</code> targets are suffixed <code class="notranslate">_cc</code> (e.g. <code class="notranslate">command_cc</code>).</li>
+<li><code class="notranslate">cc_test</code> targets are suffixed <code class="notranslate">_test</code> and every direct test rule declares<br>
+its scheduling <code class="notranslate">size</code> explicitly.</li>
+<li>Every <code class="notranslate">cc_library</code> has a direct dependency from a test in the same package;<br>
+narrowly justified structural fixtures are recorded in the policy check's<br>
+allowlist.</li>
+<li>Split <code class="notranslate">implementation_deps</code> (private, not propagated) from <code class="notranslate">deps</code> (public API<br>
+surface).</li>
+<li>Package <code class="notranslate">default_visibility = ["//visibility:private"]</code>; widen explicitly per<br>
+target only where a public boundary is intended.</li>
+</ul>
+<h2 dir="auto" id="protobuf">Protobuf</h2>
+<ul dir="auto">
+<li>Edition 2024 (<code class="notranslate">edition = "2024";</code>). <code class="notranslate">features.field_presence = EXPLICIT</code> only<br>
+where set-vs-empty matters. See <a href="CARVE_DESIGN.html">CARVE_DESIGN.md</a> section 4.4.</li>
+</ul>
+<h2 dir="auto" id="shell-and-starlark">Shell and Starlark</h2>
+<ul dir="auto">
+<li>Shell: follow <a href="STYLE_SH.html">STYLE_SH.md</a>, based on Google shell style;<br>
+format with <code class="notranslate">shfmt</code> and lint with <code class="notranslate">shellcheck</code>.</li>
+<li>Starlark/Bazel: formatted and linted with <code class="notranslate">buildifier</code> (<code class="notranslate">--warnings=all</code>).</li>
+</ul>
+<h2 dir="auto" id="markdown">Markdown</h2>
+<ul dir="auto">
+<li>Tables are vertically aligned: every column padded to a consistent width,<br>
+pipes lined up, the <code class="notranslate">---</code> separator row matched, <code class="notranslate">:---</code>/<code class="notranslate">---:</code> markers kept.<br>
+Enforced by <code class="notranslate">tools/align_md_tables.py</code> via the <code class="notranslate">align-md-tables</code> pre-commit<br>
+hook; run <code class="notranslate">pre-commit run align-md-tables -a</code> (or the script directly) to fix.</li>
+</ul>
+<h2 dir="auto" id="tests">Tests</h2>
+<ul dir="auto">
+<li>GTest, colocated with the unit. Every change is covered by a committed test at<br>
+the appropriate level - see the testing-discipline section in<br>
+<a href="AGENTS.html#testing-discipline">AGENTS.md</a>. No exemption category.</li>
+<li><strong>Assert with matchers.</strong> Use <code class="notranslate">EXPECT_THAT(actual, matcher)</code>, not GoogleTest<br>
+comparison macros. Use the expressive matcher, not a hand-rolled<br>
+predicate:
+<ul dir="auto">
+<li>substring: <code class="notranslate">EXPECT_THAT(text, HasSubstr("x"))</code> - never<br>
+<code class="notranslate">EXPECT_NE(text.find("x"), npos)</code>.</li>
+<li>equality: <code class="notranslate">Eq(...)</code> / <code class="notranslate">StrEq(...)</code>; containers: <code class="notranslate">ElementsAre</code>, <code class="notranslate">IsEmpty</code>,<br>
+<code class="notranslate">SizeIs</code>; structs: <code class="notranslate">Field(&amp;T::member, matcher)</code> with <code class="notranslate">AllOf</code> for several.</li>
+<li>status: the <code class="notranslate">mbo::testing</code> matchers (<code class="notranslate">mbo/testing/status.h</code>,<br>
+<code class="notranslate">@mboworks_mbo//mbo/testing:status_cc</code>) <code class="notranslate">IsOk()</code>, <code class="notranslate">StatusIs(code)</code>,<br>
+<code class="notranslate">IsOkAndHolds(value_matcher)</code>; <code class="notranslate">::absl_testing::</code> is disallowed (see STYLE_CPP.md<br>
+"Status matchers"). Use <code class="notranslate">IsOkAndHolds(m)</code> rather than asserting <code class="notranslate">IsOk()</code> and then<br>
+dereferencing (<code class="notranslate">*x</code>) to compare the value; bind reusable values with<br>
+<code class="notranslate">MBO_ASSERT_OK_AND_ASSIGN</code>.</li>
+</ul>
+</li>
+<li>Range-for loops use a named collection rather than an inline braced list.</li>
+<li>Use comparison <code class="notranslate">CHECK</code> macros (<code class="notranslate">CHECK_EQ</code>, <code class="notranslate">CHECK_NE</code>, and variants) so<br>
+failures report both operands.</li>
+</ul></main><footer>Release snapshot · b5f5de10c366d141bd8ef53319ada000c031a7fb</footer></body></html>

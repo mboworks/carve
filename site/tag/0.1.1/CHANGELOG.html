@@ -1,0 +1,75 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>CHANGELOG.md - carve 0.1.1</title><style>
+:root { color-scheme: light dark; font: 17px/1.6 system-ui, sans-serif; }
+body { max-width: 76rem; margin: auto; padding: 2rem; }
+a { color: light-dark(#075da8, #8cc8ff); }
+nav { display: flex; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid #888; }
+pre { padding: 1rem; overflow: auto; background: light-dark(#f3f5f7, #20252b); }
+code { font-size: .9em; } img { max-width: 100%; }
+table { display: block; overflow: auto; border-collapse: collapse; }
+th, td { border: 1px solid #888; padding: .4rem .7rem; }
+blockquote { border-left: 4px solid #888; margin-left: 0; padding-left: 1rem; }
+</style><body><nav><a href="/carve/site/tag/0.1.1/">Home</a><a href="/carve/site/tag/0.1.1/documents.html">Documentation</a><a href="https://github.com/mboworks/carve/releases/tag/0.1.1">Release &amp; downloads</a><a href="https://github.com/mboworks/carve/tree/b5f5de10c366d141bd8ef53319ada000c031a7fb">Source</a><a href="/carve/coverage/tag/0.1.1/">Coverage</a></nav><p>carve 0.1.1</p><main><h1 dir="auto" id="changelog">Changelog</h1>
+<p dir="auto">All notable changes to this project will be documented in this file. Format<br>
+follows <a href="https://keepachangelog.com/en/1.1.0/" rel="nofollow">Keep a Changelog</a>, versioning<br>
+follows <a href="https://semver.org/" rel="nofollow">SemVer</a>.</p>
+<h2 dir="auto" id="unreleased">[Unreleased]</h2>
+<h2 dir="auto" id="011---2026-09-08">[0.1.1] - 2026-09-08</h2>
+<h3 dir="auto" id="added">Added</h3>
+<ul dir="auto">
+<li>Implement the <code class="notranslate">refresh</code>, <code class="notranslate">shard</code>, <code class="notranslate">aggregate</code>, and <code class="notranslate">prune</code> commands for<br>
+producing and maintaining deterministic <code class="notranslate">compile_commands.json</code> databases.</li>
+<li>Provide Layer B's <code class="notranslate">carve_refresh</code> rule and Layer C's <code class="notranslate">cc_carve_aspect</code> and<br>
+<code class="notranslate">carve_aspect_refresh</code> integration, including cacheable per-action shards.</li>
+<li>Extract compile actions from Bazel aquery protobufs, expand response files,<br>
+remove Bazel-only flags, resolve Apple toolchain placeholders, and parse Make<br>
+dependency files.</li>
+<li>Scan dependencies in-process through Clang, record source/header ownership,<br>
+and incrementally rescan only stale or unresolved actions.</li>
+<li>Persist project-scoped action records and a deterministic header-to-owner<br>
+index, with atomic writes, shard aggregation, and age-based pruning.</li>
+<li>Add source-release automation, a tested external-consumer module, BCR<br>
+metadata for optional later publication, and retained versioned release and<br>
+coverage websites with separately published website documentation.</li>
+</ul>
+<h3 dir="auto" id="changed">Changed</h3>
+<ul dir="auto">
+<li>Publish as the <code class="notranslate">mboworks_carve</code> Bazel module and use <code class="notranslate">mboworks_mbo</code> 0.14.0<br>
+and <code class="notranslate">mboworks_proto</code> 1.2.2.</li>
+<li>Use <code class="notranslate">bazel-contrib/toolchains_llvm</code> 1.9.0 with LLVM 22.1.8 and matching<br>
+prebuilt static Clang/LLVM archives instead of compiling LLVM in CI.</li>
+<li>Store compilation-database sources and cached headers execroot-relative to<br>
+keep persisted data deterministic across hosts.</li>
+<li>Keep first-party warnings fatal while treating external headers and sources<br>
+as code outside Carve's control.</li>
+<li>Create releases as mutable drafts, verify the attached source archive, and<br>
+only then publish them directly as immutable stable releases.</li>
+<li>Build release archives without modifying the checkout and make repeated<br>
+packaging byte-reproducible.</li>
+<li>Keep tag coverage CI while avoiding Trunk's unrelated whole-repository mode<br>
+for commits that already passed the required merge gate.</li>
+</ul>
+<h3 dir="auto" id="quality">Quality</h3>
+<ul dir="auto">
+<li>Test all production modules with unit, integration, end-to-end, golden,<br>
+archive-consumer, and differential checks on Linux x86-64 and Apple Silicon.</li>
+<li>Enforce clang-tidy, Trunk, pre-commit, ASan/LSan/UBSan, TSan, and Linux MSan<br>
+in CI; LLVM-linked targets are excluded from sanitizer configurations.</li>
+<li>Enforce 95% line, function, and branch coverage overall and for every<br>
+non-empty production category. At release preparation, reported coverage is<br>
+98.54% lines, 98.90% functions, and 96.04% branches.</li>
+<li>Bound and separate Bazel action caches while leaving external repositories<br>
+and the large LLVM distribution disposable.</li>
+</ul>
+<h3 dir="auto" id="known-limitations">Known limitations</h3>
+<ul dir="auto">
+<li>The initial source release supports Linux x86-64 and Apple Silicon with the<br>
+documented LLVM toolchain. Windows and macOS x86-64 are not supported.</li>
+<li>Compilation databases are tied to their Bazel execution root rather than<br>
+being relocatable between workspace locations.</li>
+<li>NVCC and Emscripten command translation and broader external-project<br>
+differential validation remain deferred.</li>
+</ul>
+<h2 dir="auto" id="010---2026-09-08">[0.1.0] - 2026-09-08</h2>
+<p dir="auto">The signed tag was created, but its GitHub release was not published because<br>
+the original workflow uploaded assets after publishing an immutable release.<br>
+Version 0.1.1 supersedes this unpublished release.</p></main><footer>Release snapshot · b5f5de10c366d141bd8ef53319ada000c031a7fb</footer></body></html>

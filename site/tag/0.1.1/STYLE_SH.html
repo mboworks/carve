@@ -1,0 +1,47 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>STYLE_SH.md - carve 0.1.1</title><style>
+:root { color-scheme: light dark; font: 17px/1.6 system-ui, sans-serif; }
+body { max-width: 76rem; margin: auto; padding: 2rem; }
+a { color: light-dark(#075da8, #8cc8ff); }
+nav { display: flex; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid #888; }
+pre { padding: 1rem; overflow: auto; background: light-dark(#f3f5f7, #20252b); }
+code { font-size: .9em; } img { max-width: 100%; }
+table { display: block; overflow: auto; border-collapse: collapse; }
+th, td { border: 1px solid #888; padding: .4rem .7rem; }
+blockquote { border-left: 4px solid #888; margin-left: 0; padding-left: 1rem; }
+</style><body><nav><a href="/carve/site/tag/0.1.1/">Home</a><a href="/carve/site/tag/0.1.1/documents.html">Documentation</a><a href="https://github.com/mboworks/carve/releases/tag/0.1.1">Release &amp; downloads</a><a href="https://github.com/mboworks/carve/tree/b5f5de10c366d141bd8ef53319ada000c031a7fb">Source</a><a href="/carve/coverage/tag/0.1.1/">Coverage</a></nav><p>carve 0.1.1</p><main><h1 dir="auto" id="shell-style">Shell style</h1>
+<p dir="auto">Follow the <a href="https://google.github.io/styleguide/shellguide.html" rel="nofollow">Google Shell Style Guide</a><br>
+unless this document or repository tooling says otherwise.</p>
+<h2 dir="auto" id="tooling">Tooling</h2>
+<ul dir="auto">
+<li>Use Bash for repository scripts. Executable scripts start with<br>
+<code class="notranslate">#!/usr/bin/env bash</code>, followed by the repository licence header.</li>
+<li>Use <code class="notranslate">set -euo pipefail</code>, quote expansions unless splitting is intentional,<br>
+and make function variables <code class="notranslate">local</code>.</li>
+<li>Format with <code class="notranslate">shfmt -bn -ci -i=2 -w</code> and lint with <code class="notranslate">shellcheck</code>. Explain any<br>
+necessary local suppression at the suppressed line.</li>
+</ul>
+<h2 dir="auto" id="functions-and-effects">Functions and effects</h2>
+<ul dir="auto">
+<li>Return computed values on standard output and capture them; do not mutate a<br>
+caller variable with <code class="notranslate">eval</code>, <code class="notranslate">printf -v</code>, or a global variable.</li>
+<li>Send diagnostics to standard error.</li>
+<li>A function whose purpose is an external effect may perform that named effect,<br>
+but changes to directories, shell options, and traps stay local.</li>
+</ul>
+<h2 dir="auto" id="tests-and-temporary-files">Tests and temporary files</h2>
+<ul dir="auto">
+<li>Shell behavior requires a committed test just like C++ behavior.</li>
+<li>Prefer the existing C++ end-to-end harness when testing Carve itself. Adopt<br>
+<code class="notranslate">mboworks_bashtest</code> only when the behavior is genuinely shell-specific.</li>
+<li>Put test files under the test-owned temporary directory. Do not add cleanup<br>
+traps or broad recursive deletion for Bazel-managed scratch space.</li>
+</ul>
+<h2 dir="auto" id="portability">Portability</h2>
+<ul dir="auto">
+<li>Target the Bash available on supported Linux and macOS CI runners.</li>
+<li>Resolve Bazel runfiles through <code class="notranslate">TEST_SRCDIR</code> and <code class="notranslate">TEST_WORKSPACE</code>.</li>
+<li>Prefer <code class="notranslate">[[ ... ]]</code>, arithmetic <code class="notranslate">(( ... ))</code>, and arrays over legacy tests and<br>
+stringly argument assembly.</li>
+<li>Use lower-case names for local variables and functions. Preserve environment<br>
+and runfile variable names.</li>
+</ul></main><footer>Release snapshot · b5f5de10c366d141bd8ef53319ada000c031a7fb</footer></body></html>
