@@ -64,6 +64,7 @@ jobs:
         with:
           path: source
           ref: main
+          fetch-depth: 0
       - uses: actions/checkout@v7
         if: steps.target.outputs.publish == 'true'
         with:
@@ -79,6 +80,7 @@ jobs:
       - name: Stage and index report
         if: steps.target.outputs.publish == 'true'
         env:
+          GH_TOKEN: ${{ github.token }}
           EXPECTED_TARGET: ${{ steps.target.outputs.target }}
           SOURCE_COMPLETED_AT: ${{ github.event.workflow_run.updated_at }}
           SOURCE_CREATED_AT: ${{ github.event.workflow_run.created_at }}
@@ -114,6 +116,8 @@ jobs:
             mkdir -p "site/coverage/${target}"
             rsync --archive --delete report/coverage-html/ "site/coverage/${target}/"
           fi
+          gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/pulls?state=closed&base=main&per_page=100" >merged-prs.json
+          python3 source/tools/coverage_index.py history site/coverage source merged-prs.json
           python3 source/tools/coverage_index.py regenerate site/coverage
           git -C site config user.name 'github-actions[bot]'
           git -C site config user.email '41898282+github-actions[bot]@users.noreply.github.com'
@@ -124,6 +128,7 @@ jobs:
           fi
           mkdir -p public
           rsync --archive --exclude='.git' site/ public/
+          python3 source/tools/site_artwork.py source/docs/assets public
       - uses: actions/upload-pages-artifact@v5
         if: steps.target.outputs.publish == 'true'
         with:

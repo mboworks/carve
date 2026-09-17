@@ -12,15 +12,11 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
+  actions: write
   contents: read
-
-# Bump when the on-disk cache policy changes. Bazel action keys handle source,
-# dependency, toolchain, platform, and configuration changes themselves.
-env:
-  BAZEL_CACHE_GENERATION: v2
 
 jobs:
   release-site-tests:
@@ -35,6 +31,8 @@ jobs:
           python-version: '3.13'
       - run: python3 -m unittest discover -s tools -p release_site_test.py
       - run: python3 -m unittest discover -s tools -p release_notes_test.py
+      - name: Test infrastructure policies
+        run: python3 -m unittest discover -s tools -p "*_test.py"
       - name: Verify configured documentation and generated links
         env:
           GH_TOKEN: ${{ github.token }}
@@ -74,14 +72,16 @@ jobs:
         with:
           fetch-depth: 0
       - uses: bazel-contrib/setup-bazel@0.19.0
-      - name: Restore Bazel disk cache
-        uses: actions/cache/restore@v6
         with:
-          path: ~/.cache/bazel-disk
-          key: bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-clang-tidy-${{ github.ref }}-${{ github.sha }}
-          restore-keys: |
-            bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-clang-tidy-${{ github.ref }}-
-            bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-clang-tidy-refs/heads/main-
+          bazelisk-cache: false
+          disk-cache: false
+          external-cache: false
+          repository-cache: false
+      - uses: ./.github/actions/bazel-cache-restore
+        id: cache_restore
+        with:
+          namespace: clang-tidy
+          legacy-prefix: bazel-v2-ubuntu-clang-tidy-refs/heads/main-
       - name: Materialize generated and external headers
         # A cached top-level test object does not necessarily materialize its
         # generated transitive headers. clang-tidy reads those headers directly
@@ -119,13 +119,12 @@ jobs:
         if: github.event_name != 'pull_request'
         run: find carve -name '*.cc' -type f | sort >.clang-tidy-inputs
       - name: Run clang-tidy
-        run: python3 tools/clang_tidy.py --clang-tidy "${{ steps.clang_tidy.outputs.executable }}" --files-from .clang-tidy-inputs
-      - name: Save Bazel disk cache
-        if: always() && github.ref == 'refs/heads/main'
-        uses: actions/cache/save@v6
+        run: python3 tools/clang_tidy.py --jobs "$(getconf _NPROCESSORS_ONLN)" --clang-tidy "${{ steps.clang_tidy.outputs.executable }}" --files-from .clang-tidy-inputs
+      - uses: ./.github/actions/bazel-cache-save
+        if: "!cancelled() && github.ref == 'refs/heads/main'"
+        timeout-minutes: 20
         with:
-          path: ~/.cache/bazel-disk
-          key: bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-clang-tidy-${{ github.ref }}-${{ github.sha }}
+          key: ${{ steps.cache_restore.outputs.key }}
 
   test:
     needs: [trunk, pre-commit]
@@ -138,16 +137,18 @@ jobs:
       - uses: actions/checkout@v7
       # bazelisk launches the Bazel release pinned in .bazelversion.
       - uses: bazel-contrib/setup-bazel@0.19.0
+        with:
+          bazelisk-cache: false
+          disk-cache: false
+          external-cache: false
+          repository-cache: false
       # Cache compiled actions only. The repository cache contains the multi-gigabyte LLVM
       # distribution and must not consume GitHub's shared 10 GB cache allowance.
-      - name: Restore Bazel disk cache
-        uses: actions/cache/restore@v6
+      - uses: ./.github/actions/bazel-cache-restore
+        id: cache_restore
         with:
-          path: ~/.cache/bazel-disk
-          key: bazel-${{ env.BAZEL_CACHE_GENERATION }}-${{ matrix.os }}-test-${{ github.ref }}-${{ github.sha }}
-          restore-keys: |
-            bazel-${{ env.BAZEL_CACHE_GENERATION }}-${{ matrix.os }}-test-${{ github.ref }}-
-            bazel-${{ env.BAZEL_CACHE_GENERATION }}-${{ matrix.os }}-test-refs/heads/main-
+          namespace: test
+          legacy-prefix: bazel-v2-${{ matrix.os }}-test-refs/heads/main-
       - name: bazel test
         run: bazel test --config=ci --config=clang //...
       - name: Test release archive as a consumer
@@ -157,14 +158,12 @@ jobs:
           .github/workflows/release_prep.sh >release-notes.md
           tools/release_archive_test.sh "carve-${version}.tar.gz" \
             --disk_cache="$HOME/.cache/bazel-disk" \
-            --experimental_disk_cache_gc_max_size=1G \
             --repository_cache="$HOME/.cache/bazel-repo"
-      - name: Save Bazel disk cache
-        if: always() && github.ref == 'refs/heads/main'
-        uses: actions/cache/save@v6
+      - uses: ./.github/actions/bazel-cache-save
+        if: "!cancelled() && github.ref == 'refs/heads/main'"
+        timeout-minutes: 20
         with:
-          path: ~/.cache/bazel-disk
-          key: bazel-${{ env.BAZEL_CACHE_GENERATION }}-${{ matrix.os }}-test-${{ github.ref }}-${{ github.sha }}
+          key: ${{ steps.cache_restore.outputs.key }}
 
   # Sanitizers run on ubuntu only. The LLVM-linking targets are tagged `no_san`
   # and skipped; the remaining //carve/... targets are instrumented.
@@ -174,22 +173,23 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: bazel-contrib/setup-bazel@0.19.0
-      - name: Restore Bazel disk cache
-        uses: actions/cache/restore@v6
         with:
-          path: ~/.cache/bazel-disk
-          key: bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-asan-${{ github.ref }}-${{ github.sha }}
-          restore-keys: |
-            bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-asan-${{ github.ref }}-
-            bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-asan-refs/heads/main-
+          bazelisk-cache: false
+          disk-cache: false
+          external-cache: false
+          repository-cache: false
+      - uses: ./.github/actions/bazel-cache-restore
+        id: cache_restore
+        with:
+          namespace: asan
+          legacy-prefix: bazel-v2-ubuntu-asan-refs/heads/main-
       - name: bazel test (asan + ubsan)
         run: bazel test --config=ci --config=clang --config=asan --config=ubsan //carve/...
-      - name: Save Bazel disk cache
-        if: always() && github.ref == 'refs/heads/main'
-        uses: actions/cache/save@v6
+      - uses: ./.github/actions/bazel-cache-save
+        if: "!cancelled() && github.ref == 'refs/heads/main'"
+        timeout-minutes: 20
         with:
-          path: ~/.cache/bazel-disk
-          key: bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-asan-${{ github.ref }}-${{ github.sha }}
+          key: ${{ steps.cache_restore.outputs.key }}
 
   tsan:
     needs: [trunk, pre-commit]
@@ -197,22 +197,23 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: bazel-contrib/setup-bazel@0.19.0
-      - name: Restore Bazel disk cache
-        uses: actions/cache/restore@v6
         with:
-          path: ~/.cache/bazel-disk
-          key: bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-tsan-${{ github.ref }}-${{ github.sha }}
-          restore-keys: |
-            bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-tsan-${{ github.ref }}-
-            bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-tsan-refs/heads/main-
+          bazelisk-cache: false
+          disk-cache: false
+          external-cache: false
+          repository-cache: false
+      - uses: ./.github/actions/bazel-cache-restore
+        id: cache_restore
+        with:
+          namespace: tsan
+          legacy-prefix: bazel-v2-ubuntu-tsan-refs/heads/main-
       - name: bazel test (tsan)
         run: bazel test --config=ci --config=clang --config=tsan //carve/...
-      - name: Save Bazel disk cache
-        if: always() && github.ref == 'refs/heads/main'
-        uses: actions/cache/save@v6
+      - uses: ./.github/actions/bazel-cache-save
+        if: "!cancelled() && github.ref == 'refs/heads/main'"
+        timeout-minutes: 20
         with:
-          path: ~/.cache/bazel-disk
-          key: bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-tsan-${{ github.ref }}-${{ github.sha }}
+          key: ${{ steps.cache_restore.outputs.key }}
 
   # MemorySanitizer catches uninitialized reads that ASan does not. It is Linux
   # x86-64 only and uses toolchains_llvm's instrumented libc++ overlay. Targets
@@ -224,41 +225,57 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: bazel-contrib/setup-bazel@0.19.0
-      - name: Restore Bazel disk cache
-        uses: actions/cache/restore@v6
         with:
-          path: ~/.cache/bazel-disk
-          key: bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-msan-${{ github.ref }}-${{ github.sha }}
-          restore-keys: |
-            bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-msan-${{ github.ref }}-
-            bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-msan-refs/heads/main-
+          bazelisk-cache: false
+          disk-cache: false
+          external-cache: false
+          repository-cache: false
+      - uses: ./.github/actions/bazel-cache-restore
+        id: cache_restore
+        with:
+          namespace: msan
+          legacy-prefix: bazel-v2-ubuntu-msan-refs/heads/main-
       - name: bazel test (msan)
         run: bazel test --config=ci --config=clang --config=msan //carve/...
-      - name: Save Bazel disk cache
-        if: always() && github.ref == 'refs/heads/main'
-        uses: actions/cache/save@v6
+      - uses: ./.github/actions/bazel-cache-save
+        if: "!cancelled() && github.ref == 'refs/heads/main'"
+        timeout-minutes: 20
         with:
-          path: ~/.cache/bazel-disk
-          key: bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-msan-${{ github.ref }}-${{ github.sha }}
+          key: ${{ steps.cache_restore.outputs.key }}
 
   coverage:
-    needs: [trunk, pre-commit]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: bazel-contrib/setup-bazel@0.19.0
+        with:
+          bazelisk-cache: false
+          disk-cache: false
+          external-cache: false
+          repository-cache: false
       - name: Install LCOV
         run: sudo apt-get update && sudo apt-get install --yes lcov
-      - name: Restore Bazel disk cache
-        uses: actions/cache/restore@v6
+      - uses: ./.github/actions/bazel-cache-restore
+        id: cache_restore
         with:
-          path: ~/.cache/bazel-disk
-          key: bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-coverage-${{ github.ref }}-${{ github.sha }}
-          restore-keys: |
-            bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-coverage-${{ github.ref }}-
-            bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-coverage-refs/heads/main-
+          namespace: coverage
+          legacy-prefix: bazel-v2-ubuntu-coverage-refs/heads/main-
       - name: Collect coverage
-        run: bazel coverage --config=ci --config=coverage //carve/...
+        run: |
+          bazel coverage --config=ci --config=coverage //carve/... \
+            --profile="${RUNNER_TEMP}/coverage-preparation.json.gz" \
+            --experimental_profile_additional_tasks=repository_fetch \
+            --experimental_profile_additional_tasks=starlark_repository_fn \
+            --experimental_profile_additional_tasks=starlark_builtin_fn \
+            --experimental_profile_additional_tasks=fetch
+      - name: Preserve coverage preparation profile
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-preparation-profile
+          path: ${{ runner.temp }}/coverage-preparation.json.gz
+          retention-days: 7
+          if-no-files-found: warn
       - name: Apply source coverage directives
         run: |
           python3 tools/coverage_sources.py \
@@ -302,12 +319,11 @@ jobs:
       - name: Fail on coverage policy violation
         if: steps.coverage_policy.outcome != 'success'
         run: exit 1
-      - name: Save Bazel disk cache
-        if: always() && github.ref == 'refs/heads/main'
-        uses: actions/cache/save@v6
+      - uses: ./.github/actions/bazel-cache-save
+        if: "!cancelled() && github.ref == 'refs/heads/main'"
+        timeout-minutes: 20
         with:
-          path: ~/.cache/bazel-disk
-          key: bazel-${{ env.BAZEL_CACHE_GENERATION }}-ubuntu-coverage-${{ github.ref }}-${{ github.sha }}
+          key: ${{ steps.cache_restore.outputs.key }}
 
   # Single required status check: one job that gates merge on the whole matrix,
   # so branch protection needs only `done`. A yq/jq step self-checks that every
@@ -334,6 +350,23 @@ jobs:
             exit 1
           fi
           echo "done covers all $(grep -c . <<<"${declared}") workflow jobs."
+      - uses: actions/download-artifact@v8
+        if: always() && github.ref == 'refs/heads/main'
+        with:
+          pattern: cache-metrics-*
+          path: cache-metrics
+          merge-multiple: true
+      - name: Report cache storage
+        if: always() && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if gh cache list --limit 10000 --json key,ref,sizeInBytes >cache-inventory.json; then
+            python3 tools/cache_report.py --metrics cache-metrics --inventory cache-inventory.json >>"${GITHUB_STEP_SUMMARY}"
+          else
+            echo 'Cache inventory unavailable.' >>"${GITHUB_STEP_SUMMARY}"
+          fi
       - name: Fail if any dependency did not succeed
         if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
         run: exit 1

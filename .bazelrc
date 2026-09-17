@@ -85,7 +85,6 @@ common:clang --cxxopt=-Wno-unused-command-line-argument
 # CI restores only the content-addressed action cache. External repositories and
 # Bazel's output base remain disposable and are downloaded/recreated per runner.
 common:ci --disk_cache=~/.cache/bazel-disk
-common:ci --experimental_disk_cache_gc_max_size=1G
 common:ci --repository_cache=~/.cache/bazel-repo
 
 # Sanitizer presets.

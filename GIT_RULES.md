@@ -64,8 +64,9 @@ For a release:
    publishes it directly as an immutable stable release.
 3. Inspect the published release, source archive, release notes, and tag
    coverage.
-4. Manually dispatch `pages.yml` for the tag; release publication is not an
-   Actions trigger. Verify the Pages root redirects to the versioned site.
+4. Wait for `Publish release site`, triggered by the completed Release workflow.
+   Release events created with `GITHUB_TOKEN` are not Actions triggers. Use manual
+   dispatch only to retry or backfill; verify the Pages root redirects to the versioned site.
 
 An immutable release cannot be promoted from prerelease to stable. Assets must
 be attached and verified while the release is a draft; publication is the final

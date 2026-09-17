@@ -106,7 +106,9 @@ for release_file in BUILD.bazel MODULE.bazel .gitattributes; do
   GIT_INDEX_FILE="${TMP_INDEX}" git update-index --add --cacheinfo "100644,${blob},${release_file}"
 done
 ARCHIVE_TREE="$(GIT_INDEX_FILE="${TMP_INDEX}" git write-tree)"
-git archive --format=tar --prefix="${PREFIX}/" -o "${WORK}/archive.tar" \
+# Archiving a tree otherwise uses the current clock, making retries differ.
+ARCHIVE_TIME="$(git show -s --format=%cI HEAD)"
+git archive --mtime="${ARCHIVE_TIME}" --format=tar --prefix="${PREFIX}/" -o "${WORK}/archive.tar" \
   --add-virtual-file="${PREFIX}/VERSION:${TAG}" "${ARCHIVE_TREE}"
 gzip -9 -n -c "${WORK}/archive.tar" >"${ARCHIVE}"
 

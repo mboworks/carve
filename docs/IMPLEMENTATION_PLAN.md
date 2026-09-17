@@ -6,7 +6,11 @@ architecture (the *what* and *why*); this document tracks *status* and the
 month-by-month sketch in CARVE_DESIGN.md §11. Update it as milestones land; keep
 it honest.
 
-Last reviewed: 2026-06-24.
+Last reviewed: 2026-09-17 (infrastructure only; product milestones below retain their prior status).
+
+Infrastructure adaptation: bounded local lint, main-only measured caches, coverage preparation
+profiles and history ordering, reproducible archive timestamps, and deployment-only artwork are
+implemented with regression tests. See [infrastructure guidance](infrastructure.md).
 
 ## Status snapshot
 

@@ -6,6 +6,15 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Bound local clang-tidy workers and interruption cleanup; refresh measured main-only build
+  caches, run coverage alongside lint, retain preparation profiles, and order retained coverage
+  by main history. Add deployment-only site artwork, synchronize contributor guidance, and
+  make release archive timestamps reproducible across retries.
+
+## [0.1.2] - Unreleased
+
+- Advance the development version after 0.1.1, keeping the BCR consumer in sync.
+
 ## [0.1.1] - 2026-09-08
 
 ### Added

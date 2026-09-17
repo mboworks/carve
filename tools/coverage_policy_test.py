@@ -107,7 +107,7 @@ end_of_record
         workflow = (REPO_ROOT / ".github/workflows/main.yml").read_text(
             encoding="utf-8"
         )
-        for job in ("clang-tidy", "test", "asan", "tsan", "msan", "coverage"):
+        for job in ("clang-tidy", "test", "asan", "tsan", "msan"):
             with self.subTest(job=job):
                 self.assertIn(
                     f"  {job}:\n    needs: [trunk, pre-commit]\n",
