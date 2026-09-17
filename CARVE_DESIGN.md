@@ -279,7 +279,11 @@ Per the constraint, kept as close to zero as possible:
 - Vendored toolchain configuration: declarative `MODULE.bazel`, no scripts.
 - Possible exception: a one-shot regeneration script for the NVCC flag table (a `nvcc_clang_diff.py`-style developer utility, to be added when the NVCC quirk lands). Could be rewritten in C++ but Python is genuinely faster to iterate on for that specific tool. Acceptable to keep as developer-only utility.
 
-Net runtime Python: zero. Net developer Python: at most one script run rarely.
+Net runtime Python: zero. The original one-script developer estimate is superseded by
+implemented infrastructure: Python 3.13+ helpers test and enforce build/coverage policy,
+coordinate clang-tidy, manage CI caches, and publish release/coverage sites. These are
+repository development tools, not dependencies of the published C++ tool. Their behavior
+is regression-tested; see [infrastructure guidance](docs/infrastructure.md).
 
 ## 5. Build and dependency tree
 

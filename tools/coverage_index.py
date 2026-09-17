@@ -10,6 +10,7 @@ import datetime
 import html
 import json
 import re
+import subprocess
 from pathlib import Path
 
 import coverage_policy
@@ -212,11 +213,6 @@ def is_newer(candidate: dict, current: dict) -> bool:
     return key(candidate) >= key(current)
 
 
-def _version_key(target: str) -> tuple[int, ...]:
-    match = re.fullmatch(r"tag/(\d+)\.(\d+)\.(\d+)", target)
-    return tuple(map(int, match.groups())) if match else (-1,)
-
-
 def _report_row(metadata: dict) -> str:
     target = metadata["target"]
     if target == "main":
@@ -246,23 +242,66 @@ def _report_row(metadata: dict) -> str:
     return "      <tr>" + "".join(f"<td>{value}</td>" for value in (*links, *values)) + "</tr>"
 
 
+def _metadata_paths(root: Path) -> list[Path]:
+    sources = list((root / "main").glob("coverage-meta.json"))
+    sources.extend((root / "tag").glob("*/coverage-meta.json"))
+    sources.extend((root / "pr").glob("*/coverage-meta.json"))
+    return sources
+
+
+def update_history(root: Path, repository: Path, pull_requests: list[dict]) -> None:
+    """Attach each report to its merge/tag commit in main's first-parent history."""
+    commits = subprocess.check_output(
+        ["git", "-C", str(repository), "rev-list", "--first-parent", "--reverse", "HEAD"],
+        text=True,
+    ).splitlines()
+    positions = {sha: index for index, sha in enumerate(commits)}
+    merges = {
+        f"pr/{pull['number']}": pull["merge_commit_sha"]
+        for pull in pull_requests
+        if pull.get("merged_at")
+    }
+    for path in _metadata_paths(root):
+        metadata = json.loads(path.read_text(encoding="utf-8"))
+        target = metadata["target"]
+        sha = merges.get(target)
+        if re.fullmatch(r"tag/\d+\.\d+\.\d+", target):
+            tag = target.removeprefix("tag/")
+            resolved = subprocess.run(
+                ["git", "-C", str(repository), "rev-parse", "--verify", "--quiet", f"refs/tags/{tag}^{{commit}}"],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            sha = resolved.stdout.strip() if resolved.returncode == 0 else None
+        metadata["history"] = (
+            {"commit": sha, "position": positions[sha]} if sha in positions else None
+        )
+        path.write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+
+
+def _report_order(metadata: dict) -> tuple:
+    target = metadata["target"]
+    history = metadata.get("history")
+    source = metadata["source"]
+    return (
+        target == "main",
+        history is not None,
+        history["position"] if history is not None else -1,
+        history is not None and target.startswith("tag/"),
+        source["created_at"] if history is None else "",
+        source["run_id"] if history is None else 0,
+        target,
+    )
+
+
 def render_site(root: Path) -> str:
     """Render the global overview for main, all releases, and all PRs."""
-    paths = list((root / "main").glob("coverage-meta.json"))
-    paths.extend((root / "tag").glob("*/coverage-meta.json"))
-    paths.extend((root / "pr").glob("*/coverage-meta.json"))
-    reports = [json.loads(path.read_text(encoding="utf-8")) for path in paths]
-    reports.sort(
-        key=lambda value: (
-            0 if value["target"] == "main" else 1 if value["target"].startswith("tag/") else 2,
-            tuple(-part for part in _version_key(value["target"]))
-            if value["target"].startswith("tag/")
-            else -int(value["target"].removeprefix("pr/"))
-            if value["target"].startswith("pr/")
-            else 0,
-        )
-    )
-    body = "    <h1>Carve coverage reports</h1>\n"
+    reports = [json.loads(path.read_text(encoding="utf-8")) for path in _metadata_paths(root)]
+    reports.sort(key=_report_order, reverse=True)
+    body = ("    <h1>Carve coverage reports</h1>\n"
+            "    <p>Main first, then PRs and releases newest-first in main's commit history. "
+            "Unpositioned reports follow by workflow creation time.</p>\n")
     if reports:
         body += """    <table class="reportsTable">
       <thead><tr><th>Report</th><th>Data</th><th>Source</th><th>Completed</th><th>Commit</th><th>Workflow</th><th>Lines</th><th>Branches</th><th>Functions</th></tr></thead>
@@ -311,6 +350,10 @@ def main() -> int:
         metadata.add_argument(f"--{name}", required=True)
     metadata.add_argument("--run-attempt", required=True, type=int)
     metadata.add_argument("--run-id", required=True, type=int)
+    history = commands.add_parser("history")
+    history.add_argument("root", type=Path)
+    history.add_argument("repository", type=Path)
+    history.add_argument("pull_requests", type=Path)
     newer = commands.add_parser("newer")
     newer.add_argument("candidate", type=Path)
     newer.add_argument("current", type=Path)
@@ -324,6 +367,9 @@ def main() -> int:
         args.output.write_text(render_site(args.root), encoding="utf-8")
     elif args.command == "regenerate":
         regenerate(args.root)
+    elif args.command == "history":
+        pages = json.loads(args.pull_requests.read_text(encoding="utf-8"))
+        update_history(args.root, args.repository, [pull for page in pages for pull in page])
     elif args.command == "metadata":
         summary = json.loads(args.summary.read_text())
         source = {

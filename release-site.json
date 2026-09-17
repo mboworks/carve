@@ -15,7 +15,8 @@
     "STYLE_CPP.md": "STYLE_CPP.html",
     "STYLE_SH.md": "STYLE_SH.html",
     "TODO.md": "TODO.html",
-    "docs/release-website.md": "docs/release-website.html"
+    "docs/release-website.md": "docs/release-website.html",
+    "docs/infrastructure.md": "docs/infrastructure.html"
   },
   "links": [
     {

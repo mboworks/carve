@@ -36,3 +36,6 @@ unless this document or repository tooling says otherwise.
   stringly argument assembly.
 - Use lower-case names for local variables and functions. Preserve environment
   and runfile variable names.
+- Avoid GNU-only flags and `mapfile` in scripts supporting stock macOS Bash.
+- Read lines with `while IFS= read -r line`; parse structured data with `jq`, `yq`, or Python.
+- Check required external programs early and report missing prerequisites clearly.

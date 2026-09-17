@@ -81,10 +81,10 @@ repos:
 
       - id: cache-cleanup-tests
         name: cache cleanup selection tests
-        entry: python3 -m unittest tools/cache_cleanup_test.py
+        entry: python3 -m unittest tools/bazel_cache_test.py tools/cache_cleanup_test.py tools/cache_report_test.py tools/site_artwork_test.py
         language: system
         pass_filenames: false
-        files: '^(\.github/workflows/cache_cleanup\.yml|tools/cache_cleanup(_test)?\.py)$'
+        files: '^(\.github/(actions|workflows)/|tools/(bazel_cache|cache_cleanup|cache_report|site_artwork)(_test)?\.py$)'
 
       - id: bazelrc-policy-tests
         name: Bazel warning policy tests

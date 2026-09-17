@@ -1,45 +1,40 @@
-# SPDX-FileCopyrightText: Copyright (c) M. Boerger, the MBO Works authors
-# SPDX-License-Identifier: Apache-2.0
-
-name: Cleanup caches
-run-name: Clean Actions caches after ${{ github.event.workflow_run.name || github.event_name }} run ${{ github.event.workflow_run.id || github.run_id }}
+name: Maintain Actions caches
 
 on:
-  pull_request:
-    types: [closed]
   workflow_run:
-    workflows: [Test]
+    workflows: [Test, Release]
     types: [completed]
   schedule:
-    - cron: "37 4 * * 1"
+    - cron: "17 3 * * *"
   workflow_dispatch: {}
 
-concurrency:
-  group: cache-cleanup
-  cancel-in-progress: false
-
+# This workflow runs trusted code from the default branch after another workflow completes. It
+# needs write access only to delete cache entries; it never checks out or executes a PR head.
 permissions:
   actions: write
   contents: read
+  pull-requests: read
 
 jobs:
   cleanup:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - name: Delete caches belonging to the closed pull request
-        if: github.event_name == 'pull_request'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PR_REF: refs/pull/${{ github.event.pull_request.number }}/merge
-        run: gh cache delete --all --ref "${PR_REF}" --succeed-on-no-caches
-      - name: Delete oversized and superseded caches
-        if: github.event_name != 'pull_request'
-        env:
-          GH_TOKEN: ${{ github.token }}
+        with:
+          ref: main
+      - name: Delete closed-PR, tag, superseded, and oversized cache entries
         run: |
-          gh cache list --limit 10000 --json id,key,createdAt,sizeInBytes \
-            | python3 tools/cache_cleanup.py >expired-cache-ids
-          while read -r cache_id; do
-            [[ -z "${cache_id}" ]] || gh cache delete "${cache_id}"
-          done <expired-cache-ids
+          set -euo pipefail
+          if ! cache_json=$(gh cache list --limit 10000 --json id,key,ref,sizeInBytes,createdAt 2>&1); then
+            echo "::warning title=Cache size enforcement skipped::${cache_json}"
+            exit 0
+          fi
+          gh api --paginate --slurp "repos/${GH_REPO}/pulls?state=closed&per_page=100" >closed-prs.json
+          obsolete=$(printf '%s' "${cache_json}" | python3 tools/cache_cleanup.py --closed-prs closed-prs.json)
+          for cache_id in ${obsolete}; do
+            echo "Deleting cache ${cache_id}: closed PR, tag, superseded generation, or size limit"
+            gh cache delete "${cache_id}"
+          done
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}

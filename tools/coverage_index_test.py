@@ -5,6 +5,9 @@
 
 import json
 import tempfile
+import subprocess
+import sys
+from unittest import mock
 import unittest
 from pathlib import Path
 
@@ -58,17 +61,19 @@ class CoverageIndexTest(unittest.TestCase):
             for target in ("main", "tag/0.9.0", "tag/0.10.0", "pr/9", "pr/81"):
                 destination = root / target
                 destination.mkdir(parents=True)
-                (destination / "coverage-meta.json").write_text(json.dumps(metadata(target)))
+                value = metadata(target)
+                positions = {"main": 0, "pr/9": 4, "tag/0.10.0": 3, "pr/81": 2, "tag/0.9.0": 1}
+                value["history"] = {"position": positions[target], "commit": "abc"}
+                (destination / "coverage-meta.json").write_text(json.dumps(value))
 
             rendered = coverage_index.render_site(root)
 
         self.assertIn("main branch", rendered)
         self.assertIn("release 0.10.0", rendered)
         self.assertIn("PR #81", rendered)
-        self.assertLess(rendered.index('href="main/"'), rendered.index('href="tag/0.10.0/"'))
-        self.assertLess(rendered.index('href="tag/0.10.0/"'), rendered.index('href="tag/0.9.0/"'))
-        self.assertLess(rendered.index('href="tag/0.9.0/"'), rendered.index('href="pr/81/"'))
-        self.assertLess(rendered.index('href="pr/81/"'), rendered.index('href="pr/9/"'))
+        expected = ["main", "pr/9", "tag/0.10.0", "pr/81", "tag/0.9.0"]
+        offsets = [rendered.index(f'href="{target}/"') for target in expected]
+        self.assertEqual(offsets, sorted(offsets))
 
     def test_each_global_row_links_to_report_source_commit_and_run(self):
         rendered = coverage_index._report_row(metadata("pr/81"))
@@ -83,6 +88,78 @@ class CoverageIndexTest(unittest.TestCase):
         new = {**old, "source": {**old["source"], "created_at": "2026-09-04T11:00:00Z"}}
         self.assertTrue(coverage_index.is_newer(new, old))
         self.assertFalse(coverage_index.is_newer(old, new))
+
+    def test_history_uses_merge_and_peeled_tag_commits_and_refreshes_old_reports(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            repository = root / "source"
+            repository.mkdir()
+            def git(*args):
+                return subprocess.check_output(
+                    ["git", "-C", str(repository), "-c", "user.name=Coverage Test",
+                     "-c", "user.email=coverage@example.invalid", "-c", "commit.gpgsign=false",
+                     "-c", "tag.gpgsign=false", "-c", "core.hooksPath=/dev/null", *args], text=True,
+                    stderr=subprocess.DEVNULL,
+                ).strip()
+            git("init")
+            git("commit", "--allow-empty", "-m", "older merge")
+            older = git("rev-parse", "HEAD")
+            git("tag", "0.9.0")
+            git("commit", "--allow-empty", "-m", "release commit")
+            release = git("rev-parse", "HEAD")
+            git("tag", "-a", "0.10.0", "-m", "release")
+            git("commit", "--allow-empty", "-m", "newer merge")
+            newer = git("rev-parse", "HEAD")
+            reports = root / "reports"
+            for target in ("main", "pr/900", "pr/1", "pr/2", "tag/0.9.0", "tag/0.10.0", "tag/9.9.9"):
+                folder = reports / target
+                folder.mkdir(parents=True)
+                metadata = coverage_index.report_metadata(summary(95), target, {
+                    "created_at": "2026-08-22T10:00:00Z", "completed_at": "2026-08-22T10:01:00Z",
+                    "started_at": "2026-08-22T10:00:00Z", "run_attempt": 1, "run_id": 1,
+                    "head_sha": "tested-pr-head",
+                })
+                metadata["history"] = {"position": 999, "commit": "stale"}
+                (folder / "coverage-meta.json").write_text(json.dumps(metadata))
+            pulls = [
+                {"number": 900, "merged_at": "2026-08-20T10:00:00Z", "merge_commit_sha": older},
+                {"number": 1, "merged_at": "2026-08-21T10:00:00Z", "merge_commit_sha": newer},
+                {"number": 2, "merged_at": None, "merge_commit_sha": older},
+            ]
+            pages = root / "pulls.json"
+            pages.write_text(json.dumps([pulls[:1], pulls[1:]]))
+            with mock.patch.object(sys, "argv", [
+                "coverage_index.py", "history", str(reports), str(repository), str(pages)
+            ]):
+                self.assertEqual(coverage_index.main(), 0)
+            expected = {"pr/900": (0, older), "tag/0.9.0": (0, older),
+                        "tag/0.10.0": (1, release), "pr/1": (2, newer)}
+            for target, (position, commit) in expected.items():
+                metadata = json.loads((reports / target / "coverage-meta.json").read_text())
+                self.assertEqual(metadata["history"], {"position": position, "commit": commit})
+                self.assertEqual(metadata["source"]["head_sha"], "tested-pr-head")
+            for target in ("main", "pr/2", "tag/9.9.9"):
+                metadata = json.loads((reports / target / "coverage-meta.json").read_text())
+                self.assertIsNone(metadata["history"])
+            rendered = coverage_index.render_site(reports)
+            order = ["main", "pr/1", "tag/0.10.0", "tag/0.9.0", "pr/900"]
+            offsets = [rendered.index(f'href="{target}/"') for target in order]
+            self.assertEqual(offsets, sorted(offsets))
+            self.assertLess(offsets[-1], rendered.index('href="pr/2/"'))
+            # A PR report can be published before the PR is merged. Refreshing must move it
+            # into the main chronology without replacing its coverage or workflow identity.
+            pulls[-1]["merged_at"] = "2026-08-22T10:00:00Z"
+            coverage_index.update_history(reports, repository, pulls)
+            refreshed = json.loads((reports / "pr/2/coverage-meta.json").read_text())
+            self.assertEqual(refreshed["history"]["position"], 0)
+
+    def test_unpositioned_reports_use_creation_time(self):
+        old = metadata("pr/900")
+        new = metadata("pr/1")
+        new["source"]["created_at"] = "2026-09-05T10:00:00Z"
+        old["source"]["completed_at"] = "2026-09-06T10:00:00Z"
+        ordered = sorted([old, new], key=coverage_index._report_order, reverse=True)
+        self.assertEqual([value["target"] for value in ordered], ["pr/1", "pr/900"])
 
     def test_regenerate_rebuilds_all_indexes_from_retained_json(self):
         with tempfile.TemporaryDirectory() as directory:

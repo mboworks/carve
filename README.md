@@ -1,6 +1,6 @@
-# carve
+# carve <img src="docs/assets/mboworks-logo.png" alt="MBO Works" width="64" height="64" align="right">
 
-[Release website](https://mboworks.github.io/carve/)
+[Release website](https://mboworks.github.io/carve/) · [Infrastructure and publishing](docs/infrastructure.md)
 
 Carve `compile_commands.json` out of Bazel build graphs for clangd-style
 tooling, licensed under [Apache-2.0](LICENSE). Carve is a clean-slate C++23

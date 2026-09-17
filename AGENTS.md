@@ -119,6 +119,13 @@ Run `pre-commit run -a` for format and repository policy checks. CI also runs
 Trunk's independent configuration/security scan; Trunk does not own Git hooks
 or run clang-tidy.
 
+## Infrastructure
+
+[Infrastructure guidance](docs/infrastructure.md) owns local lint limits, cache budgets,
+coverage history ordering, profiles, and deployment-only artwork. Keep it aligned with
+workflow behavior. Do not weaken warnings, sanitizers, lint rules, or coverage thresholds
+just to make CI pass. Keep generated databases, Bazel outputs, and tool caches untracked.
+
 ## Commits
 
 - All commits signed off (DCO): `git commit -s`.
@@ -134,8 +141,8 @@ or run clang-tidy.
 
 - Branches off `main`. PRs target `main`.
 - Description explains the why; the diff explains the what.
-- Agent-authored descriptions begin with a short `## AG;DR` summary, followed
-  by the detailed rationale, change list, and verification evidence.
+- Descriptions start with a short human-readable outcome and motivation, followed
+  by `## AG;DR` with implementation, validation, portability, dependencies, and limitations.
 - All CI green before merge.
 - Squash-merge by default; preserve commit history only for substantial,
   well-organized series.

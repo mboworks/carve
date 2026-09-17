@@ -52,9 +52,11 @@ def _align_block(rows: list[str]) -> list[str]:
     ncol = max(len(r) for r in grid)
     for r in grid:
         r.extend([""] * (ncol - len(r)))
-    widths = [0] * ncol
+    widths = [3] * ncol
     for r in grid:
         if _is_separator(r):
+            for i, c in enumerate(r):
+                widths[i] = max(widths[i], 3 + int(c.startswith(":")) + int(c.endswith(":")))
             continue
         for i, c in enumerate(r):
             widths[i] = max(widths[i], len(c))
@@ -65,7 +67,7 @@ def _align_block(rows: list[str]) -> list[str]:
             for i in range(ncol):
                 left = r[i].startswith(":")
                 right = r[i].endswith(":")
-                dashes = "-" * max(3, widths[i])
+                dashes = "-" * (widths[i] - int(left) - int(right))
                 seg.append((":" if left else "") + dashes + (":" if right else ""))
             out.append("| " + " | ".join(seg) + " |")
         else:

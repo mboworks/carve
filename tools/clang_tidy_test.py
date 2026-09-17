@@ -38,10 +38,11 @@ class SelectedSourcesTest(unittest.TestCase):
                 ["carve/b/b.cc"],
             )
 
-    @mock.patch("clang_tidy.subprocess.run")
+    @mock.patch("clang_tidy.subprocess.Popen")
     def test_run_limits_header_diagnostics_to_first_party_code(self, run):
-        run.return_value = mock.Mock(returncode=0, stdout="")
-        clang_tidy.run_one("clang-tidy", Path("compile_commands.json"), "carve/a/a.cc")
+        run.return_value = mock.Mock(returncode=0)
+        run.return_value.communicate.return_value = ("", None)
+        clang_tidy.run_one("clang-tidy", Path("compile_commands.json"), "carve/a/a.cc", clang_tidy.ProcessRegistry())
         self.assertEqual(
             run.call_args.args[0],
             [
@@ -53,6 +54,47 @@ class SelectedSourcesTest(unittest.TestCase):
                 "carve/a/a.cc",
             ],
         )
+
+    def test_stopped_pool_does_not_start_queued_processes(self):
+        registry = clang_tidy.ProcessRegistry()
+        registry.terminate_all()
+        with mock.patch("clang_tidy.subprocess.Popen") as spawn:
+            result = clang_tidy.run_one("clang-tidy", Path("compile_commands.json"), "carve/a/a.cc", registry)
+        spawn.assert_not_called()
+        self.assertEqual(result, ("carve/a/a.cc", 130, ""))
+
+    def test_default_workers_are_bounded_and_explicit_zero_is_rejected(self):
+        import contextlib
+        import io
+        import json
+        import threading
+        import time
+        with tempfile.TemporaryDirectory() as raw:
+            database = Path(raw) / "compile_commands.json"
+            database.write_text(json.dumps([
+                {"file": f"carve/a/{index}.cc", "directory": str(Path.cwd())}
+                for index in range(8)
+            ]))
+            for cpus, jobs, expected in [(128, [], 2), (1, [], 1), (128, ["--jobs", "3"], 3)]:
+                active = peak = 0
+                lock = threading.Lock()
+
+                def worker(_executable, _database, source, _registry):
+                    nonlocal active, peak
+                    with lock:
+                        active += 1
+                        peak = max(peak, active)
+                    time.sleep(0.02)
+                    with lock:
+                        active -= 1
+                    return source, 0, ""
+
+                with self.subTest(cpus=cpus, jobs=jobs), mock.patch("clang_tidy.os.cpu_count", return_value=cpus), \
+                        mock.patch("clang_tidy.run_one", side_effect=worker), contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(clang_tidy.main(["--clang-tidy", "tidy", "--database", str(database), *jobs]), 0)
+                self.assertEqual(peak, expected)
+            with self.assertRaises(SystemExit), contextlib.redirect_stderr(io.StringIO()):
+                clang_tidy.main(["--clang-tidy", "tidy", "--jobs", "0"])
 
     def test_crashing_llvm_check_is_disabled(self):
         config = (Path(__file__).parent.parent / ".clang-tidy").read_text(encoding="utf-8")

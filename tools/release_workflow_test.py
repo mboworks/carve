@@ -8,6 +8,7 @@ from pathlib import Path
 import subprocess
 import tarfile
 import tempfile
+import time
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -46,11 +47,13 @@ class ReleaseWorkflowTest(unittest.TestCase):
         archives = []
         with tempfile.TemporaryDirectory() as output:
             for directory in ("first", "second"):
+                if archives:
+                    time.sleep(1.1)  # Cross the timestamp boundary that used to change tar bytes.
                 destination = Path(output) / directory
                 destination.mkdir()
                 environment = os.environ.copy()
                 environment["CARVE_RELEASE_OUTPUT_DIR"] = str(destination)
-                environment["CARVE_RELEASE_VERSION"] = "0.1.1"
+                environment["CARVE_RELEASE_VERSION"] = "0.1.2"
                 subprocess.run(
                     [str(ROOT / ".github/workflows/release_prep.sh")],
                     cwd=ROOT,
@@ -58,15 +61,15 @@ class ReleaseWorkflowTest(unittest.TestCase):
                     stdout=subprocess.DEVNULL,
                     check=True,
                 )
-                archives.append((destination / "carve-0.1.1.tar.gz").read_bytes())
+                archives.append((destination / "carve-0.1.2.tar.gz").read_bytes())
 
             self.assertEqual(archives[0], archives[1])
-            with tarfile.open(Path(output) / "first/carve-0.1.1.tar.gz") as archive:
+            with tarfile.open(Path(output) / "first/carve-0.1.2.tar.gz") as archive:
                 names = set(archive.getnames())
-                self.assertIn("carve-0.1.1/VERSION", names)
-                self.assertIn("carve-0.1.1/examples/bcr/MODULE.bazel", names)
-                self.assertNotIn("carve-0.1.1/.github", names)
-                module = archive.extractfile("carve-0.1.1/MODULE.bazel")
+                self.assertIn("carve-0.1.2/VERSION", names)
+                self.assertIn("carve-0.1.2/examples/bcr/MODULE.bazel", names)
+                self.assertNotIn("carve-0.1.2/.github", names)
+                module = archive.extractfile("carve-0.1.2/MODULE.bazel")
                 self.assertIsNotNone(module)
                 self.assertIn(
                     b'# include("//bazelmod:dev.MODULE.bazel")', module.read()
