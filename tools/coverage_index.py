@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # SPDX-FileCopyrightText: Copyright (c) M. Boerger, the MBO Works authors
 # SPDX-License-Identifier: Apache-2.0
-"""Generate cross-linked per-run and retained-site coverage overviews."""
+
+"""Generate per-run and retained-site HTML coverage indexes."""
 
 from __future__ import annotations
 
@@ -10,12 +11,17 @@ import datetime
 import html
 import json
 import re
+import shutil
 import subprocess
+import tempfile
 from pathlib import Path
 
 import coverage_policy
 
 METRICS = ("lines", "branches", "functions")
+_METRICS = METRICS
+
+_METRICS = ("lines", "branches", "functions")
 
 
 def _page(title: str, body: str) -> str:
@@ -39,7 +45,7 @@ def _page(title: str, body: str) -> str:
       .reportsTable th:nth-child(-n+6), .reportsTable td:nth-child(-n+6) {{ text-align: left; }}
       .coverageTable td:first-child {{ background: #dae7fe; color: #284fa8; }}
       .coverageTable td {{ white-space: nowrap; }}
-      .coverageTable td:nth-child(n+3), .reportsTable td:nth-child(n+7) {{ font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-variant-numeric: tabular-nums; }}
+      .coverageTable td:nth-child(n+3), .patchTable td:nth-child(n+2), .reportsTable td:nth-child(n+7) {{ font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-variant-numeric: tabular-nums; }}
       .low {{ background: #f8cecc; }}
       .medium {{ background: #fff2cc; }}
       .high {{ background: #d5e8d4; }}
@@ -72,37 +78,119 @@ def _policy(summary: dict, category: str) -> dict[str, coverage_policy.MetricPol
             summary["targets"][category][metric],
             summary["enforcement"][category][metric],
         )
-        for metric in METRICS
+        for metric in _METRICS
     }
 
 
 def _status(metrics: dict, policy: dict[str, coverage_policy.MetricPolicy]) -> str:
-    failures = [
-        name
-        for name in METRICS
-        if not coverage_policy.passes(metrics[name]["percent"], policy[name])
-    ]
+    names = tuple(name for name in _METRICS if name in policy)
+    failures = [name for name in names if not coverage_policy.passes(metrics[name]["percent"], policy[name])]
     if failures:
         return "BAD: " + "/".join(name[0].upper() for name in failures)
-    if all(
-        coverage_policy.rating(metrics[name]["percent"], policy[name]) == "high"
-        for name in METRICS
-    ):
+    if all(coverage_policy.rating(metrics[name]["percent"], policy[name]) == "high" for name in names):
         return "GOOD"
     return "OK"
 
 
 def _status_class(status: str) -> str:
-    return {"GOOD": "status-good", "OK": "status-ok"}.get(status, "status-bad")
+    if status == "GOOD":
+        return "status-good"
+    if status == "OK":
+        return "status-ok"
+    return "status-bad"
+
+
+def _ordered_categories(measurements: dict[str, dict]) -> list[str]:
+    """Order overall first, then program and extension groups alphabetically."""
+    return sorted(
+        measurements,
+        key=lambda category: (
+            0
+            if category == "overall"
+            else 1
+            if category.startswith("program /")
+            else 2
+            if category.startswith("extensions /")
+            else 3,
+            category.casefold(),
+        ),
+    )
+
+
+def _full_table(summary: dict) -> str:
+    rows = []
+    overall = _policy(summary, "overall")
+    reasons = summary.get("reasons", {})
+    for category in _ordered_categories(summary["measurements"]):
+        metrics = summary["measurements"][category]
+        policy = _policy(summary, category)
+        status = _status(metrics, policy)
+        reason = reasons.get(category, "")
+        reason_attr = f' title="{html.escape(reason, quote=True)}"' if reason else ""
+        cells: list[tuple[str, str | None]] = [
+            (html.escape(category), reason_attr),
+            (html.escape(status), f'class="{_status_class(status)}"'),
+        ]
+        for metric in _METRICS:
+            value = metrics[metric]
+            rating = coverage_policy.rating(value["percent"], policy[metric])
+            metric_policy = policy[metric]
+            title = (
+                f"{rating}; enforce {metric_policy.enforce}; medium at {metric_policy.minimum:g}%; "
+                f"high at {metric_policy.target:g}%"
+            )
+            attrs = f'class="{rating}" title="{html.escape(title, quote=True)}"'
+            rate = _percent(value)
+            cells.extend(
+                (
+                    (rate, attrs),
+                    (str(value["covered"]), attrs),
+                    (str(value["total"]), attrs),
+                )
+            )
+        row = f"      <tr><td{cells[0][1] or ''}>{cells[0][0]}</td><td {cells[1][1]}>{cells[1][0]}</td>"
+        row += "".join(
+            f'<td{f" {attrs}" if attrs else ""}>{cell}</td>' for cell, attrs in cells[2:]
+        )
+        row += '<td class="policyGap"></td>'
+        for metric in _METRICS:
+            value = policy[metric]
+            if category == "overall":
+                label = _compact_policy(value)
+                css = "policyCell"
+            elif value == overall[metric]:
+                label = "default"
+                css = "policyCell"
+            else:
+                direction = _policy_direction(value, overall[metric])
+                word = {
+                    "policy-weaker": "lower",
+                    "policy-stricter": "higher",
+                    "policy-mixed": "mixed",
+                }[direction]
+                label = f"{word}<br>{_compact_policy(value)}"
+                css = f"policyCell {direction}"
+            row += f'<td class="{css}">{label}</td>'
+        row += "</tr>"
+        rows.append(row)
+    return """    <table class="coverageTable">
+      <thead>
+        <tr><th rowspan="2">Category</th><th rowspan="2">Status</th><th colspan="3">Lines</th><th colspan="3">Branches</th><th colspan="3">Functions</th><th class="policyGap" rowspan="2"></th><th colspan="3">Policy vs default<sup>*</sup></th></tr>
+        <tr><th>Rate</th><th>Covered</th><th>Total</th><th>Rate</th><th>Covered</th><th>Total</th><th>Rate</th><th>Covered</th><th>Total</th><th>Lines</th><th>Branches</th><th>Functions</th></tr>
+      </thead>
+      <tbody>
+""" + "\n".join(rows) + """
+      </tbody>
+    </table>
+    <p class="policyNote"><sup>*</sup> Policy values are <code>medium/high&middot;enforced-band</code>.
+    For example, <code>90/92&middot;M</code> means medium starts at 90%, high starts at 92%, and medium is
+    enforced. Lower, higher, and mixed compare policy strictness, including the enforced band, not
+    measured coverage.</p>"""
 
 
 def _compact_policy(policy: coverage_policy.MetricPolicy) -> str:
-    limits = (
-        f"{policy.minimum:g}"
-        if policy.minimum == policy.target
-        else f"{policy.minimum:g}/{policy.target:g}"
-    )
-    return f"{limits}&middot;{policy.enforce[0].upper()}"
+    boundaries = f"{policy.minimum:g}" if policy.minimum == policy.target else f"{policy.minimum:g}/{policy.target:g}"
+    return f"{boundaries}&middot;{policy.enforce[0].upper()}"
 
 
 def _policy_direction(
@@ -124,78 +212,49 @@ def _policy_direction(
     return "policy-weaker" if weaker else "policy-stricter"
 
 
-def _full_table(summary: dict) -> str:
-    rows = []
-    overall = _policy(summary, "overall")
-    reasons = summary.get("reasons", {})
-    for category, metrics in summary["measurements"].items():
-        policy = _policy(summary, category)
-        status = _status(metrics, policy)
-        reason = reasons.get(category, "")
-        reason_attr = f' title="{html.escape(reason, quote=True)}"' if reason else ""
-        row = f'      <tr><td{reason_attr}>{html.escape(category)}</td>'
-        row += f'<td class="{_status_class(status)}">{html.escape(status)}</td>'
-        for metric in METRICS:
-            value = metrics[metric]
-            metric_policy = policy[metric]
-            rating = coverage_policy.rating(value["percent"], metric_policy)
-            title = (
-                f"{rating}; enforce {metric_policy.enforce}; medium at "
-                f"{metric_policy.minimum:g}%; high at {metric_policy.target:g}%"
-            )
-            attrs = f'class="{rating}" title="{html.escape(title, quote=True)}"'
-            for cell in (_percent(value), str(value["covered"]), str(value["total"])):
-                row += f"<td {attrs}>{cell}</td>"
-        row += '<td class="policyGap"></td>'
-        for metric in METRICS:
-            value = policy[metric]
-            if category == "overall":
-                label, css = _compact_policy(value), "policyCell"
-            elif value == overall[metric]:
-                label, css = "default", "policyCell"
-            else:
-                direction = _policy_direction(value, overall[metric])
-                word = {
-                    "policy-weaker": "lower",
-                    "policy-stricter": "higher",
-                    "policy-mixed": "mixed",
-                }[direction]
-                label, css = f"{word}<br>{_compact_policy(value)}", f"policyCell {direction}"
-            row += f'<td class="{css}">{label}</td>'
-        rows.append(row + "</tr>")
-    return """    <table class="coverageTable">
-      <thead>
-        <tr><th rowspan="2">Category</th><th rowspan="2">Status</th><th colspan="3">Lines</th><th colspan="3">Branches</th><th colspan="3">Functions</th><th class="policyGap" rowspan="2"></th><th colspan="3">Policy vs default<sup>*</sup></th></tr>
-        <tr><th>Rate</th><th>Covered</th><th>Total</th><th>Rate</th><th>Covered</th><th>Total</th><th>Rate</th><th>Covered</th><th>Total</th><th>Lines</th><th>Branches</th><th>Functions</th></tr>
-      </thead>
-      <tbody>
-""" + "\n".join(rows) + """
-      </tbody>
-    </table>
-    <p class="policyNote"><sup>*</sup> Policy values are <code>medium/high&middot;enforced-band</code>.
-    For example, <code>90/92&middot;M</code> means medium starts at 90%, high starts at 92%, and medium is
-    enforced. Lower, higher, and mixed compare policy strictness, including the enforced band, not
-    measured coverage.</p>"""
-
-
 def render_report(summary: dict, target: str) -> str:
-    """Render the overview landing page for one retained report."""
+    """Returns the landing page for one retained report."""
     overview = "../" * len(target.split("/"))
-    body = f'    <h1 class="reportTitle">Carve coverage: {html.escape(target)}</h1>\n'
-    body += _full_table(summary) + "\n"
+    body = f'    <h1 class="reportTitle">Carve coverage: {html.escape(target)}</h1>\n{_full_table(summary)}\n'
+    if "patch" in summary:
+        patch = summary["patch"]
+        serialized = summary["patch_policy"]
+        patch_policy = {
+            metric: coverage_policy.MetricPolicy(
+                serialized["minimum"][metric],
+                serialized["target"][metric],
+                serialized["enforce"][metric],
+            )
+            for metric in ("lines", "branches")
+            if metric in serialized["minimum"]
+        }
+        patch_status = _status(patch, patch_policy)
+        values = []
+        for metric in ("lines", "branches"):
+            if metric not in patch_policy:
+                values.append(f"<td>{_percent(patch[metric])}</td>")
+                continue
+            rating = coverage_policy.rating(patch[metric]["percent"], patch_policy[metric])
+            values.append(f'<td class="{rating}">{_percent(patch[metric])}</td>')
+        status_class = _status_class(patch_status)
+        body += (
+            "    <h2>Changed coverable lines</h2>\n"
+            "    <table class=\"patchTable\"><thead><tr><th>Status</th><th>Lines</th><th>Branches</th></tr></thead><tbody><tr>"
+            f'<td class="{status_class}">{patch_status}</td>{"".join(values)}</tr></tbody></table>\n'
+        )
     body += (
-        '    <p><a href="lcov/">Detailed source coverage</a> · '
-        '<a href="coverage-data.json">Complete coverage JSON</a> · '
-        '<a href="coverage.lcov">LCOV trace</a> · '
-        '<a href="coverage-summary.json">Aggregate summary JSON</a> · '
-        '<a href="coverage-meta.json">Metadata JSON</a> · '
-        f'<a href="{overview}">All coverage reports</a></p>'
+        '    <p><a href="lcov/">Browse detailed LCOV source coverage</a> &middot; '
+        '<a href="coverage-data.json">Coverage data (JSON)</a> &middot; '
+        '<a href="coverage.lcov">LCOV trace</a> &middot; '
+        '<a href="coverage-summary.json">Aggregate summary JSON</a> &middot; '
+        '<a href="coverage-meta.json">Report metadata (JSON)</a> &middot; '
+        f'<a href="{overview}">All reports</a></p>'
     )
     return _page(f"Carve coverage: {target}", body)
 
 
 def report_metadata(summary: dict, target: str, source: dict) -> dict:
-    """Return retained identity and global-overview data for one report."""
+    """Returns the retained identity and overview data for one report."""
     return {
         "schema": 1,
         "target": target,
@@ -208,38 +267,62 @@ def is_newer(candidate: dict, current: dict) -> bool:
     """Whether candidate may replace current, including an idempotent replay."""
     def key(value: dict) -> tuple[str, int, int]:
         source = value["source"]
-        return source["created_at"], source["run_id"], source["run_attempt"]
+        return (source["created_at"], source["run_id"], source["run_attempt"])
 
     return key(candidate) >= key(current)
 
 
-def _report_row(metadata: dict) -> str:
+def latest_metadata(values: list[dict]) -> dict[str, dict]:
+    """Returns the newest metadata record for every target."""
+    result = {}
+    for value in values:
+        target = value["target"]
+        if target not in result or is_newer(value, result[target]):
+            result[target] = value
+    return result
+
+
+def _short_row(metadata: dict, report_path: str | None = None) -> str:
     target = metadata["target"]
     if target == "main":
         label = "main"
         source = '<a href="https://github.com/mboworks/carve/tree/main">main branch</a>'
     elif target.startswith("tag/"):
-        version = target.removeprefix("tag/")
-        label = f"release {version}"
-        source = f'<a href="https://github.com/mboworks/carve/releases/tag/{html.escape(version)}">release {html.escape(version)}</a>'
+        release = target.removeprefix("tag/")
+        label = f"release {release}"
+        source = (
+            f'<a href="https://github.com/mboworks/carve/releases/tag/{html.escape(release)}">'
+            f"release {html.escape(release)}</a>"
+        )
     else:
         number = target.removeprefix("pr/")
         label = f"PR {number}"
         source = f'<a href="https://github.com/mboworks/carve/pull/{html.escape(number)}">PR #{html.escape(number)}</a>'
-    run = metadata["source"]
-    completed = datetime.datetime.fromisoformat(run["completed_at"].replace("Z", "+00:00"))
-    timestamp = completed.astimezone(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
-    sha = html.escape(run["head_sha"])
-    links = (
-        f'<a href="{target}/">{html.escape(label)}</a>',
-        f'<a href="{target}/coverage-data.json">JSON</a>',
-        source,
-        timestamp,
-        f'<a href="https://github.com/mboworks/carve/commit/{sha}"><code>{sha[:7]}</code></a>',
-        f'<a href="https://github.com/mboworks/carve/actions/runs/{run["run_id"]}">run {run["run_id"]}</a>',
-    )
-    values = tuple(_percent(metadata["coverage"][metric]) for metric in METRICS)
-    return "      <tr>" + "".join(f"<td>{value}</td>" for value in (*links, *values)) + "</tr>"
+    source_metadata = metadata["source"]
+    run_id = source_metadata["run_id"]
+    if run_id == 0:  # Reports retained before metadata was introduced.
+        timestamp = commit = run = "n/a"
+    else:
+        completed = datetime.datetime.fromisoformat(source_metadata["completed_at"].replace("Z", "+00:00"))
+        timestamp = completed.astimezone(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+        sha = source_metadata["head_sha"]
+        commit = (
+            f'<a href="https://github.com/mboworks/carve/commit/{html.escape(sha)}">'
+            f"<code>{html.escape(sha[:7])}</code></a>"
+        )
+        attempt = source_metadata["run_attempt"]
+        run = f'<a href="https://github.com/mboworks/carve/actions/runs/{run_id}">run {run_id}</a>'
+        if attempt > 1:
+            run += f" (attempt {attempt})"
+    values = [_percent(metadata["coverage"][metric]) for metric in _METRICS]
+    report_path = html.escape(target if report_path is None else report_path)
+    report = f'<a href="{report_path}/">{html.escape(label)}</a>'
+    data = f'<a href="{report_path}/coverage-data.json">JSON</a>'
+    details = (report, data, source, timestamp, commit, run)
+    return "        <tr>" + "".join(f"<td>{value}</td>" for value in (*details, *values)) + "</tr>"
+
+
+_report_row = _short_row
 
 
 def _metadata_paths(root: Path) -> list[Path]:
@@ -249,24 +332,139 @@ def _metadata_paths(root: Path) -> list[Path]:
     return sources
 
 
-def update_history(root: Path, repository: Path, pull_requests: list[dict]) -> None:
-    """Attach each report to its merge/tag commit in main's first-parent history."""
+def archive_reports(root: Path, incoming: Path | None = None) -> None:
+    """Retain each published run/attempt once, including its detailed source pages."""
+    metadata_paths = _metadata_paths(root)
+    if incoming is not None:
+        metadata_paths.append(incoming / "coverage-meta.json")
+    for metadata_path in metadata_paths:
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        source = metadata["source"]
+        run, attempt = int(source["run_id"]), int(source["run_attempt"])
+        if run <= 0 or attempt <= 0:
+            continue  # Legacy reports have no authentic run identity to archive.
+        destination = root / "runs" / str(run) / str(attempt)
+        if destination.exists():
+            continue
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix=".archive-", dir=destination.parent) as temporary:
+            candidate = Path(temporary) / "report"
+            shutil.copytree(metadata_path.parent, candidate)
+            candidate.rename(destination)
+    (root / "runs").mkdir(parents=True, exist_ok=True)
+    (root / "runs/index.html").write_text(render_run_history(root), encoding="utf-8")
+
+
+def render_run_history(root: Path) -> str:
+    """Render all archived runs, without collapsing attempts or PR identities."""
+    reports = []
+    for path in (root / "runs").glob("*/*/coverage-meta.json"):
+        metadata = json.loads(path.read_text(encoding="utf-8"))
+        reports.append((metadata, path.parent.relative_to(root / "runs").as_posix()))
+    reports.sort(key=lambda item: (
+        item[0]["source"]["created_at"], item[0]["source"]["run_id"], item[0]["source"]["run_attempt"]
+    ), reverse=True)
+    body = (
+        '    <h1>Carve coverage run history</h1>\n'
+        '    <p><a href="../index.html">Current coverage overview</a></p>\n'
+        '    <p>Immutable snapshots of published reports, including detailed source coverage, '
+        'identified by their original CI run and attempt. Newest runs appear first.</p>\n'
+    )
+    if reports:
+        headings = ("Report", "Data", "Source", "Completed", "Commit", "Workflow", "Lines", "Branches", "Functions")
+        body += '    <table class="reportsTable"><thead><tr>'
+        body += "".join(f"<th>{heading}</th>" for heading in headings)
+        body += "</tr></thead><tbody>\n"
+        body += "\n".join(_short_row(metadata, path) for metadata, path in reports)
+        body += "\n    </tbody></table>\n"
+    else:
+        body += "    <p>No archived coverage runs are available.</p>\n"
+    return _page("Carve coverage run history", body)
+
+
+def _integration_position(repository: Path, commit: str, commits: list[str]) -> int | None:
+    """Find the first main commit containing a merge made on an integration branch."""
+    def contains(index: int) -> bool:
+        return subprocess.run(
+            ["git", "-C", str(repository), "merge-base", "--is-ancestor", commit, commits[index]],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False,
+        ).returncode == 0
+
+    if not commits or not contains(len(commits) - 1):
+        return None
+    first, last = 0, len(commits) - 1
+    while first < last:
+        middle = (first + last) // 2
+        if contains(middle):
+            last = middle
+        else:
+            first = middle + 1
+    return first
+
+
+def _squashed_integration_position(repository: Path, pull: dict, merges: dict,
+                                   positions: dict, fetch_heads: bool) -> int | None:
+    """Verify membership in an aggregation whose final merge was squashed."""
+    base = pull.get("base", {})
+    for parent in merges.values():
+        head = parent.get("head", {})
+        position = positions.get(parent["merge_commit_sha"])
+        if (position is None or not base.get("ref") or base["ref"] != head.get("ref")
+                or base.get("repo", {}).get("full_name") != head.get("repo", {}).get("full_name")
+                or pull["merged_at"] > parent["merged_at"]):
+            continue
+        sha = head.get("sha", "")
+        if not re.fullmatch(r"[0-9a-f]{40}", sha):
+            continue
+        present = subprocess.run(
+            ["git", "-C", str(repository), "cat-file", "-e", f"{sha}^{{commit}}"],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False,
+        ).returncode == 0
+        if not present and fetch_heads:
+            subprocess.run(["git", "-C", str(repository), "fetch", "--no-tags", "origin", sha], check=True)
+        if _integration_position(repository, pull["merge_commit_sha"], [sha]) is not None:
+            return position
+    return None
+
+
+def _tag_reference_time(repository: Path, tag: str) -> str | None:
+    """Tagger time for annotated tags; commit time for lightweight tags."""
+    result = subprocess.run(
+        ["git", "-C", str(repository), "for-each-ref", "--format=%(creatordate:unix)",
+         f"refs/tags/{tag}"], capture_output=True, text=True, check=False,
+    )
+    value = result.stdout.strip()
+    if result.returncode or not value.isdecimal():
+        return None
+    return datetime.datetime.fromtimestamp(int(value), datetime.timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def update_history(root: Path, repository: Path, pull_requests: list[dict],
+                   fetch_heads: bool = False) -> None:
+    """Attach reports to main chronology, including merges through aggregation PRs."""
     commits = subprocess.check_output(
         ["git", "-C", str(repository), "rev-list", "--first-parent", "--reverse", "HEAD"],
         text=True,
     ).splitlines()
     positions = {sha: index for index, sha in enumerate(commits)}
+    pulls_by_target = {f"pr/{pull['number']}": pull for pull in pull_requests}
     merges = {
-        f"pr/{pull['number']}": pull["merge_commit_sha"]
+        f"pr/{pull['number']}": pull
         for pull in pull_requests
         if pull.get("merged_at")
     }
     for path in _metadata_paths(root):
         metadata = json.loads(path.read_text(encoding="utf-8"))
         target = metadata["target"]
-        sha = merges.get(target)
+        current_pull = pulls_by_target.get(target, {})
+        metadata["pull_state"] = ("merged" if current_pull.get("merged_at")
+                                  else current_pull.get("state", "unknown")) if target.startswith("pr/") else None
+        pull = merges.get(target)
+        metadata["reference_time"] = pull["merged_at"] if pull else None
+        sha = pull["merge_commit_sha"] if pull else None
         if re.fullmatch(r"tag/\d+\.\d+\.\d+", target):
             tag = target.removeprefix("tag/")
+            metadata["reference_time"] = _tag_reference_time(repository, tag)
             resolved = subprocess.run(
                 ["git", "-C", str(repository), "rev-parse", "--verify", "--quiet", f"refs/tags/{tag}^{{commit}}"],
                 capture_output=True,
@@ -274,128 +472,132 @@ def update_history(root: Path, repository: Path, pull_requests: list[dict]) -> N
                 check=False,
             )
             sha = resolved.stdout.strip() if resolved.returncode == 0 else None
-        metadata["history"] = (
-            {"commit": sha, "position": positions[sha]} if sha in positions else None
-        )
+        history = {"commit": sha, "position": positions[sha]} if sha in positions else None
+        if sha and history is None:
+            position = _integration_position(repository, sha, commits)
+            if position is None and pull:
+                position = _squashed_integration_position(repository, pull, merges, positions, fetch_heads)
+            if position is not None:
+                history = {
+                    "commit": sha,
+                    "position": position,
+                    "integration_commit": commits[position],
+                    "merged_at": pull["merged_at"] if pull else "",
+                }
+        metadata["history"] = history
         path.write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
 
 
 def _report_order(metadata: dict) -> tuple:
     target = metadata["target"]
+    reference_time = metadata.get("reference_time")
     history = metadata.get("history")
     source = metadata["source"]
     return (
         target == "main",
-        history is not None,
-        history["position"] if history is not None else -1,
-        history is not None and target.startswith("tag/"),
-        source["created_at"] if history is None else "",
-        source["run_id"] if history is None else 0,
+        reference_time is not None,
+        history["position"] if reference_time is None and history else -1,
+        reference_time or source["created_at"],
+        source["run_id"] if reference_time is None else 0,
         target,
     )
 
 
 def render_site(root: Path) -> str:
-    """Render the global overview for main, all releases, and all PRs."""
-    reports = [json.loads(path.read_text(encoding="utf-8")) for path in _metadata_paths(root)]
-    reports.sort(key=_report_order, reverse=True)
-    body = ("    <h1>Carve coverage reports</h1>\n"
-            "    <p>Main first, then PRs and releases newest-first in main's commit history. "
-            "Unpositioned reports follow by workflow creation time.</p>\n")
-    if reports:
-        body += """    <table class="reportsTable">
-      <thead><tr><th>Report</th><th>Data</th><th>Source</th><th>Completed</th><th>Commit</th><th>Workflow</th><th>Lines</th><th>Branches</th><th>Functions</th></tr></thead>
+    """Returns the overview, main first then newest PR merge/tag timestamp first."""
+    metadata = latest_metadata(
+        [json.loads(source.read_text(encoding="utf-8")) for source in _metadata_paths(root)]
+    )
+    reports = sorted(
+        (report for report in metadata.values() if report.get("pull_state") != "closed"),
+        key=_report_order, reverse=True,
+    )
+    rows = "\n".join(_short_row(metadata) for metadata in reports)
+    body = (
+        "    <h1>Carve coverage reports</h1>\n"
+        '    <p><a href="runs/">All retained coverage runs and attempts</a></p>\n'
+        "    <p>Main first, then PRs by actual merge time and releases by tag creation time, newest first. "
+        "Lightweight tags have no creation timestamp, so their tagged commit time is used. "
+        "Aggregated PRs retain their own reports and individual merge times. "
+        "Open PRs and reports without a reference timestamp follow, newest CI run first. "
+        "PRs closed without merging are omitted here; their reports remain in run history.</p>\n"
+    )
+    if rows:
+        body += """    <table class="reportsTable"><thead><tr><th>Report</th><th>Data</th><th>Source</th><th>Completed</th><th>Commit</th><th>Workflow</th><th>Lines</th><th>Branches</th><th>Functions</th></tr></thead>
       <tbody>
-""" + "\n".join(_report_row(report) for report in reports) + """
+""" + rows + """
       </tbody>
     </table>
 """
-    else:
+    if not reports:
         body += "    <p>No coverage reports are available.</p>\n"
     return _page("Carve coverage reports", body)
 
 
 def regenerate(root: Path) -> int:
-    """Regenerate every retained report index and the aggregate index."""
+    """Regenerate each retained report and the aggregate overview."""
     summaries = list((root / "main").glob("coverage-summary.json"))
     summaries.extend((root / "tag").glob("*/coverage-summary.json"))
     summaries.extend((root / "pr").glob("*/coverage-summary.json"))
     for summary_path in summaries:
         target = summary_path.parent.relative_to(root).as_posix()
         summary = json.loads(summary_path.read_text(encoding="utf-8"))
-        (summary_path.parent / "index.html").write_text(
-            render_report(summary, target), encoding="utf-8"
-        )
+        (summary_path.parent / "index.html").write_text(render_report(summary, target), encoding="utf-8")
     (root / "index.html").write_text(render_site(root), encoding="utf-8")
     return len(summaries)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    commands = parser.add_subparsers(dest="command", required=True)
-    report = commands.add_parser("report")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+    report = subparsers.add_parser("report")
     report.add_argument("summary", type=Path)
     report.add_argument("target")
     report.add_argument("output", type=Path)
-    site = commands.add_parser("site")
+    site = subparsers.add_parser("site")
     site.add_argument("root", type=Path)
     site.add_argument("output", type=Path)
-    regenerate_command = commands.add_parser("regenerate")
-    regenerate_command.add_argument("root", type=Path)
-    metadata = commands.add_parser("metadata")
+    metadata = subparsers.add_parser("metadata")
     metadata.add_argument("summary", type=Path)
     metadata.add_argument("target")
     metadata.add_argument("output", type=Path)
-    for name in ("created-at", "started-at", "completed-at", "head-sha"):
-        metadata.add_argument(f"--{name}", required=True)
+    metadata.add_argument("--created-at", required=True)
+    metadata.add_argument("--started-at", required=True)
+    metadata.add_argument("--completed-at", required=True)
+    metadata.add_argument("--head-sha", required=True)
     metadata.add_argument("--run-attempt", required=True, type=int)
     metadata.add_argument("--run-id", required=True, type=int)
-    history = commands.add_parser("history")
+    history = subparsers.add_parser("history")
     history.add_argument("root", type=Path)
     history.add_argument("repository", type=Path)
     history.add_argument("pull_requests", type=Path)
-    newer = commands.add_parser("newer")
+    history.add_argument("--fetch-aggregation-heads", action="store_true")
+    archive = subparsers.add_parser("archive")
+    archive.add_argument("root", type=Path)
+    archive.add_argument("--incoming", type=Path)
+    newer = subparsers.add_parser("newer")
     newer.add_argument("candidate", type=Path)
     newer.add_argument("current", type=Path)
     args = parser.parse_args()
     if args.command == "report":
-        args.output.write_text(
-            render_report(json.loads(args.summary.read_text()), args.target),
-            encoding="utf-8",
-        )
+        args.output.write_text(render_report(json.loads(args.summary.read_text(encoding="utf-8")), args.target), encoding="utf-8")
     elif args.command == "site":
         args.output.write_text(render_site(args.root), encoding="utf-8")
-    elif args.command == "regenerate":
-        regenerate(args.root)
+    elif args.command == "archive":
+        archive_reports(args.root, args.incoming)
     elif args.command == "history":
         pages = json.loads(args.pull_requests.read_text(encoding="utf-8"))
-        update_history(args.root, args.repository, [pull for page in pages for pull in page])
+        update_history(args.root, args.repository, [pull for page in pages for pull in page],
+                       args.fetch_aggregation_heads)
     elif args.command == "metadata":
-        summary = json.loads(args.summary.read_text())
-        source = {
-            name: getattr(args, name)
-            for name in (
-                "created_at",
-                "started_at",
-                "completed_at",
-                "head_sha",
-                "run_attempt",
-                "run_id",
-            )
-        }
-        args.output.write_text(
-            json.dumps(report_metadata(summary, args.target, source), indent=2) + "\n",
-            encoding="utf-8",
-        )
+        summary = json.loads(args.summary.read_text(encoding="utf-8"))
+        source = {name: getattr(args, name) for name in ("created_at", "started_at", "completed_at", "head_sha", "run_attempt", "run_id")}
+        value = report_metadata(summary, args.target, source)
+        args.output.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
     else:
-        return (
-            0
-            if is_newer(
-                json.loads(args.candidate.read_text()),
-                json.loads(args.current.read_text()),
-            )
-            else 1
-        )
+        candidate = json.loads(args.candidate.read_text(encoding="utf-8"))
+        current = json.loads(args.current.read_text(encoding="utf-8"))
+        return 0 if is_newer(candidate, current) else 1
     return 0
 
 

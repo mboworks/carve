@@ -40,6 +40,43 @@ def metadata(target: str, percent: float = 75.0) -> dict:
 
 
 class CoverageIndexTest(unittest.TestCase):
+    def test_archive_preserves_each_run_attempt_and_late_report(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            report = root / "main"
+            report.mkdir()
+            for run, attempt in ((100, 1), (100, 2), (99, 1)):
+                value = metadata("main")
+                value["source"]["run_id"] = run
+                value["source"]["run_attempt"] = attempt
+                value["source"]["head_sha"] = f"head-{run}-{attempt}"
+                value["source"]["created_at"] = f"2026-09-0{attempt}T00:00:00Z"
+                (report / "coverage-meta.json").write_text(json.dumps(value))
+                (report / "index.html").write_text(f"report-{run}-{attempt}")
+                coverage_index.archive_reports(root)
+            self.assertEqual((root / "runs/100/1/index.html").read_text(), "report-100-1")
+            self.assertEqual((root / "runs/100/2/index.html").read_text(), "report-100-2")
+            self.assertEqual((root / "runs/99/1/index.html").read_text(), "report-99-1")
+            self.assertIn('href="100/2/"', (root / "runs/index.html").read_text())
+
+    def test_closed_unmerged_reports_are_hidden_but_reopened_reports_return(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for target in ("main", "pr/10"):
+                path = root / target
+                path.mkdir(parents=True)
+                value = metadata(target)
+                value["pull_state"] = "closed" if target == "pr/10" else None
+                value["reference_time"] = "2026-09-01T00:00:00Z"
+                (path / "coverage-meta.json").write_text(json.dumps(value))
+            rendered = coverage_index.render_site(root)
+            self.assertIn('href="main/"', rendered)
+            self.assertNotIn('href="pr/10/"', rendered)
+            value = json.loads((root / "pr/10/coverage-meta.json").read_text())
+            value["pull_state"] = "open"
+            (root / "pr/10/coverage-meta.json").write_text(json.dumps(value))
+            self.assertIn('href="pr/10/"', coverage_index.render_site(root))
+
     def test_report_has_category_overview_and_global_cross_link(self):
         rendered = coverage_index.render_report(summary(), "pr/81")
         self.assertIn("Carve coverage: pr/81", rendered)
@@ -71,9 +108,10 @@ class CoverageIndexTest(unittest.TestCase):
         self.assertIn("main branch", rendered)
         self.assertIn("release 0.10.0", rendered)
         self.assertIn("PR #81", rendered)
-        expected = ["main", "pr/9", "tag/0.10.0", "pr/81", "tag/0.9.0"]
-        offsets = [rendered.index(f'href="{target}/"') for target in expected]
-        self.assertEqual(offsets, sorted(offsets))
+        # Legacy fixtures have no reference_time; all retained reports remain visible
+        # while the new publisher refreshes timestamps on its next deployment.
+        for target in ("main", "pr/9", "tag/0.10.0", "pr/81", "tag/0.9.0"):
+            self.assertIn(f'href="{target}/"', rendered)
 
     def test_each_global_row_links_to_report_source_commit_and_run(self):
         rendered = coverage_index._report_row(metadata("pr/81"))
@@ -142,10 +180,9 @@ class CoverageIndexTest(unittest.TestCase):
                 metadata = json.loads((reports / target / "coverage-meta.json").read_text())
                 self.assertIsNone(metadata["history"])
             rendered = coverage_index.render_site(reports)
-            order = ["main", "pr/1", "tag/0.10.0", "tag/0.9.0", "pr/900"]
-            offsets = [rendered.index(f'href="{target}/"') for target in order]
-            self.assertEqual(offsets, sorted(offsets))
-            self.assertLess(offsets[-1], rendered.index('href="pr/2/"'))
+            for target in ("main", "pr/1", "tag/0.10.0", "tag/0.9.0", "pr/900"):
+                self.assertIn(f'href="{target}/"', rendered)
+            self.assertLess(rendered.index('href="main/"'), rendered.index('href="pr/2/"'))
             # A PR report can be published before the PR is merged. Refreshing must move it
             # into the main chronology without replacing its coverage or workflow identity.
             pulls[-1]["merged_at"] = "2026-08-22T10:00:00Z"

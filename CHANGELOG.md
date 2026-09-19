@@ -11,6 +11,9 @@ follows [SemVer](https://semver.org/).
   by main history. Add deployment-only site artwork, synchronize contributor guidance, and
   make release archive timestamps reproducible across retries.
 
+- Retain complete coverage reports per CI run and attempt, order the overview by actual PR merge/tag
+  timestamps, preserve aggregation provenance, and hide closed-unmerged PRs from the overview.
+
 ## [0.1.2] - Unreleased
 
 - Advance the development version after 0.1.1, keeping the BCR consumer in sync.
