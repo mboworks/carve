@@ -18,9 +18,6 @@ from pathlib import Path
 
 import coverage_policy
 
-METRICS = ("lines", "branches", "functions")
-_METRICS = METRICS
-
 _METRICS = ("lines", "branches", "functions")
 
 
@@ -215,7 +212,7 @@ def _policy_direction(
 def render_report(summary: dict, target: str) -> str:
     """Returns the landing page for one retained report."""
     overview = "../" * len(target.split("/"))
-    body = f'    <h1 class="reportTitle">Carve coverage: {html.escape(target)}</h1>\n{_full_table(summary)}\n'
+    body = f'    <h1 class="reportTitle">carve coverage: {html.escape(target)}</h1>\n{_full_table(summary)}\n'
     if "patch" in summary:
         patch = summary["patch"]
         serialized = summary["patch_policy"]
@@ -244,21 +241,35 @@ def render_report(summary: dict, target: str) -> str:
         )
     body += (
         '    <p><a href="lcov/">Browse detailed LCOV source coverage</a> &middot; '
-        '<a href="coverage-data.json">Coverage data (JSON)</a> &middot; '
-        '<a href="coverage.lcov">LCOV trace</a> &middot; '
-        '<a href="coverage-summary.json">Aggregate summary JSON</a> &middot; '
+        '<a href="coverage-summary.json">Coverage data (JSON)</a> &middot; '
         '<a href="coverage-meta.json">Report metadata (JSON)</a> &middot; '
         f'<a href="{overview}">All reports</a></p>'
     )
-    return _page(f"Carve coverage: {target}", body)
+    return _page(f"carve coverage: {target}", body)
 
 
-def report_metadata(summary: dict, target: str, source: dict) -> dict:
+def report_metadata(
+    summary: dict,
+    target: str,
+    created_at: str,
+    started_at: str,
+    completed_at: str,
+    run_id: int,
+    run_attempt: int,
+    head_sha: str,
+) -> dict:
     """Returns the retained identity and overview data for one report."""
     return {
         "schema": 1,
         "target": target,
-        "source": source,
+        "source": {
+            "created_at": created_at,
+            "started_at": started_at,
+            "completed_at": completed_at,
+            "run_id": run_id,
+            "run_attempt": run_attempt,
+            "head_sha": head_sha,
+        },
         "coverage": summary["measurements"]["overall"],
     }
 
@@ -291,13 +302,15 @@ def _short_row(metadata: dict, report_path: str | None = None) -> str:
         release = target.removeprefix("tag/")
         label = f"release {release}"
         source = (
-            f'<a href="https://github.com/mboworks/carve/releases/tag/{html.escape(release)}">'
-            f"release {html.escape(release)}</a>"
+            f'<a href="https://github.com/mboworks/carve/releases/tag/v{html.escape(release)}">'
+            f"release v{html.escape(release)}</a>"
         )
     else:
         number = target.removeprefix("pr/")
         label = f"PR {number}"
         source = f'<a href="https://github.com/mboworks/carve/pull/{html.escape(number)}">PR #{html.escape(number)}</a>'
+    if metadata.get("phase"):
+        label += f" ({metadata['phase']})"
     source_metadata = metadata["source"]
     run_id = source_metadata["run_id"]
     if run_id == 0:  # Reports retained before metadata was introduced.
@@ -317,12 +330,9 @@ def _short_row(metadata: dict, report_path: str | None = None) -> str:
     values = [_percent(metadata["coverage"][metric]) for metric in _METRICS]
     report_path = html.escape(target if report_path is None else report_path)
     report = f'<a href="{report_path}/">{html.escape(label)}</a>'
-    data = f'<a href="{report_path}/coverage-data.json">JSON</a>'
+    data = f'<a href="{report_path}/coverage-summary.json">JSON</a>'
     details = (report, data, source, timestamp, commit, run)
     return "        <tr>" + "".join(f"<td>{value}</td>" for value in (*details, *values)) + "</tr>"
-
-
-_report_row = _short_row
 
 
 def _metadata_paths(root: Path) -> list[Path]:
@@ -355,31 +365,69 @@ def archive_reports(root: Path, incoming: Path | None = None) -> None:
     (root / "runs/index.html").write_text(render_run_history(root), encoding="utf-8")
 
 
-def render_run_history(root: Path) -> str:
-    """Render all archived runs, without collapsing attempts or PR identities."""
-    reports = []
-    for path in (root / "runs").glob("*/*/coverage-meta.json"):
+def selected_reports(root: Path, both_phases: bool = False) -> list[tuple[dict, str]]:
+    """Select one result per PR, or one per phase, with exact merge attribution."""
+    registry = root / "pull-requests.json"
+    pulls = json.loads(registry.read_text()) if registry.exists() else []
+    by_target = {f"pr/{pull['number']}": pull for pull in pulls}
+    by_merge = {pull["merge_commit_sha"]: target for target, pull in by_target.items()
+                if pull.get("merged_at") and pull.get("merge_commit_sha")}
+    selected = {}
+    paths = list((root / "runs").glob("*/*/coverage-meta.json")) + _metadata_paths(root)
+    for path in paths:
         metadata = json.loads(path.read_text(encoding="utf-8"))
-        reports.append((metadata, path.parent.relative_to(root / "runs").as_posix()))
-    reports.sort(key=lambda item: (
-        item[0]["source"]["created_at"], item[0]["source"]["run_id"], item[0]["source"]["run_attempt"]
-    ), reverse=True)
+        target = metadata["target"]
+        phase = ""
+        if target == "main":
+            target = by_merge.get(metadata["source"]["head_sha"])
+            if target is None:
+                continue
+            metadata["target"] = target
+            phase = "post-merge"
+        elif target.startswith("pr/"):
+            phase = "pre-merge"
+        if target in by_target:
+            pull = by_target[target]
+            metadata["pull_state"] = "merged" if pull.get("merged_at") else pull.get("state")
+            metadata["reference_time"] = pull.get("merged_at")
+        if metadata.get("pull_state") == "closed":
+            continue
+        metadata["phase"] = phase
+        key = (target, phase)
+        if key not in selected or is_newer(metadata, selected[key][0]):
+            report_path = path.parent
+            if phase == "post-merge":
+                source = metadata["source"]
+                archived = root / "runs" / str(source["run_id"]) / str(source["run_attempt"])
+                if (archived / "coverage-meta.json").exists():
+                    report_path = archived
+            selected[key] = (metadata, report_path.relative_to(root).as_posix())
+    if not both_phases:
+        for target, phase in list(selected):
+            if phase == "pre-merge" and (target, "post-merge") in selected:
+                del selected[(target, phase)]
+    return sorted(selected.values(), key=lambda item: (_report_order(item[0]), item[0]["phase"] == "post-merge"), reverse=True)
+
+
+def render_run_history(root: Path) -> str:
+    """Show at most one pre-merge and one post-merge result per PR."""
+    reports = selected_reports(root, both_phases=True)
     body = (
-        '    <h1>Carve coverage run history</h1>\n'
+        '    <h1>carve pre-merge and post-merge coverage</h1>\n'
         '    <p><a href="../index.html">Current coverage overview</a></p>\n'
-        '    <p>Immutable snapshots of published reports, including detailed source coverage, '
-        'identified by their original CI run and attempt. Newest runs appear first.</p>\n'
+        '    <p>One result per PR phase and release. Post-merge results test the exact merge commit; '
+        'retries and unrelated main runs are omitted.</p>\n'
     )
     if reports:
         headings = ("Report", "Data", "Source", "Completed", "Commit", "Workflow", "Lines", "Branches", "Functions")
         body += '    <table class="reportsTable"><thead><tr>'
         body += "".join(f"<th>{heading}</th>" for heading in headings)
         body += "</tr></thead><tbody>\n"
-        body += "\n".join(_short_row(metadata, path) for metadata, path in reports)
+        body += "\n".join(_short_row(metadata, "../" + path) for metadata, path in reports)
         body += "\n    </tbody></table>\n"
     else:
-        body += "    <p>No archived coverage runs are available.</p>\n"
-    return _page("Carve coverage run history", body)
+        body += "    <p>No PR or release coverage results are available.</p>\n"
+    return _page("carve pre-merge and post-merge coverage", body)
 
 
 def _integration_position(repository: Path, commit: str, commits: list[str]) -> int | None:
@@ -431,7 +479,7 @@ def _tag_reference_time(repository: Path, tag: str) -> str | None:
     """Tagger time for annotated tags; commit time for lightweight tags."""
     result = subprocess.run(
         ["git", "-C", str(repository), "for-each-ref", "--format=%(creatordate:unix)",
-         f"refs/tags/{tag}"], capture_output=True, text=True, check=False,
+         f"refs/tags/v{tag}"], capture_output=True, text=True, check=False,
     )
     value = result.stdout.strip()
     if result.returncode or not value.isdecimal():
@@ -447,6 +495,10 @@ def update_history(root: Path, repository: Path, pull_requests: list[dict],
         text=True,
     ).splitlines()
     positions = {sha: index for index, sha in enumerate(commits)}
+    root.mkdir(parents=True, exist_ok=True)
+    registry = [{key: pull.get(key) for key in ("number", "state", "merged_at", "merge_commit_sha")}
+                for pull in pull_requests]
+    (root / "pull-requests.json").write_text(json.dumps(registry, indent=2) + "\n", encoding="utf-8")
     pulls_by_target = {f"pr/{pull['number']}": pull for pull in pull_requests}
     merges = {
         f"pr/{pull['number']}": pull
@@ -466,7 +518,7 @@ def update_history(root: Path, repository: Path, pull_requests: list[dict],
             tag = target.removeprefix("tag/")
             metadata["reference_time"] = _tag_reference_time(repository, tag)
             resolved = subprocess.run(
-                ["git", "-C", str(repository), "rev-parse", "--verify", "--quiet", f"refs/tags/{tag}^{{commit}}"],
+                ["git", "-C", str(repository), "rev-parse", "--verify", "--quiet", f"refs/tags/v{tag}^{{commit}}"],
                 capture_output=True,
                 text=True,
                 check=False,
@@ -491,12 +543,10 @@ def update_history(root: Path, repository: Path, pull_requests: list[dict],
 def _report_order(metadata: dict) -> tuple:
     target = metadata["target"]
     reference_time = metadata.get("reference_time")
-    history = metadata.get("history")
     source = metadata["source"]
     return (
         target == "main",
         reference_time is not None,
-        history["position"] if reference_time is None and history else -1,
         reference_time or source["created_at"],
         source["run_id"] if reference_time is None else 0,
         target,
@@ -504,23 +554,18 @@ def _report_order(metadata: dict) -> tuple:
 
 
 def render_site(root: Path) -> str:
-    """Returns the overview, main first then newest PR merge/tag timestamp first."""
-    metadata = latest_metadata(
-        [json.loads(source.read_text(encoding="utf-8")) for source in _metadata_paths(root)]
-    )
-    reports = sorted(
-        (report for report in metadata.values() if report.get("pull_state") != "closed"),
-        key=_report_order, reverse=True,
-    )
-    rows = "\n".join(_short_row(metadata) for metadata in reports)
+    """Return one preferred result per PR and release in reference-time order."""
+    reports = selected_reports(root)
+    rows = "\n".join(_short_row(metadata, path) for metadata, path in reports)
     body = (
-        "    <h1>Carve coverage reports</h1>\n"
-        '    <p><a href="runs/">All retained coverage runs and attempts</a></p>\n'
-        "    <p>Main first, then PRs by actual merge time and releases by tag creation time, newest first. "
+        "    <h1>carve coverage reports</h1>\n"
+        '    <p><a href="runs/">Pre-merge and post-merge results</a></p>\n'
+        "    <p>PRs by actual merge time and releases by tag creation time, newest first. "
         "Lightweight tags have no creation timestamp, so their tagged commit time is used. "
-        "Aggregated PRs retain their own reports and individual merge times. "
+        "Each PR shows pre-merge coverage until its exact merge-commit coverage is available, then post-merge replaces it. "
+        "Aggregated PRs retain their own pre-merge reports and individual merge times. "
         "Open PRs and reports without a reference timestamp follow, newest CI run first. "
-        "PRs closed without merging are omitted here; their reports remain in run history.</p>\n"
+        "PRs closed without merging are omitted here; their direct report URLs remain available.</p>\n"
     )
     if rows:
         body += """    <table class="reportsTable"><thead><tr><th>Report</th><th>Data</th><th>Source</th><th>Completed</th><th>Commit</th><th>Workflow</th><th>Lines</th><th>Branches</th><th>Functions</th></tr></thead>
@@ -531,20 +576,7 @@ def render_site(root: Path) -> str:
 """
     if not reports:
         body += "    <p>No coverage reports are available.</p>\n"
-    return _page("Carve coverage reports", body)
-
-
-def regenerate(root: Path) -> int:
-    """Regenerate each retained report and the aggregate overview."""
-    summaries = list((root / "main").glob("coverage-summary.json"))
-    summaries.extend((root / "tag").glob("*/coverage-summary.json"))
-    summaries.extend((root / "pr").glob("*/coverage-summary.json"))
-    for summary_path in summaries:
-        target = summary_path.parent.relative_to(root).as_posix()
-        summary = json.loads(summary_path.read_text(encoding="utf-8"))
-        (summary_path.parent / "index.html").write_text(render_report(summary, target), encoding="utf-8")
-    (root / "index.html").write_text(render_site(root), encoding="utf-8")
-    return len(summaries)
+    return _page("carve coverage reports", body)
 
 
 def main() -> int:
@@ -575,8 +607,6 @@ def main() -> int:
     archive = subparsers.add_parser("archive")
     archive.add_argument("root", type=Path)
     archive.add_argument("--incoming", type=Path)
-    regenerate_parser = subparsers.add_parser("regenerate")
-    regenerate_parser.add_argument("root", type=Path)
     newer = subparsers.add_parser("newer")
     newer.add_argument("candidate", type=Path)
     newer.add_argument("current", type=Path)
@@ -593,11 +623,17 @@ def main() -> int:
                        args.fetch_aggregation_heads)
     elif args.command == "metadata":
         summary = json.loads(args.summary.read_text(encoding="utf-8"))
-        source = {name: getattr(args, name) for name in ("created_at", "started_at", "completed_at", "head_sha", "run_attempt", "run_id")}
-        value = report_metadata(summary, args.target, source)
+        value = report_metadata(
+            summary,
+            args.target,
+            args.created_at,
+            args.started_at,
+            args.completed_at,
+            args.run_id,
+            args.run_attempt,
+            args.head_sha,
+        )
         args.output.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
-    elif args.command == "regenerate":
-        regenerate(args.root)
     else:
         candidate = json.loads(args.candidate.read_text(encoding="utf-8"))
         current = json.loads(args.current.read_text(encoding="utf-8"))
