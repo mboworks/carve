@@ -49,6 +49,11 @@ time. Closed-unmerged PRs are omitted from the overview while direct reports rem
 ancestry is provenance and is verified for squashed parents without changing measured identities.
 Existing detailed LCOV and complete coverage JSON remain available.
 
+Coverage publication also refreshes PR lifecycle metadata on close and reopen, selects one
+pre-merge or exact-merge-commit post-merge result per PR, and accepts a valid coverage job when
+other CI jobs fail. A manual source-run input can replay a retained artifact through the same
+serialized publisher without rerunning tests.
+
 Both complete-site publishers decorate only their staged deployment copies with shared favicons.
 Retained release snapshots stay unchanged. The README uses the shared 64-pixel MBO Works logo.
 Release archives fix entry timestamps to the source commit so retries are byte-identical even

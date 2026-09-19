@@ -6,6 +6,9 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Refresh coverage metadata when PRs close or reopen, show one pre/post-merge result per PR,
+  publish valid coverage when unrelated jobs fail, and support serialized source-run backfill.
+
 - Bound local clang-tidy workers and interruption cleanup; refresh measured main-only build
   caches, run coverage alongside lint, retain preparation profiles, and order retained coverage
   by main history. Add deployment-only site artwork, synchronize contributor guidance, and
