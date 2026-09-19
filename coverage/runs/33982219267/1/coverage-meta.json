@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "target": "pr/100",
+  "source": {
+    "created_at": "2026-09-05T17:50:47Z",
+    "started_at": "2026-09-05T17:50:47Z",
+    "completed_at": "2026-09-05T18:07:58Z",
+    "head_sha": "323c21f4ae776cf59808f102a42129deb8317aca",
+    "run_attempt": 1,
+    "run_id": 33982219267
+  },
+  "coverage": {
+    "lines": {
+      "covered": 966,
+      "total": 996,
+      "percent": 96.99
+    },
+    "functions": {
+      "covered": 78,
+      "total": 78,
+      "percent": 100.0
+    },
+    "branches": {
+      "covered": 432,
+      "total": 474,
+      "percent": 91.14
+    }
+  },
+  "history": {
+    "commit": "94e2b0434486da88d7782081903d2f684cd1dd1c",
+    "position": 121
+  }
+}

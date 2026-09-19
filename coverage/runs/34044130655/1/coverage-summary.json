@@ -1,0 +1,428 @@
+{
+  "schema": 2,
+  "measurements": {
+    "overall": {
+      "lines": {
+        "covered": 1149,
+        "total": 1166,
+        "percent": 98.54
+      },
+      "functions": {
+        "covered": 90,
+        "total": 91,
+        "percent": 98.9
+      },
+      "branches": {
+        "covered": 509,
+        "total": 530,
+        "percent": 96.04
+      }
+    },
+    "aggregate": {
+      "lines": {
+        "covered": 47,
+        "total": 47,
+        "percent": 100.0
+      },
+      "functions": {
+        "covered": 3,
+        "total": 3,
+        "percent": 100.0
+      },
+      "branches": {
+        "covered": 26,
+        "total": 26,
+        "percent": 100.0
+      }
+    },
+    "aquery": {
+      "lines": {
+        "covered": 94,
+        "total": 94,
+        "percent": 100.0
+      },
+      "functions": {
+        "covered": 4,
+        "total": 4,
+        "percent": 100.0
+      },
+      "branches": {
+        "covered": 38,
+        "total": 38,
+        "percent": 100.0
+      }
+    },
+    "cdb": {
+      "lines": {
+        "covered": 109,
+        "total": 109,
+        "percent": 100.0
+      },
+      "functions": {
+        "covered": 10,
+        "total": 10,
+        "percent": 100.0
+      },
+      "branches": {
+        "covered": 40,
+        "total": 40,
+        "percent": 100.0
+      }
+    },
+    "cli": {
+      "lines": {
+        "covered": 28,
+        "total": 28,
+        "percent": 100.0
+      },
+      "functions": {
+        "covered": 3,
+        "total": 3,
+        "percent": 100.0
+      },
+      "branches": {
+        "covered": 18,
+        "total": 18,
+        "percent": 100.0
+      }
+    },
+    "command": {
+      "lines": {
+        "covered": 84,
+        "total": 84,
+        "percent": 100.0
+      },
+      "functions": {
+        "covered": 6,
+        "total": 6,
+        "percent": 100.0
+      },
+      "branches": {
+        "covered": 56,
+        "total": 56,
+        "percent": 100.0
+      }
+    },
+    "io": {
+      "lines": {
+        "covered": 53,
+        "total": 53,
+        "percent": 100.0
+      },
+      "functions": {
+        "covered": 3,
+        "total": 3,
+        "percent": 100.0
+      },
+      "branches": {
+        "covered": 16,
+        "total": 16,
+        "percent": 100.0
+      }
+    },
+    "process": {
+      "lines": {
+        "covered": 106,
+        "total": 106,
+        "percent": 100.0
+      },
+      "functions": {
+        "covered": 11,
+        "total": 11,
+        "percent": 100.0
+      },
+      "branches": {
+        "covered": 47,
+        "total": 48,
+        "percent": 97.92
+      }
+    },
+    "prune": {
+      "lines": {
+        "covered": 19,
+        "total": 19,
+        "percent": 100.0
+      },
+      "functions": {
+        "covered": 2,
+        "total": 2,
+        "percent": 100.0
+      },
+      "branches": {
+        "covered": 12,
+        "total": 12,
+        "percent": 100.0
+      }
+    },
+    "refresh": {
+      "lines": {
+        "covered": 271,
+        "total": 271,
+        "percent": 100.0
+      },
+      "functions": {
+        "covered": 24,
+        "total": 24,
+        "percent": 100.0
+      },
+      "branches": {
+        "covered": 127,
+        "total": 132,
+        "percent": 96.21
+      }
+    },
+    "scan_deps": {
+      "lines": {
+        "covered": 28,
+        "total": 28,
+        "percent": 100.0
+      },
+      "functions": {
+        "covered": 3,
+        "total": 3,
+        "percent": 100.0
+      },
+      "branches": {
+        "covered": 6,
+        "total": 6,
+        "percent": 100.0
+      }
+    },
+    "shard": {
+      "lines": {
+        "covered": 68,
+        "total": 68,
+        "percent": 100.0
+      },
+      "functions": {
+        "covered": 2,
+        "total": 2,
+        "percent": 100.0
+      },
+      "branches": {
+        "covered": 32,
+        "total": 32,
+        "percent": 100.0
+      }
+    },
+    "sidecar": {
+      "lines": {
+        "covered": 113,
+        "total": 113,
+        "percent": 100.0
+      },
+      "functions": {
+        "covered": 10,
+        "total": 10,
+        "percent": 100.0
+      },
+      "branches": {
+        "covered": 52,
+        "total": 52,
+        "percent": 100.0
+      }
+    }
+  },
+  "minimums": {
+    "overall": {
+      "lines": 90,
+      "functions": 90,
+      "branches": 80
+    },
+    "aggregate": {
+      "lines": 90,
+      "functions": 90,
+      "branches": 80
+    },
+    "aquery": {
+      "lines": 90,
+      "functions": 90,
+      "branches": 80
+    },
+    "cdb": {
+      "lines": 90,
+      "functions": 90,
+      "branches": 80
+    },
+    "cli": {
+      "lines": 90,
+      "functions": 90,
+      "branches": 80
+    },
+    "command": {
+      "lines": 90,
+      "functions": 90,
+      "branches": 80
+    },
+    "io": {
+      "lines": 90,
+      "functions": 90,
+      "branches": 80
+    },
+    "process": {
+      "lines": 90,
+      "functions": 90,
+      "branches": 80
+    },
+    "prune": {
+      "lines": 90,
+      "functions": 90,
+      "branches": 80
+    },
+    "refresh": {
+      "lines": 90,
+      "functions": 90,
+      "branches": 80
+    },
+    "scan_deps": {
+      "lines": 90,
+      "functions": 90,
+      "branches": 80
+    },
+    "shard": {
+      "lines": 90,
+      "functions": 90,
+      "branches": 80
+    },
+    "sidecar": {
+      "lines": 90,
+      "functions": 90,
+      "branches": 80
+    }
+  },
+  "targets": {
+    "overall": {
+      "lines": 95,
+      "functions": 95,
+      "branches": 85
+    },
+    "aggregate": {
+      "lines": 95,
+      "functions": 95,
+      "branches": 85
+    },
+    "aquery": {
+      "lines": 95,
+      "functions": 95,
+      "branches": 85
+    },
+    "cdb": {
+      "lines": 95,
+      "functions": 95,
+      "branches": 85
+    },
+    "cli": {
+      "lines": 95,
+      "functions": 95,
+      "branches": 85
+    },
+    "command": {
+      "lines": 95,
+      "functions": 95,
+      "branches": 85
+    },
+    "io": {
+      "lines": 95,
+      "functions": 95,
+      "branches": 85
+    },
+    "process": {
+      "lines": 95,
+      "functions": 95,
+      "branches": 85
+    },
+    "prune": {
+      "lines": 95,
+      "functions": 95,
+      "branches": 85
+    },
+    "refresh": {
+      "lines": 95,
+      "functions": 95,
+      "branches": 85
+    },
+    "scan_deps": {
+      "lines": 95,
+      "functions": 95,
+      "branches": 85
+    },
+    "shard": {
+      "lines": 95,
+      "functions": 95,
+      "branches": 85
+    },
+    "sidecar": {
+      "lines": 95,
+      "functions": 95,
+      "branches": 85
+    }
+  },
+  "enforcement": {
+    "overall": {
+      "lines": "high",
+      "functions": "high",
+      "branches": "high"
+    },
+    "aggregate": {
+      "lines": "high",
+      "functions": "high",
+      "branches": "high"
+    },
+    "aquery": {
+      "lines": "high",
+      "functions": "high",
+      "branches": "high"
+    },
+    "cdb": {
+      "lines": "high",
+      "functions": "high",
+      "branches": "high"
+    },
+    "cli": {
+      "lines": "high",
+      "functions": "high",
+      "branches": "high"
+    },
+    "command": {
+      "lines": "high",
+      "functions": "high",
+      "branches": "high"
+    },
+    "io": {
+      "lines": "high",
+      "functions": "high",
+      "branches": "high"
+    },
+    "process": {
+      "lines": "high",
+      "functions": "high",
+      "branches": "high"
+    },
+    "prune": {
+      "lines": "high",
+      "functions": "high",
+      "branches": "high"
+    },
+    "refresh": {
+      "lines": "high",
+      "functions": "high",
+      "branches": "high"
+    },
+    "scan_deps": {
+      "lines": "high",
+      "functions": "high",
+      "branches": "high"
+    },
+    "shard": {
+      "lines": "high",
+      "functions": "high",
+      "branches": "high"
+    },
+    "sidecar": {
+      "lines": "high",
+      "functions": "high",
+      "branches": "high"
+    }
+  },
+  "reasons": {}
+}
