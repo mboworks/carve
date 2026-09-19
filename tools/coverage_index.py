@@ -575,6 +575,8 @@ def main() -> int:
     archive = subparsers.add_parser("archive")
     archive.add_argument("root", type=Path)
     archive.add_argument("--incoming", type=Path)
+    regenerate_parser = subparsers.add_parser("regenerate")
+    regenerate_parser.add_argument("root", type=Path)
     newer = subparsers.add_parser("newer")
     newer.add_argument("candidate", type=Path)
     newer.add_argument("current", type=Path)
@@ -594,6 +596,8 @@ def main() -> int:
         source = {name: getattr(args, name) for name in ("created_at", "started_at", "completed_at", "head_sha", "run_attempt", "run_id")}
         value = report_metadata(summary, args.target, source)
         args.output.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
+    elif args.command == "regenerate":
+        regenerate(args.root)
     else:
         candidate = json.loads(args.candidate.read_text(encoding="utf-8"))
         current = json.loads(args.current.read_text(encoding="utf-8"))
