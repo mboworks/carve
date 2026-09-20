@@ -51,7 +51,7 @@ bazel_dep(name = "mboworks_proto", version = "1.2.4", dev_dependency = True)
 # Root-development C++ toolchain from bazel-contrib/toolchains_llvm. This is a
 # dev dependency because downstream modules compile Carve with their own
 # ABI-compatible toolchain.
-bazel_dep(name = "toolchains_llvm", version = "1.9.0", dev_dependency = True)
+bazel_dep(name = "toolchains_llvm", version = "1.9.1", dev_dependency = True)
 
 llvm = use_extension(
     "@toolchains_llvm//toolchain/extensions:llvm.bzl",
