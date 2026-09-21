@@ -38,7 +38,7 @@ bazel_dep(name = "rules_shell", version = "0.8.0")
 bazel_dep(name = "abseil-cpp", version = "20260817.0")
 bazel_dep(name = "protobuf", version = "36.1.bcr.1")
 bazel_dep(name = "mboworks_mbo", version = "0.15.0")
-bazel_dep(name = "zstd", version = "1.5.7.bcr.1")
+bazel_dep(name = "zstd", version = "1.5.7.bcr.2")
 
 # Test-only deps.
 bazel_dep(name = "googletest", version = "1.18.0.bcr.1", dev_dependency = True)
