@@ -43,11 +43,11 @@ not overwrite it. Compare preparation with action time and cache hits before opt
 
 The trusted publisher archives every identified report and attempt before replacing a target URL,
 including late reports that cannot replace a newer latest report. The immutable run-history index
-retains detailed LCOV pages and original run metadata. Main stays first; merged PRs and releases
+retains aggregate summaries and original run metadata indefinitely. Main stays first; merged PRs and releases
 follow by actual merge/tag timestamps, while open and unknown reports follow by workflow creation
 time. Closed-unmerged PRs are omitted from the overview while direct reports remain. Aggregation
 ancestry is provenance and is verified for squashed parents without changing measured identities.
-Existing detailed LCOV and complete coverage JSON remain available.
+Recent detailed LCOV remains available for seven days; coverage JSON is retained as lossless gzip.
 
 Coverage publication also refreshes PR lifecycle metadata on close and reopen, selects one
 pre-merge or exact-merge-commit post-merge result per PR, and accepts a valid coverage job when
@@ -70,3 +70,10 @@ updated to describe the existing developer infrastructure without adding runtime
 
 Run `bazel build //...`, `bazel test //...`, `python3 -m unittest discover -s tools -p '*_test.py'`,
 and `pre-commit run --all-files`. CI validates the sanitizer matrix and generated site links.
+
+## Published-site storage
+
+[Storage and retention](site-storage.md) documents compressed summaries, seven-day source details,
+shallow publication snapshots, the 250 MB advisory budget, and the final payload guard. Both
+publishers compact before committing and after deployment-only artwork. Original aggregate
+measurements and run identities are preserved; publication Git history is not rewritten.

@@ -1,1 +1,2 @@
 bazel-carve
+tools/coverage_web/node_modules

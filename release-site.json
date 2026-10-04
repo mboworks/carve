@@ -16,7 +16,8 @@
     "STYLE_SH.md": "STYLE_SH.html",
     "TODO.md": "TODO.html",
     "docs/release-website.md": "docs/release-website.html",
-    "docs/infrastructure.md": "docs/infrastructure.html"
+    "docs/infrastructure.md": "docs/infrastructure.html",
+    "docs/site-storage.md": "docs/site-storage.html"
   },
   "links": [
     {
