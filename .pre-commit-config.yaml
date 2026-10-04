@@ -45,6 +45,19 @@ repos:
 
   - repo: local
     hooks:
+      - id: coverage-storage-tests
+        name: Test retained coverage storage
+        entry: python3 -m unittest discover -s tools -p '*storage*_test.py'
+        language: system
+        pass_filenames: false
+        files: '^(tools/|\.github/workflows/)'
+      - id: compact-site-tests
+        name: Test publication compaction and budgets
+        entry: python3 -m unittest discover -s tools -p compact_site_test.py
+        language: system
+        pass_filenames: false
+        files: '^(tools/|\.github/workflows/)'
+
       - id: check-version
         name: module/changelog/release version invariant
         entry: .pre-commit/check_version.sh

@@ -5,6 +5,8 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning
 follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
+- Compress retained coverage history, keep aggregates indefinitely and source pages for seven days,
+  and measure complete publication size against a 250 MB advisory budget.
 
 - Refresh coverage metadata when PRs close or reopen, show one pre/post-merge result per PR,
   publish valid coverage when unrelated jobs fail, and support serialized source-run backfill.
