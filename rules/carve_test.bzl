@@ -92,6 +92,15 @@ def _aspect_includes_external_test_impl(ctx):
         [s for s in shards if "int128" in s] != [],
         "with exclude_external_sources = False the external int128.cc should be sharded, got: {}".format(shards),
     )
+
+    # The manifest is consumed by rlocation: external shards need canonical
+    # repository keys, not main-repository keys containing ../ segments.
+    manifests = [a.content for a in analysistest.target_actions(env) if a.mnemonic == "FileWrite"]
+    asserts.equals(env, 1, len(manifests))
+    if manifests:
+        keys = manifests[0].splitlines()
+        asserts.true(env, [k for k in keys if "int128" in k] != [])
+        asserts.equals(env, [], [k for k in keys if "/../" in k or k.startswith("../")])
     return analysistest.end(env)
 
 _aspect_includes_external_test = analysistest.make(_aspect_includes_external_test_impl)

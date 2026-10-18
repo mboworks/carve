@@ -5,6 +5,9 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning
 follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
+
+- Use mboworks_bzl 0.8.0 runfiles keys for refresh tools, manifests, and aspect shards,
+  including files from external repositories.
 - Compress retained coverage history, keep aggregates indefinitely and source pages for seven days,
   and measure complete publication size against a 250 MB advisory budget.
 

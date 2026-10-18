@@ -20,6 +20,7 @@ trap (lock/server contention, sandboxing). Running carve *after* the outer build
 via `bazel run`, keeps the server free. (CARVE_DESIGN.md sections 3.1, 4.6.)
 """
 
+load("@mboworks_bzl//bzl/runfiles:runfiles.bzl", _runfiles = "runfiles")
 load(":cc_carve_aspect.bzl", "CarveShardsInfo", "cc_carve_aspect")
 
 def _carve_refresh_impl(ctx):
@@ -30,7 +31,7 @@ def _carve_refresh_impl(ctx):
         output = launcher,
         is_executable = True,
         substitutions = {
-            "@@CARVE_RLOCATION@@": "{}/{}".format(ctx.workspace_name, carve.short_path),
+            "@@CARVE_RLOCATION@@": _runfiles.key(ctx, carve),
             "@@TARGETS@@": ",".join(ctx.attr.targets),
             "@@OUTPUT@@": ctx.attr.output,
             "@@SIDECAR@@": ctx.attr.sidecar,
@@ -89,7 +90,7 @@ def _carve_aspect_refresh_impl(ctx):
     manifest = ctx.actions.declare_file(ctx.label.name + ".shards_manifest")
     ctx.actions.write(
         manifest,
-        "".join(["{}/{}\n".format(ctx.workspace_name, shard.short_path) for shard in shard_list]),
+        "".join([_runfiles.key(ctx, shard) + "\n" for shard in shard_list]),
     )
 
     launcher = ctx.actions.declare_file(ctx.label.name + ".sh")
@@ -98,8 +99,8 @@ def _carve_aspect_refresh_impl(ctx):
         output = launcher,
         is_executable = True,
         substitutions = {
-            "@@CARVE_RLOCATION@@": "{}/{}".format(ctx.workspace_name, carve.short_path),
-            "@@MANIFEST_RLOCATION@@": "{}/{}".format(ctx.workspace_name, manifest.short_path),
+            "@@CARVE_RLOCATION@@": _runfiles.key(ctx, carve),
+            "@@MANIFEST_RLOCATION@@": _runfiles.key(ctx, manifest),
             "@@OUTPUT@@": ctx.attr.output,
             "@@PROJECT_ID@@": ctx.attr.project_id,
         },
