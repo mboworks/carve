@@ -41,7 +41,7 @@ using ::testing::Eq;
 using ::testing::HasSubstr;
 
 void EmitDiagnostic(clang::DiagnosticsEngine::Level level, clang::DiagnosticConsumer& consumer) {
-  auto ids = llvm::makeIntrusiveRefCnt<clang::DiagnosticIDs>();
+  const auto ids = llvm::makeIntrusiveRefCnt<clang::DiagnosticIDs>();
   clang::DiagnosticOptions options;
   clang::DiagnosticsEngine diagnostics(ids, options, &consumer, /*ShouldOwnClient=*/false);
   diagnostics.Report(diagnostics.getCustomDiagID(level, "test diagnostic"));

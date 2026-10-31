@@ -52,7 +52,10 @@ absl::StatusOr<std::vector<std::string>> ScanDependencies(
   std::string diagnostics;
   scan_deps_internal::CapturingDiagnosticConsumer diag_consumer(diagnostics);
   const std::vector<std::string> command(args.begin(), args.end());
+  // P1689 scanning does not emit module outputs, but LLVM 23 requires this callback.
+  // LCOV_EXCL_START
   const auto lookup_module_output = [](const deps::ModuleDeps&, deps::ModuleOutputKind) { return std::string(); };
+  // LCOV_EXCL_STOP
   const std::optional<std::string> result = tool.getDependencyFile(
       command, llvm::StringRef(working_dir.data(), working_dir.size()), lookup_module_output, diag_consumer);
   if (!result.has_value()) {

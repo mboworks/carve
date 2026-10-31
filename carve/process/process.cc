@@ -72,7 +72,9 @@ class PosixSystemCalls final : public process_internal::SystemCalls {
 // polling so neither pipe blocks the other.
 absl::Status DrainPipes(int out_fd, int err_fd, CommandResult& result, process_internal::SystemCalls& system_calls) {
   std::array<pollfd, 2> fds = {
-      pollfd{.fd = out_fd, .events = POLLIN, .revents = 0}, pollfd{.fd = err_fd, .events = POLLIN, .revents = 0}};
+      pollfd{.fd = out_fd, .events = POLLIN, .revents = 0},
+      pollfd{.fd = err_fd, .events = POLLIN, .revents = 0},
+  };
   std::array<std::string*, 2> sinks = {&result.stdout_data, &result.stderr_data};
   int open_fds = 2;
   absl::Status status;
@@ -86,7 +88,7 @@ absl::Status DrainPipes(int out_fd, int err_fd, CommandResult& result, process_i
     }
     for (std::size_t i = 0; i < fds.size(); ++i) {
       // POSIX poll flags are signed int macros; the bitmask test is the idiomatic form.
-      // NOLINTNEXTLINE(hicpp-signed-bitwise)
+      // NOLINTNEXTLINE(bugprone-signed-bitwise,hicpp-signed-bitwise)
       if (fds.at(i).fd < 0 || (fds.at(i).revents & (POLLIN | POLLHUP | POLLERR)) == 0) {
         continue;
       }

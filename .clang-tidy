@@ -29,6 +29,7 @@ Checks: >
   -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   -fuchsia*,
+  -zircon-*,
   google-*,
   -google-build-using-namespace,
   -hicpp-*,

@@ -65,7 +65,8 @@ TEST(DeBazelTest, TrailingValuelessFlagWithValueDoesNotConsumePastEnd) {
 TEST(DeBazelTest, DropsMultipleQuirksTogether) {
   const std::vector<std::string> argv = {
       "clang", "-fno-canonical-system-headers", "--gcc-toolchain=/opt/gcc", "-c", "a.cc", "-gcc-toolchain", "/x", "-o",
-      "a.o"};
+      "a.o",
+  };
   EXPECT_THAT(DeBazel(argv), ElementsAre("clang", "-c", "a.cc", "-o", "a.o"));
 }
 
@@ -104,7 +105,11 @@ TEST(DeBazelTest, KeepsNonBazelOutModulesCachePath) {
 
 TEST(ResolveXcodePlaceholdersTest, SubstitutesDeveloperDirAndSdkrootSubstrings) {
   const std::vector<std::string> argv = {
-      "__BAZEL_XCODE_DEVELOPER_DIR__/usr/bin/clang", "-isysroot__BAZEL_XCODE_SDKROOT__", "-c", "a.cc"};
+      "__BAZEL_XCODE_DEVELOPER_DIR__/usr/bin/clang",
+      "-isysroot__BAZEL_XCODE_SDKROOT__",
+      "-c",
+      "a.cc",
+  };
   EXPECT_THAT(
       ResolveXcodePlaceholders(argv, "/Applications/Xcode.app/Contents/Developer", "/SDKs/MacOSX.sdk"),
       ElementsAre(
