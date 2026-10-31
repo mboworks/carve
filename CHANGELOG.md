@@ -6,6 +6,9 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Use the native Linux linker with toolchains_llvm 1.12.0 so LLVM 22 builds do not depend on the
+  host providing the legacy libxml2.so.2 ABI.
+
 - Use mboworks_bzl 0.8.0 runfiles keys for refresh tools, manifests, and aspect shards,
   including files from external repositories.
 - Compress retained coverage history, keep aggregates indefinitely and source pages for seven days,
