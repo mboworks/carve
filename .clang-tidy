@@ -1,7 +1,7 @@
 ---
 # Base ruleset is mboworks/mbo's. Checks disabled below either conflict with
 # the shared documented style (anonymous namespaces, test values), produce
-# incorrect include advice with hermetic libc++, or are broken in LLVM 22.1.8.
+# incorrect include advice with hermetic libc++, or have crashed in pinned toolchains.
 Checks: >
   *,
   abseil-*,

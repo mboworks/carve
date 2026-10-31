@@ -6,8 +6,8 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
-- Use the native Linux linker with toolchains_llvm 1.12.0 so LLVM 22 builds do not depend on the
-  host providing the legacy libxml2.so.2 ABI.
+- Upgrade development and consumer configuration to toolchains_llvm 1.12.0 and LLVM 23.1.4,
+  including matching full static-development archives and bundled LLD on Linux and macOS.
 
 - Use mboworks_bzl 0.8.0 runfiles keys for refresh tools, manifests, and aspect shards,
   including files from external repositories.

@@ -26,7 +26,7 @@ file is corrected.
 
 ## C++
 
-- C++23, clang 20.1+ (pinned at LLVM 22.1.8 via `toolchains_llvm` 1.9.0).
+- C++23, clang 20.1+ (pinned at LLVM 23.1.4 via `toolchains_llvm` 1.12.0).
 - Style: Google C++ with the deviations in [.clang-format](.clang-format);
   formatting is enforced, not negotiated.
 - Compiler warnings for first-party C and C++ sources are enabled with `-Wall`,

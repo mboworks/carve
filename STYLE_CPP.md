@@ -22,9 +22,9 @@ an AI assistant) can follow them without reverse-engineering the tooling.
   Interruption terminates active workers and prevents queued launches. CI sets its worker
   count explicitly. See [infrastructure guidance](docs/infrastructure.md). The enabled set is
   broad: `abseil-*`, `bugprone-*`, `cppcoreguidelines-*`, `google-*`, `misc-*`,
-  `modernize-*`, `performance-*`, `portability-*`, and `readability-*`. LLVM 22.1.8's
-  crashing `abseil-unchecked-statusor-access` check is excluded until the pinned toolchain
-  contains a fix.
+  `modernize-*`, `performance-*`, `portability-*`, and `readability-*`. The
+  `abseil-unchecked-statusor-access` check remains excluded after crashing in the previous
+  pinned toolchain; re-enable it separately after validating it across the full database.
 
 ### What `.clang-format` decides (do not fight it)
 

@@ -21,7 +21,7 @@ exports_files(["prebuilt.BUILD.bazel"])
 
 # Thin Bazel wrapper over the matching official prebuilt LLVM distribution.
 # The archive list is the transitive closure of clangDependencyScanning in the
-# LLVM 22.1.8 ClangTargets.cmake and LLVMExports.cmake metadata.
+# LLVM 23.1.4 ClangTargets.cmake and LLVMExports.cmake metadata.
 cc_library(
     name = "clang_dependency_scanning",
     srcs = [
