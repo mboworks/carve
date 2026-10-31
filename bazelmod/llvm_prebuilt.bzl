@@ -16,9 +16,9 @@
 """Downloads official LLVM distributions containing static development libraries."""
 
 _DISTRIBUTIONS = {
-    ("linux", "aarch64"): ("LLVM-22.1.8-Linux-ARM64", "805efad2bb91cb4967fa569e0881d10c0f69c04461cf671cccbae19f547acc34"),
-    ("linux", "x86_64"): ("LLVM-22.1.8-Linux-X64", "df0e1ecf16caf3489a272a5eea4eec9b0d82878f6477fa309504f918a0006384"),
-    ("mac os x", "aarch64"): ("LLVM-22.1.8-macOS-ARM64", "f260f4f7c0d430828a81ae8a3826a1d63fc0963ec2459489308cc23b1f7eab4f"),
+    ("linux", "aarch64"): ("LLVM-23.1.4-Linux-ARM64", "9b27cf263d711aa6ebfd4045ab241d947bd09b3cd19ffa5728f48a80c9eb3a91"),
+    ("linux", "x86_64"): ("LLVM-23.1.4-Linux-X64", "25d814fda50d5fb0084b42be09605d8b1595d49d5e2e03a3345d7e112ff6f9f3"),
+    ("mac os x", "aarch64"): ("LLVM-23.1.4-macOS-ARM64", "5d3179db39adeca5b17a34d82708fe976bc60e055b05fe557878fb3fb64d39ef"),
 }
 
 def normalize_arch(arch):
@@ -32,12 +32,12 @@ def _llvm_prebuilt_repository_impl(repository_ctx):
     platform = (repository_ctx.os.name, normalize_arch(repository_ctx.os.arch))
     distribution = _DISTRIBUTIONS.get(platform)
     if distribution == None:
-        fail("No official LLVM 22.1.8 development archive for {}-{}".format(*platform))
+        fail("No official LLVM 23.1.4 development archive for {}-{}".format(*platform))
     basename, sha256 = distribution
     repository_ctx.download_and_extract(
         sha256 = sha256,
         stripPrefix = basename,
-        url = "https://github.com/llvm/llvm-project/releases/download/llvmorg-22.1.8/{}.tar.xz".format(basename),
+        url = "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.4/{}.tar.xz".format(basename),
     )
     repository_ctx.file("BUILD.bazel", repository_ctx.read(repository_ctx.attr.build_file))
 

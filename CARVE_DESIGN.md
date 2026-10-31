@@ -121,7 +121,7 @@ distribution and supplies a thin wrapper over its headers and static archives. L
 
 **Decision (implemented).** Option 2 via
 [bazel-contrib/toolchains_llvm](https://github.com/bazel-contrib/toolchains_llvm)
-1.9.0 for root development, plus the official LLVM 22.1.8 distributions fetched
+1.12.0 for root development, plus the official LLVM 23.1.4 distributions fetched
 directly by Carve's module extension.
 `//third_party/llvm:clang_dependency_scanning` wraps `clang_headers` and the
 static archive closure recorded by the distribution's Clang and LLVM CMake
@@ -300,9 +300,12 @@ bazel_dep(name = "rules_proto", version = "7.0.2")
 bazel_dep(name = "zstd", version = "1.5.7.bcr.1")
 
 # Prebuilt clang toolchain and matching static Clang/LLVM archives.
-bazel_dep(name = "toolchains_llvm", version = "1.9.0")
+bazel_dep(name = "toolchains_llvm", version = "1.12.0")
 llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
-llvm.toolchain(name = "llvm_toolchain", llvm_version = "22.1.8")
+llvm.toolchain(
+    name = "llvm_toolchain",
+    llvm_version = "23.1.4",
+)
 use_repo(llvm, "llvm_toolchain", "llvm_toolchain_llvm")
 register_toolchains("@llvm_toolchain//:all")
 ```

@@ -749,10 +749,10 @@ TEST(RunRefreshTest, SidecarHoldsNoAbsolutePathsForCrossHostDeterminism) {
   MBO_ASSERT_OK_AND_ASSIGN(const ActionRecords stored, sidecar::Load(fixture.options.sidecar_path));
   for (const ActionRecord& record : stored.records()) {
     for (const std::string_view source : record.sources()) {
-      EXPECT_FALSE(source.starts_with("/")) << "absolute source leaked into the sidecar: " << source;
+      EXPECT_FALSE(source.starts_with('/')) << "absolute source leaked into the sidecar: " << source;
     }
     for (const std::string_view header : record.headers()) {
-      EXPECT_FALSE(header.starts_with("/")) << "absolute header leaked into the sidecar: " << header;
+      EXPECT_FALSE(header.starts_with('/')) << "absolute header leaked into the sidecar: " << header;
     }
   }
 }

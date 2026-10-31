@@ -303,7 +303,8 @@ absl::StatusOr<std::string> RunAquery(const std::vector<std::string>& targets, c
   const std::string expr =
       absl::StrCat("mnemonic(\"CppCompile|ObjcCompile|CppModuleCompile\", ", absl::StrJoin(targets, " + "), ")");
   const std::vector<std::string> argv = {
-      bazel.empty() ? "bazel" : bazel, "aquery", "--output=proto", "--include_param_files", expr};
+      bazel.empty() ? "bazel" : bazel, "aquery", "--output=proto", "--include_param_files", expr,
+  };
   MBO_ASSIGN_OR_RETURN(process::CommandResult result, process::Run(argv));
   if (result.exit_code != 0) {
     return absl::UnknownError(absl::StrCat("bazel aquery failed (exit ", result.exit_code, "): ", result.stderr_data));

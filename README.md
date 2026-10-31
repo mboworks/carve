@@ -58,11 +58,11 @@ bazel_dep(name = "mboworks_carve", version = "0.1.1")
 
 # The official LLVM static archives contain LLVM bitcode, so select the
 # matching compiler as well as its C++ standard library.
-bazel_dep(name = "toolchains_llvm", version = "1.9.0")
+bazel_dep(name = "toolchains_llvm", version = "1.12.0")
 llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
 llvm.toolchain(
     name = "llvm_toolchain",
-    llvm_version = "22.1.8",
+    llvm_version = "23.1.4",
     stdlib = {
         "": "builtin-libc++",
         "linux-aarch64": "stdc++",
@@ -83,7 +83,7 @@ try-import %workspace%/carve.bazelrc
 ```
 
 The fragment is part of every source archive. The consumer registers the
-matching toolchain because `toolchains_llvm` 1.9.0 only permits its toolchain
+matching toolchain because `toolchains_llvm` only permits its toolchain
 extension in the root module. Bazel's `include()` likewise cannot load a
 fragment from an external repository, so this stanza cannot live inside Carve.
 The checked-in [`examples/bcr`](examples/bcr) module is the authoritative
@@ -107,10 +107,10 @@ one individually-cacheable shard per compile action and aggregate them.
 ## Build requirements
 
 - Bazel 9.1+
-- Clang 22.x (LLVM 22.1.8); root development uses
-  [toolchains_llvm](https://github.com/bazel-contrib/toolchains_llvm) 1.9.0,
+- Clang 23.x (LLVM 23.1.4); root development uses
+  [toolchains_llvm](https://github.com/bazel-contrib/toolchains_llvm) 1.12.0,
   while `scan_deps` downloads and links the matching static Clang/LLVM archives
-- A consumer toolchain using LLVM 22.1.8 with libstdc++ on Linux or libc++ on
+- A consumer toolchain using LLVM 23.1.4 with libstdc++ on Linux or libc++ on
   macOS, matching the official LLVM distributions
 - Apple Silicon / x86\_64 Linux supported; Windows planned
 

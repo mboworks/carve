@@ -60,7 +60,7 @@ sources to rederive from.
 Code-style and structural rules (layout, namespaces, header guards, target
 naming, `deps` vs `implementation_deps`) live in [RULES.md](RULES.md). Summary:
 
-- C++23, clang 20.1+ (pinned at LLVM 22.1.8 via `toolchains_llvm` 1.9.0).
+- C++23, clang 20.1+ (pinned at LLVM 23.1.4 via `toolchains_llvm` 1.12.0).
 - Style: Google C++ with deviations in [.clang-format](.clang-format).
 - Lints: [.clang-tidy](.clang-tidy), `WarningsAsErrors: true`.
 - No exceptions (`-fno-exceptions` is set in `.bazelrc`); use `absl::Status` /

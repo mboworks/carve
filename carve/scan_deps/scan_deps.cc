@@ -18,6 +18,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "absl/status/status.h"
@@ -33,9 +34,9 @@
 namespace carve::scan_deps {
 namespace {
 
-// LLVM 22 split the API: the service + enums live in clang::dependencies, the
-// tool in clang::tooling. Scan errors are reported to a DiagnosticConsumer
-// rather than returned, so we capture them into a string for the status.
+// The service + options live in clang::dependencies, while the tool lives in
+// clang::tooling. Scan errors are reported to a DiagnosticConsumer rather than
+// returned, so we capture them into a string for the status.
 namespace deps = clang::dependencies;
 
 }  // namespace
@@ -43,15 +44,20 @@ namespace deps = clang::dependencies;
 absl::StatusOr<std::vector<std::string>> ScanDependencies(
     absl::Span<const std::string> args,
     std::string_view working_dir) {
-  deps::DependencyScanningService service(
-      deps::ScanningMode::DependencyDirectivesScan, deps::ScanningOutputFormat::Make);
+  deps::DependencyScanningServiceOptions options;
+  options.Mode = deps::ScanningMode::DependencyDirectivesScan;
+  deps::DependencyScanningService service(std::move(options));
   clang::tooling::DependencyScanningTool tool(service);
 
   std::string diagnostics;
   scan_deps_internal::CapturingDiagnosticConsumer diag_consumer(diagnostics);
   const std::vector<std::string> command(args.begin(), args.end());
-  const std::optional<std::string> result =
-      tool.getDependencyFile(command, llvm::StringRef(working_dir.data(), working_dir.size()), diag_consumer);
+  // P1689 scanning does not emit module outputs, but LLVM 23 requires this callback.
+  // LCOV_EXCL_START
+  const auto lookup_module_output = [](const deps::ModuleDeps&, deps::ModuleOutputKind) { return std::string(); };
+  // LCOV_EXCL_STOP
+  const std::optional<std::string> result = tool.getDependencyFile(
+      command, llvm::StringRef(working_dir.data(), working_dir.size()), lookup_module_output, diag_consumer);
   if (!result.has_value()) {
     return absl::InvalidArgumentError(absl::StrCat("scan-deps failed: ", diagnostics));
   }

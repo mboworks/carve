@@ -55,6 +55,24 @@ class CoverageSourcesTest(unittest.TestCase):
                 ["// LCOV_EXCL_START", "// LCOV_EXCL_START"]
             )
 
+    def test_drops_evaluated_branch_on_unexecuted_line(self):
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            source = workspace / "carve/example.cc"
+            source.parent.mkdir(parents=True)
+            source.write_text("unreachable();\ncovered();\n", encoding="utf-8")
+            report = (
+                "SF:carve/example.cc\n"
+                "BRDA:1,0,0,-\nBRDA:1,0,1,1\nBRDA:2,0,0,1\nBRF:3\nBRH:2\n"
+                "DA:1,0\nDA:2,1\nLF:2\nLH:1\nend_of_record\n"
+            )
+
+            actual = coverage_sources.normalized(report, workspace)
+
+            self.assertIn("BRDA:1,0,0,-", actual)
+            self.assertNotIn("BRDA:1,0,1,1", actual)
+            self.assertIn("BRDA:2,0,0,1\nBRF:2\nBRH:1", actual)
+
     def test_preserves_records_without_checked_in_sources(self):
         report = "SF:external/dependency/example.cc\nDA:1,1\nLF:1\nLH:1\nend_of_record\n"
         self.assertEqual(report, coverage_sources.normalized(report))

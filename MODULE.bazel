@@ -52,7 +52,7 @@ bazel_dep(name = "mboworks_proto", version = "1.2.4", dev_dependency = True)
 # Root-development C++ toolchain from bazel-contrib/toolchains_llvm. This is a
 # dev dependency because downstream modules compile Carve with their own
 # ABI-compatible toolchain.
-bazel_dep(name = "toolchains_llvm", version = "1.11.3", dev_dependency = True)
+bazel_dep(name = "toolchains_llvm", version = "1.12.0", dev_dependency = True)
 
 llvm = use_extension(
     "@toolchains_llvm//toolchain/extensions:llvm.bzl",
@@ -62,11 +62,13 @@ llvm = use_extension(
 llvm.toolchain(
     name = "llvm_toolchain",
     # MSan reports false positives for reads from an uninstrumented standard
-    # library. toolchains_llvm's msan feature swaps this matching overlay in on
-    # Linux; ordinary builds continue to use the stdlib selection below.
+    # library. toolchains_llvm's msan feature swaps this instrumented overlay
+    # in on Linux; ordinary builds continue to use the stdlib selection below.
+    # No LLVM 23 overlay is published yet; CI verifies this LLVM 22 build with
+    # the pinned LLVM 23 compiler and runtime.
     libcxx_sha256 = "fd1ac49eeda4edc6deeda2037998e558718a63a5054fff4fdace7751b270217a",
     libcxx_url = "https://github.com/RealtimeRoboticsGroup/toolchains/releases/download/22.1.8/libcxx-msan-22.1.8-x86_64-linux-gnu-ubuntu-22.04.tar.zst",
-    llvm_version = "22.1.8",
+    llvm_version = "23.1.4",
     # Match the standard library used to build the official static archives.
     # The unqualified stdc++ selection links it statically.
     stdlib = {

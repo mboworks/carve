@@ -36,8 +36,9 @@ void AppendJsonString(std::string& out, std::string_view value) {
   constexpr unsigned kFirstUnescapedAscii = 0x20;
   constexpr unsigned kLowNibbleMask = 0x0FU;
   constexpr unsigned kNibbleBits = 4U;
-  static constexpr std::array<char, 16> kHexDigits = {'0', '1', '2', '3', '4', '5', '6', '7',
-                                                      '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+  static constexpr std::array<char, 16> kHexDigits = {
+      '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
+  };
   out.push_back('"');
   for (const char character : value) {
     const unsigned byte = static_cast<unsigned char>(character);

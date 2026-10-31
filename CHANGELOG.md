@@ -6,6 +6,9 @@ follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+- Upgrade development and consumer configuration to toolchains_llvm 1.12.0 and LLVM 23.1.4,
+  including matching full static-development archives and bundled LLD on Linux and macOS.
+
 - Use mboworks_bzl 0.8.0 runfiles keys for refresh tools, manifests, and aspect shards,
   including files from external repositories.
 - Compress retained coverage history, keep aggregates indefinitely and source pages for seven days,

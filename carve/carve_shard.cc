@@ -67,7 +67,7 @@ ABSL_FLAG(
 namespace {
 
 // Trims trailing whitespace from a captured command's stdout.
-std::string TrimmedOutput(const std::vector<std::string>& argv) {
+std::string TrimmedOutput(const std::vector<std::string>& argv) {  // NOLINT(modernize-use-string-view)
 #if defined(__APPLE__)
   const absl::StatusOr<carve::process::CommandResult> result = carve::process::Run(argv);
   if (!result.ok() || result->exit_code != 0) {

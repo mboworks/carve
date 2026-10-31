@@ -114,6 +114,10 @@ constexpr std::string_view kUsage =
     "  subcommands: refresh | aggregate | shard | prune\n"
     "  see CARVE_DESIGN.md section 6 for the per-subcommand flag surface";
 
+std::int64_t NowUnixSeconds() {
+  return absl::ToUnixSeconds(absl::Now());
+}
+
 void PrintError(std::string_view message) {
   std::cerr << "carve: error: " << message << '\n';
 }
@@ -168,7 +172,7 @@ absl::Status RunRefreshFromFlags() {
       .sidecar_path = absl::GetFlag(FLAGS_sidecar),
       .project_id = absl::GetFlag(FLAGS_project_id),
       .scanner = carve::scan_deps::ScanDependencies,
-      .now = [] { return absl::ToUnixSeconds(absl::Now()); },
+      .now = NowUnixSeconds,
       .jobs = jobs,
       .xcode_resolver = MakeXcodeResolver(),
   };
