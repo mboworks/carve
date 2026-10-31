@@ -67,6 +67,7 @@ def normalize_record(record: str, source: Path) -> str:
     definitions = []
     hits_by_name = defaultdict(int)
     data_lines = []
+    line_hits = {}
     branches = []
     for line in raw_lines:
         if line.startswith("FN:"):
@@ -76,7 +77,9 @@ def normalize_record(record: str, source: Path) -> str:
             hits, name = line[5:].split(",", 1)
             hits_by_name[name] += int(hits)
         elif line.startswith("DA:"):
-            number = int(line[3:].split(",", 1)[0])
+            number_text, hits_text = line[3:].split(",", 2)[:2]
+            number = int(number_text)
+            line_hits[number] = int(hits_text)
             if number not in excluded_lines:
                 data_lines.append(line)
         elif line.startswith("BRDA:"):
@@ -98,6 +101,12 @@ def normalize_record(record: str, source: Path) -> str:
             f"FNH:{sum(hits_by_name[name] > 0 for name, _ in functions)}",
         )
     )
+    consistent_branches = []
+    for line in branches:
+        fields = line[5:].split(",")
+        if line_hits.get(int(fields[0])) != 0 or fields[-1] == "-":
+            consistent_branches.append(line)
+    branches = consistent_branches
     result.extend(branches)
     result.extend(
         (
